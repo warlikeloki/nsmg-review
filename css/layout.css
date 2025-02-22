@@ -1,0 +1,51 @@
+@charset "utf-8";
+
+/* Main Content Layout */
+.page-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 95%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 20%;
+    min-width: 250px;
+    background-color: #f1f1f1;
+    padding: 20px;
+    text-align: left;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: 10px;
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: var(--dark-gray);
+}
+
+.left-sidebar {
+    /* Add any specific styles here */
+}
+
+.right-sidebar {
+    /* Add any specific styles here */
+}
+
+/* Sections */
+.welcome-section {
+    text-align: center;
+    padding: 40px;
+    background-color: #007bff;
+    color: white;
+}

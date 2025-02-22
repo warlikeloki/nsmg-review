@@ -1,0 +1,32 @@
+@charset "utf-8";
+
+/* Header */
+.main-header {
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    position: relative;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-container a {
+    display: block;
+}
+
+.logo-container img {
+    max-width: 200px;
+    height: auto;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    margin-left: 15px;
+}

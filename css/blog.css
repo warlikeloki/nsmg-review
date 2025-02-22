@@ -1,0 +1,44 @@
+@charset "utf-8";
+
+/* Blog Page */
+#blog-page {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 0;
+}
+
+#blog-page header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#blog-page article {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+/* Blog Admin */
+#admin-section {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 15px;
+    background: #f3f3f3;
+    border-radius: 5px;
+}
+
+#admin-section input,
+#admin-section textarea {
+    width: 100%;
+    margin: 10px 0;
+    padding: 8px;
+}
+
+#admin-section button {
+    background: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}

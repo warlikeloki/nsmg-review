@@ -1,0 +1,43 @@
+@charset "utf-8";
+
+/* Search Functionality */
+.search-container {
+    display: flex; /* Arrange input and button horizontally */
+    margin-bottom: 20px; /* Add some space below the search bar */
+}
+
+.search-container input[type="text"] {
+    flex-grow: 1; /* Allow input to expand to fill available space */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-container button {
+    padding: 10px 20px;
+    background-color: #007bff; /* Example color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px; /* Add space between input and button */
+}
+
+#searchResults {
+    margin-top: 10px;
+}
+
+#searchResults a {
+    display: block; /* Make search results stack vertically */
+    margin-bottom: 5px;
+    color: #007bff; /* Example color */
+    text-decoration: none;
+}
+
+#searchResults a:hover {
+    text-decoration: underline;
+}
+
+#searchResults p { /* Style for "no results" message */
+    color: #777;
+}

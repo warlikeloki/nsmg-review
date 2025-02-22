@@ -1,0 +1,19 @@
+@charset "utf-8";
+
+/* CSS for Countdown Timer */
+#countdown-label {
+    font-size: 2em;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+/* Responsive adjustments (example) */
+@media (max-width: 768px) {
+    #countdown {
+        font-size: 1.5em;
+    }
+    #countdown-label {
+        font-size: 1.7em;
+    }
+}
