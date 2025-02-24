@@ -14,51 +14,16 @@
 	<script defer src="/js/blog.js"></script>
 </head>
 <body>
-    <header class="main-header">
-        <div class="logo-container">
-            <a href="/index.html" aria-label="Neil Smith Media Group Home">
-                <!--<img src="[image]" alt="Neil Smith Media Group Logo"> for later-->
-            </a>
-            <div class="title">Neil Smith Media Group</div>
-        </div>
-        <button class="hamburger" aria-label="Menu" aria-expanded="false">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav class="nav-menu">
-            <ul>
-                <li><a href="/index.html" title="Home">Home</a></li>
-                <li class="dropdown">
-                    <a href="/media/media.html" title="Media &amp Events" aria-haspopup="true" aria-expanded="false">Media</a>
-                    <ul class="dropdown-content">
-                        <li><a href="/media/blog/blog.html" title="Blog">Blog</a></li>
-                        <li><a href="/media/social-media/social-media.html" title="Social Media">Social Media</a></li>
-                        <li><a href="/media/newsletter/newsletter.html" title="Newsletters">Newsletters</a></li>
-                        <li><a href="/media/gallery/gallery.html" title="Gallery">Gallery</a></li>
-                    </ul>
-                </li>
-                <li><a href="/services/services.html" title="Services">Services</a></li>
-                <li><a href="/events/events.html" title="Events">Events</a></li>    
-                <li class="dropdown">
-                    <a href="/about-us/about.html" title="About Us" aria-haspopup="true" aria-expanded="false">About Us</a>
-                    <ul class="dropdown-content">
-						<li><a href="/about-us/about.html" title="Who We Are">Who We Are</a></li>
-                        <li><a href="/about-us/contact-us.html" title="Contact Us">Contact Us</a></li>
-                        <li><a href="/about-us/terms-conditions.html" title="Terms &amp Conditions">Terms &amp; Conditions</a></li>
-                        <li><a href="/about-us/privacy.html" title="Privacy Policy">Privacy Policy</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </nav>
-        <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Enter search term">
-    <button id="searchButton">Search</button>  </div>
-<div id="searchResults"></div>
-    </header>
-    <!--<div class="banner-container">
-        <img src="[image]" alt="Banner Image Description">
-    </div> FOR LATER -->
+<!-- HEADER -->
+<script>
+    fetch('/header.html')
+        .then(response => response.text())
+        .then(html => document.getElementById('header-container').innerHTML - html);
+</script>
+<!--<div class="banner-container">
+    <img src="[image]" alt="Banner Image Description">
+</div> FOR LATER -->
+<!-- PAGE CONTAINER -->
     <div class="page-container">
         <aside class="sidebar left-sidebar">
             <h3>Upcoming Events</h3>
@@ -97,15 +62,11 @@
         </aside>
     </div>
 
-    <footer>
-        <div class="inline-block" style="background-color:gray">
-            <a href="/about-us/privacy.html" title="privacy-policy" style="color:white">Privacy Policy</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <a href="/about-us/terms-conditions.html" title="terms-conditions" style="color:white">Terms &amp; Conditions</a>
-        </div>
-        <br>
-        <p>&copy; 2025 Neil Smith Media Group, LLC | All Rights Reserved</p>
-    </footer>
+<!-- FOOTER -->
+<div id=""footer-container"></div>
+fetch('footer.html')
+    .then(response +> response.text())
+    .then(html => document.getElementById('footer-container').innerHTML = html);
 
 </body>
 </html>
