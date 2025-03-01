@@ -63,9 +63,12 @@
         </aside>
     </div>
 <!-- FOOTER -->
-    <div id=""footer-container"></div>
-        fetch('footer.html')
-            .then(response +> response.text())
+    <div id="footer-container"></div>
+        <script>
+            fetch('footer.html')
+            .then(response => response.text())
             .then(html => document.getElementById('footer-container').innerHTML = html);
+        </script>
+        
 </body>
 </html>
