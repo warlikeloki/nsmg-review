@@ -1,5 +1,14 @@
 @charset "utf-8";
 
+/* CSS Variables */
+:root {
+    --primary-color: #0056b3;
+    --secondary-color: #ffcc00; /* Yellow */
+    --light-gray: #f8f9fa;
+    --dark-gray: #333;
+    --border-color: #ddd;
+}
+
 /* CSS file imports */
 @import "banner.css";
 @import "blog.css";
@@ -16,12 +25,3 @@
 @import "search.css";
 @import "typography.css";
 @import "normailze.css";
-
-/* CSS Variables */
-:root {
-    --primary-color: #0056b3;
-    --secondary-color: #ffcc00; /* Yellow */
-    --light-gray: #f8f9fa;
-    --dark-gray: #333;
-    --border-color: #ddd;
-}
