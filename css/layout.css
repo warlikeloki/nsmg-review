@@ -11,6 +11,16 @@
     padding: 20px 0;
 }
 
+.grid-container {
+    display: grid;
+    grid-template-columns: 60% 40%; /* 60% on the left, 40% on the right */
+}
+
+/* To switch to 40/60 */
+.grid-container.reverse {
+    grid-template-columns: 40% 60%;
+}
+
 /* Sidebar Styling */
 .sidebar {
     width: 20%;
