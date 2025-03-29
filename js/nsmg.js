@@ -238,4 +238,3 @@ async function loadBlogPosts() {
 }
 
 document.addEventListener("DOMContentLoaded", loadBlogPosts);
-

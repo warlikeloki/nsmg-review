@@ -1,0 +1,46 @@
+/Website
+|- index.html
+|- header.html
+|- footer.html
+|	|- about-us
+|	|	|- about.html
+|	|	|- contact-us.html
+|	|	|- privacy.html
+|	|	|- terms-conditions.html 
+|	|- css
+|	|	|- stylesheet.css
+|	|	|- banner.css
+|	|	|- blog.css
+|	|	|- components.css
+|	|	|- countdown.css
+|	|	|- footer.css
+|	|	|- form.css
+|	|	|- gallery.css
+|	|	|- hamburger.css
+|	|	|- header.css
+|	|	|- layout.css
+|	|	|- mobile.css
+|	|	|- navigation.css
+|	|	|- search.css
+|	|	|- typography.css
+|	|	|- normailze.css
+|	|- js
+|	|	|- blog.js
+|	|	|- dropdown.js
+|	|	|- hamburger.js
+|	|	|- newsletter.js
+|	|	|- nsmg.js
+|	|	|- search.js
+|	|- media
+|	|	|- media.html
+|	|	|- blog
+|	|	|	|- blog.html
+|	|	|- gallery
+|	|	|	|- gallery.html
+|	|	|- newsletter
+|	|	|	|- newsletter.html
+|	|	|- social-media
+|	|	|	|- social-media.html
+|	|- php
+|	|- services
+|	|	|- services.html
