@@ -1,59 +1,185 @@
-@charset "utf-8";
-
-/* Mobile View */
 @media (max-width: 768px) {
-    .hamburger {
-        display: flex;
-    }
+  /* --- Navigation --- */
+  .hamburger {
+      display: flex; /* Show hamburger icon on small screens */
+      flex-direction: column;
+      justify-content: space-between;
+      width: 30px;
+      height: 20px;
+      cursor: pointer;
+      padding: 5px; /* Add padding for better touch area */
+      border: none; /* Remove default button border */
+      background: transparent; /* Make background transparent */
+      position: absolute; /* Position it */
+      top: 15px; /* Adjust top position */
+      right: 20px; /* Adjust right position */
+      z-index: 3; /* Ensure it's above the nav menu */
+  }
 
-    .nav-menu {
-        display: none;
-        flex-direction: column;
-        position: absolute;
-        top: 60px;
-        left: 0;
-        width: 100%;
-        background: var(--primary-color);
-        padding: 20px;
-        z-index: 2;
-    }
+  .hamburger span {
+      display: block;
+      height: 2px;
+      width: 100%;
+      background-color: white; /* Or your preferred color */
+      border-radius: 3px;
+      transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth animation for transform and opacity */
+  }
 
-    .nav-menu.active {
-        display: flex;
-    }
+  .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(6px, 6px);
+  }
 
-    .nav-menu ul {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0;
-    }
+  .hamburger.active span:nth-child(2) {
+      opacity: 0;
+  }
 
-    .nav-menu li {
-        width: 100%;
-    }
+  .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+  }
 
-    .nav-menu a {
-        padding: 15px;
-    }
+  .nav-menu {
+      display: none; /* Initially hide the full nav menu on small screens */
+      flex-direction: column; /* Stack menu items vertically */
+      position: absolute; /* Position the menu absolutely, relative to the nearest positioned ancestor */
+      top: 60px;        /* Position below the header/nav bar.  Adjust as needed. */
+      left: 0;
+      width: 100%;       /* Full width of the screen */
+      background: var(--primary-color); /* Use your primary color */
+      padding: 20px;
+      z-index: 2;        /* Ensure it's above other content */
+  }
 
-    .nav-menu a.active {
-        background-color: var(--primary-color);
-        color: white;
-    }
+  .nav-menu.active {
+      display: flex; /* Show the menu when the 'active' class is applied (by JS) */
+  }
 
-    .page-container {
-        flex-direction: column;
-        align-items: center;
-    }
+  .nav-menu ul {
+      flex-direction: column; /* Stack list items */
+      align-items: flex-start; /* Align items to the start (left in LTR) */
+      gap: 0;           /* Remove default list item gap */
+      padding-left: 0; /* Remove default padding on the ul */
+      list-style: none;   /* Remove list bullets */
+  }
 
-    .sidebar {
-        width: 100%;
-        min-width: auto;
-        text-align: center;
-        padding: 10px;
-    }
+  .nav-menu li {
+      width: 100%; /* Make each list item take full width */
+  }
 
-    .main-content {
-        width: 90%;
-    }
+  .nav-menu a {
+      display: block; /* Important: Make links block-level for full-width clickable area */
+      padding: 15px;
+      color: white; /* Default link color */
+      text-decoration: none; /* Remove underlines */
+  }
+
+  .nav-menu a:hover {
+      background-color: #0056b3; /* Example: A darker blue. Replace with a darker shade of your primary color */
+      color: white;
+  }
+
+  .nav-menu a.active {
+      background-color: var(--primary-color); /* Style for the active link */
+      color: white;
+  }
+
+  .nav-menu .dropdown-content {
+      display: none; /* Initially hidden */
+      position: static; /* Adjust positioning for mobile */
+      width: 100%; /* Full width on mobile */
+      box-shadow: none; /* Remove shadow on mobile */
+      border-radius: 0; /* Remove border-radius on mobile */
+      padding-left: 15px; /* Indent dropdown items */
+      margin-top: 0; /* Reset top margin */
+  }
+
+  .nav-menu .dropdown.active > .dropdown-content {
+      display: flex;
+      flex-direction: column; /* Stack dropdown links */
+  }
+
+  .nav-menu .dropdown > a[aria-expanded="true"] + .dropdown-content {
+      display: flex; /* Alternative way to show if aria-expanded is used */
+      flex-direction: column;
+  }
+
+  .nav-menu .dropdown-content li a {
+      padding: 10px 15px; /* Adjust padding for dropdown items */
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle divider */
+  }
+
+  .nav-menu .dropdown-content li:last-child a {
+      border-bottom: none; /* Remove divider on the last item */
+  }
+
+  /* --- Main Content and Sidebar --- */
+  .page-container {
+      flex-direction: column; /* Stack sidebar and main content vertically */
+      align-items: flex-start; /* Changed from center to start */
+      /* Consider using 'start' to left-align content, or 'stretch' */
+  }
+
+  
+  .left-sidebar, .right-sidebar {
+      display: none;
+}
+
+  
+
+
+  .main-content {
+      width: 100%; /* Changed from 90% to 100% */
+      padding: 0; /* Remove padding, or adjust as needed */
+  }
+
+  /* --- Countdown Styling --- */
+  #countdown {
+      font-size: 1.4em;
+  }
+
+  #countdown-label {
+      font-size: 1.7em;
+  }
+
+  /* --- Additional Mobile-Specific Styles (Suggestions) --- */
+
+  body {
+      font-size: 16px; /* Consider setting a base font size for mobile */
+      line-height: 1.6;  /* Improved default line height for mobile readability */
+  }
+
+  h1 {
+      font-size: 2.2em; /* Adjust heading sizes for mobile */
+  }
+  h2{
+      font-size: 1.8em;
+  }
+
+  /* Responsive Images */
+  img {
+      max-width: 100%; /* Ensure images don't overflow their container */
+      height: auto;
+  }
+
+  /* Buttons */
+  button,
+  .button { /* If you have a custom .button class */
+      padding: 12px 24px; /* Adjust button padding for touch */
+      font-size: 1.1em;
+      cursor: pointer;  /* Make sure cursor is set */
+  }
+
+  /* Form Inputs */
+  input[type="text"],
+  input[type="email"],
+  textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 15px;
+  }
+  textarea{
+      min-height: 100px;
+  }
 }

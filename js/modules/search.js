@@ -1,4 +1,4 @@
-// search.js
+// Search Functionality
 document.addEventListener('DOMContentLoaded', () => {
     // ... other code ...
 

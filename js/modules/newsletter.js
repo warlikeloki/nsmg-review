@@ -1,4 +1,4 @@
-// newsletter.js
+// Newsletter Signup
 const newsletterForm = document.querySelector('.newsletter form');
 
 newsletterForm.addEventListener('submit', (event) => {
@@ -52,3 +52,4 @@ document.addEventListener('DOMContentLoaded', () => {
             link.classList.add('active');
         }
     });
+});

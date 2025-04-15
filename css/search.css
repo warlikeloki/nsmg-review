@@ -1,43 +1,62 @@
-@charset "utf-8";
-
-/* Search Functionality */
+/* --------------------------------
+* search.css
+* --------------------------------
+* Contains:
+* - Styles for sitewide search functionality
+*/
 .search-container {
-    display: flex; /* Arrange input and button horizontally */
-    margin-bottom: 20px; /* Add some space below the search bar */
+display: flex;
+margin-bottom: 20px;
 }
 
 .search-container input[type="text"] {
-    flex-grow: 1; /* Allow input to expand to fill available space */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.search-container button {
-    padding: 10px 20px;
-    background-color: #007bff; /* Example color */
+    flex-grow: 1;
+    padding: 0.75rem; /* Align with .fs-input padding */
+    border: none; /* Remove specific border */
+    border-radius: var(--border-radius-medium); /* Changed from 5px (implicitly) */
+    box-shadow: var(--feedback-border-default) 0 0 0 1px inset; /* Use consistent border */
+    color: var(--feedback-primary); /* Use consistent text color */
+    font-size: 1rem; /* Align with .fs-input font-size */
+    line-height: 1.5rem; /* Align with .fs-input line-height */
+    height: 2.5rem; /* Align with .fs-input height */
+  }
+  
+  .search-container button {
+    background-color: var(--tertiary-color); /* Use a consistent button color */
     color: white;
-    border: none;
-    border-radius: 5px;
+    padding: 1rem 2rem; /* Align with .fs-button padding */
+    border: none; /* Remove specific border */
+    border-radius: var(--border-radius-medium); /* Changed from 5px (implicitly) */
     cursor: pointer;
-    margin-left: 10px; /* Add space between input and button */
-}
+    margin-left: 10px;
+    font-size: 0.875rem; /* Align with .fs-button font-size */
+    font-weight: 500; /* Align with .fs-button font-weight */
+    line-height: 1rem; /* Align with .fs-button line-height */
+    transition-duration: 200ms;
+    transition-property: background-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .search-container button:hover {
+    background-color: var(--secondary-color); /* Use a consistent hover color */
+    color: var(--dark-gray);
+  }
 
 #searchResults {
-    margin-top: 10px;
+margin-top: 10px;
 }
 
 #searchResults a {
-    display: block; /* Make search results stack vertically */
-    margin-bottom: 5px;
-    color: #007bff; /* Example color */
-    text-decoration: none;
+display: block;
+margin-bottom: 5px;
+color: #007bff;
+text-decoration: none;
 }
 
 #searchResults a:hover {
-    text-decoration: underline;
+text-decoration: underline;
 }
 
-#searchResults p { /* Style for "no results" message */
-    color: #777;
+#searchResults p {
+color: #777;
 }
