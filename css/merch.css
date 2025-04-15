@@ -1,0 +1,87 @@
+/* Merch.css (Form Section - Refactored to use .fs-* classes) */
+
+.merch-page {
+    padding: 20px; /* Keep page padding */
+  }
+  
+  .merch-form {
+    display: grid;
+    row-gap: 1.5rem; /* Use .fs-form spacing */
+  }
+  
+  .merch-form:where(.fs-layout__2-column) {
+    column-gap: 1.5rem;
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .merch-form__section-title {
+    font-size: 1.25rem; /* Align with .fs-fieldset-title */
+    font-weight: 500; /* Align with .fs-fieldset-title */
+    line-height: 1.75rem; /* Align with .fs-fieldset-title */
+    margin-bottom: 1.5rem; /* Use .fs-fieldset-title spacing */
+    color: var(--feedback-text-default); /* Use consistent text color */
+    font-family: var(--font-family-display); /* Use consistent font */
+  }
+  
+  .merch-form__field {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.375rem; /* Use .fs-field spacing */
+    margin-bottom: 0; /* Remove specific margin, .fs-form handles spacing */
+  }
+  
+  .merch-form__label {
+    display: block; /* Ensure it behaves like .fs-label */
+    font-size: 0.875rem; /* Align with .fs-label */
+    font-weight: 500; /* Align with .fs-label */
+    line-height: 1.25rem; /* Align with .fs-label */
+    color: var(--feedback-text-default); /* Use consistent text color */
+    font-family: var(--font-family-display); /* Use consistent font */
+    margin-bottom: 0; /* Remove specific margin, .fs-field handles spacing */
+  }
+  
+  .merch-form__input,
+  .merch-form__select,
+  .merch-form__textarea {
+    /* Rely on .fs-input, .fs-select, .fs-textarea classes in HTML */
+    padding: 0.75rem; /* Align with .fs-input padding */
+    border: none; /* Remove specific border */
+    border-radius: 0.375rem; /* Align with .fs-input border-radius */
+    box-shadow: var(--feedback-border-default) 0 0 0 1px inset; /* Use consistent border */
+    color: var(--feedback-primary); /* Use consistent text color */
+    font-size: 1rem; /* Align with .fs-input font-size */
+    line-height: 1.5rem; /* Align with .fs-input line-height */
+    height: 2.5rem; /* Align with .fs-input height */
+  }
+  
+  .merch-form__textarea {
+    height: auto; /* Override fixed height for textarea */
+    padding: 0.5rem 0.75rem; /* Align with .fs-textarea padding */
+    resize: vertical; /* Keep resize option */
+  }
+  
+  .merch-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1.5rem; /* Use consistent grid gap */
+  }
+  
+  .merch-form__button {
+    /* Use .fs-button class in HTML */
+    background-color: var(--feedback-primary); /* Use consistent button color */
+    color: white;
+    padding: 1rem 2rem; /* Use consistent button padding */
+    border: none; /* Remove specific border */
+    border-radius: 0.375rem; /* Use consistent button border-radius */
+    cursor: pointer;
+    font-size: 0.875rem; /* Align with .fs-button font-size */
+    font-weight: 500; /* Align with .fs-button font-weight */
+    line-height: 1rem; /* Align with .fs-button line-height */
+    transition-duration: 200ms;
+    transition-property: background-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .merch-form__button:hover {
+    background-color: var(--feedback-primary-active); /* Use consistent hover color */
+  }

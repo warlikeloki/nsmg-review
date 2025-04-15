@@ -1,5 +1,3 @@
-@charset "utf-8";
-
 /* CSS for Countdown Timer */
 #countdown-label {
     font-size: 2em;
@@ -8,12 +6,44 @@
     margin-bottom: 10px;
 }
 
-/* Responsive adjustments (example) */
-@media (max-width: 768px) {
-    #countdown {
-        font-size: 1.5em;
-    }
-    #countdown-label {
-        font-size: 1.7em;
-    }
+#countdown {
+    font-size: 2em;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+    color: var(--dark-gray);
+    background-color: #dedede;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping to multiple lines */
+    align-items: center; /* Vertically center items */
+    justify-content: center; /* horizontally center */
+    gap: 10px; /* Add spacing between the time units (optional) */
+}
+
+.countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 50px; /* Ensure each item has a minimum width */
+}
+
+#countdown span {
+    margin: 0 0.25em;
+}
+
+#countdown.expired {
+    color: red;
+}
+
+.no-js-countdown {
+    text-align: center;
+    font-size: 0.9em;
+    color: #666;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 10px;
+    background-color: #f9f9f9;
 }

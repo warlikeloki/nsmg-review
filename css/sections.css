@@ -1,0 +1,210 @@
+/* --------------------------------
+* sections.css
+* --------------------------------
+* Contains:
+* - Styles for main content sections
+*/
+.welcome-section {
+text-align: center;
+padding: 30px;
+background-color: var(--primary-color); /* 3-29-2025: changed color to primary color.*/
+color: white;
+}
+
+.join-btn,
+.newsletter button {
+  display: inline-block;
+  padding: 1rem 2rem; /* Base button padding */
+  border: none; /* Base button border */
+  border-radius: var(--border-radius-medium); /* Changed from 5px */
+  font-weight: var(--heading-font-weight); /* Base button font-weight */
+  text-decoration: none; /* Base button text-decoration */
+  cursor: pointer; /* Base button cursor */
+  font-size: 0.875rem; /* Base button font-size */
+  line-height: 1rem; /* Base button line-height */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Base button transition */
+
+  background-color: var(--secondary-color); /* Specific background */
+  color: var(--dark-gray); /* Specific color */
+  margin: 10px; /* Keep specific margin */
+}
+
+.join-btn:hover,
+.newsletter button:hover {
+  background-color: var(--secondary-color-darker, #d4a700); /* Use darker shade */
+  color: var(--dark-gray-lighter, #555);
+}
+
+.special-button {
+  display: inline-block;
+  padding: 1rem 2rem; /* Base button padding */
+  border: none; /* Base button border */
+  border-radius: var(--border-radius-medium); /* Changed from 5px */
+  font-weight: var(--heading-font-weight); /* Base button font-weight */
+  text-decoration: none; /* Base button text-decoration */
+  cursor: pointer; /* Base button cursor */
+  font-size: 1rem; /* Specific font size */
+  line-height: 1rem; /* Base button line-height */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Base button transition */
+
+  background-color: var(--tertiary-color); /* Specific background */
+  color: white; /* Specific color */
+}
+
+.special-button:hover {
+  background-color: var(--tertiary-color-darker, #0056b3); /* Use darker shade */
+}
+
+.collapsible-paragraph .read-more-btn {
+  display: inline-block;
+  padding: 0.625rem 1.25rem; /* Adjusted padding to rem */
+  border: 1px solid var(--border-color); /* Specific border */
+  border-radius: var(--border-radius-medium); /* Changed from 5px (implicitly) */
+  font-weight: var(--heading-font-weight); /* Base button font-weight */
+  text-decoration: none; /* Base button text-decoration */
+  cursor: pointer; /* Base button cursor */
+  font-size: 0.875rem; /* Base button font-size */
+  line-height: 1rem; /* Base button line-height */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Base button transition */
+
+  background-color: var(--tertiary-color); /* Specific background */
+  color: white; /* Specific color */
+  margin-top: 0.3125rem; /* Adjusted margin to rem */
+}
+
+.collapsible-paragraph .read-more-btn:hover {
+  background-color: var(--secondary-color);
+  color: var(--dark-gray) !important;
+}
+
+.updates {
+padding: 20px;
+}
+
+.updates article {
+margin-bottom: 20px;
+border-bottom: 1px solid var(--border-color);
+padding-bottom: 10px;
+}
+
+.updates article:last-child {
+border-bottom: none;
+}
+
+.newsletter {
+text-align: center;
+padding: 20px;
+}
+
+.newsletter form {
+  display: flex;
+  flex-direction: column; /* Stack the field and button group */
+  align-items: center; /* Center items horizontally within the form */
+  max-width: 300px; /* Adjust as needed for the form width */
+  margin: 0 auto; /* Center the form itself */
+}
+
+.newsletter .fs-button-group {
+  width: 100%; /* Make the button group take full width of the form */
+  display: flex;
+  justify-content: center; /* Center the button within the button group */
+  margin-top: 1rem; /* Add some spacing above the button */
+}
+
+.newsletter input {
+padding: 10px;
+border: 1px solid var(--border-color);
+border-radius: 5px;
+width: 300px;
+max-width: 100%;
+}
+
+.officers {
+padding: 20px;
+background-color: #f3f3f3;
+}
+
+.incumbents {
+padding: 20px;
+background-color: #f3f3f3;
+text-align: center;
+}
+
+.incumbents ul {
+list-style: none;
+padding: 5px;
+}
+
+.candidates {
+padding: 20px;
+background-color: #f3f3f3;
+text-align: center;
+    }
+    
+.candidates ul {
+list-style: none;
+padding: 5px;
+}
+
+.button-container {
+    text-align: center; /* Center the button container */
+    margin-top: 20px; /* Space above the button container */
+}
+
+/* Friends of Democrats stlye */
+  .friend-list ul {
+    list-style-type: none; /* Remove the bullets */
+    padding-left: 0; /* Remove default left padding for lists */
+}
+
+.friend-list li {
+    margin-bottom: 20px; /* Add some spacing between each organization's section */
+    text-align: center; /* Initially center all content within the li */
+}
+
+.friend-list li > a {
+    display: block; /* Make the link a block element to take full width for centering */
+    font-weight: bold; /* Make the organization name stand out */
+    margin-bottom: 5px; /* Add a little space below the name */
+    text-decoration: none; /* Remove default link underline if you prefer */
+    color: var(--tertiary-color);
+    font-size: 1.4em; /* Use your primary color for the name */
+}
+
+.friend-list li > p {
+    text-align: left; /* Align the paragraph text to the left for better readability */
+    margin-top: 10px; /* Add some space above the paragraph */
+    text-align: center; /* Center the paragraph text */
+    width: 80%; /* Limit the width of the paragraph */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Future image styling (you can add this now) */
+.friend-list li > img {
+    display: block; /* Make the image a block element */
+    max-width: 150px; /* Set a maximum width for the logo/photo */
+    height: auto;
+    margin: 10px auto; /* Center the image with some top and bottom margin */
+}
+
+/* Collapsing paragraph styling */
+.collapsible-paragraph .full-content {
+    display: none;
+}
+
+.collapsible-paragraph .full-content.show {
+    display: block;
+}
+
+/* If you want to use a link instead of a button */
+.collapsible-paragraph a.read-more-link {
+    display: block;
+    margin-top: 5px;
+    color: blue;
+    text-decoration: none;
+}
+
+.collapsible-paragraph a.read-more-link:hover {
+    text-decoration: underline;
+}

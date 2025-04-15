@@ -1,61 +1,129 @@
-@charset "utf-8";
-
-/* Main Content Layout */
+/* --------------------------------
+* layout.css
+* --------------------------------
+* Contains:
+* - CSS Grid and Flexbox styles for page layout
+*/
 .page-container {
     display: flex;
     justify-content: center;
     align-items: flex-start;
     width: 95%;
-    max-width: 1400px;
     margin: 0 auto;
-    padding: 20px 0;
-}
-
-.grid-container {
-    display: grid;
-    grid-template-columns: 60% 40%; /* 60% on the left, 40% on the right */
-}
-
-/* To switch to 40/60 */
-.grid-container.reverse {
-    grid-template-columns: 40% 60%;
-}
-
-/* Sidebar Styling */
-.sidebar {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  
+  .sidebar {
+    min-height: 100vh;
     width: 20%;
     min-width: 250px;
     background-color: #f1f1f1;
     padding: 20px;
     text-align: left;
-}
-
-.sidebar ul {
+  }
+  
+  .sidebar ul {
     list-style: none;
     padding: 0;
-}
-
-.sidebar li {
+  }
+  
+  .sidebar li {
     margin-bottom: 10px;
-}
-
-.sidebar a {
+  }
+  
+  .sidebar a {
     text-decoration: none;
     color: var(--dark-gray);
-}
-
-.left-sidebar {
-    /* Add any specific styles here */
-}
-
-.right-sidebar {
-    /* Add any specific styles here */
-}
-
-/* Sections */
-.welcome-section {
-    text-align: center;
-    padding: 40px;
-    background-color: #007bff;
+  }
+  
+  .left-sidebar {
+    background-color: #78b9ff;
+  }
+  
+  .right-sidebar {
+    background-color: #78b9ff;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin: 0 20px;
+  }
+  
+  .horizontal-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap; /* Keep wrap for responsiveness */
+    gap: 10px; /* Reduced gap */
+    justify-content: space-between; /* Distribute items */
+  }
+  
+  .horizontal-list li {
+    margin-right: 0;
+    flex: 1 0 auto; /* Allow items to grow and shrink, but not initially */
+    display: flex; /* added for centering */
+    justify-content: center; /* added for centering */
+  }
+  
+  .horizontal-list li a {
+    color: #0078d7;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 12px; /* Slightly reduced horizontal padding */
+    border-radius: 5px;
+    border: 1px solid #0078d7;
+    display: block;
+    white-space: nowrap; /* Prevent text wrapping inside the link */
+    text-align: center; /* Center the text within the link */
+    width: 100%; /* Make link take up full width of the li */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+  }
+  /* Code below is for images in the horizontal list, if any
+  .horizontal-list li a:hover {
+    opacity: 0.8;
+  }
+  
+  .horizontal-list li img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+  }
+  
+  @media (max-width: 768px) {
+    .horizontal-list {
+      flex-direction: column;
+      gap: 10px;
+    }
+    .horizontal-list li {
+      flex: none;
+    }
+  }
+  */
+  .horizontal-list li a:hover {
+    background-color: #0078d7;
     color: white;
-}
+  }
+  @media (max-width: 600px) {
+    .horizontal-list {
+      flex-direction: column;
+    }
+  }
+  
+  .pdf-container {
+    width: 100%;
+    height: 80vh;
+    border: var(--border-default);
+    margin-bottom: 20px;
+    overflow: auto;
+  }
+  embed {
+    width: 100%;
+    height: 100%;
+  }

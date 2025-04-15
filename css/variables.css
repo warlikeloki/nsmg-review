@@ -2,8 +2,9 @@
 
 /* CSS Variables */
 :root {
-    --primary-color: #0056b3;
-    --secondary-color: #ffcc00; /* Yellow */
+    --primary-color: #0056b3; /* Main Color */
+    --secondary-color: #ffcc00; /* Secondary, complementary color */
+    --tertiary-color: #28a745; /* Tertiary color for accents */
     --light-gray: #f8f9fa;
     --dark-gray: #333;
     --border-color: #ddd;

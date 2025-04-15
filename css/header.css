@@ -1,6 +1,4 @@
-@charset "utf-8";
-
-/* Header */
+/* --- header.css --- */
 .main-header {
     background-color: var(--primary-color);
     display: flex;
@@ -8,25 +6,47 @@
     justify-content: space-between;
     padding: 15px 20px;
     position: relative;
-}
-
-.logo-container {
+  }
+  
+  .logo-container {
     display: flex;
     align-items: center;
-}
-
-.logo-container a {
+  }
+  
+  .logo-container a {
     display: block;
-}
-
-.logo-container img {
+  }
+  
+  .logo-container img {
     max-width: 200px;
     height: auto;
-}
-
-.title {
-    font-size: 24px;
+  }
+  
+  .title {
+    font-size: 1.5em; /* Using em for better scaling */
     font-weight: bold;
     color: white;
-    margin-left: 15px;
-}
+    margin-left: 1rem; /* Using rem for consistency */
+  }
+  
+  /* Donate Button Styling (Moved here from original navigation styles in header.css) */
+  .main-header .donate-btn { /* More specific selector */
+    display: inline-block;
+    padding: 0.625rem 0.9375rem; /* Specific padding */
+    border: none; /* Base button border */
+    border-radius: var(--border-radius-medium); /* Changed from 5px (implicitly) */
+    font-weight: var(--heading-font-weight); /* Base button font-weight */
+    text-decoration: none; /* Base button text-decoration */
+    cursor: pointer; /* Base button cursor */
+    font-size: 0.875rem; /* Base button font-size */
+    line-height: 1rem; /* Base button line-height */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Base button transition */
+  
+    background-color: var(--tertiary-color); /* Specific background */
+    color: white !important; /* Override default link color */
+  }
+  
+  .main-header .donate-btn:hover {
+    background-color: var(--secondary-color);
+    color: var(--dark-gray) !important;
+  }
