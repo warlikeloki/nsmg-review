@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testimonials - Neil Smith Media Group</title>
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/navigation.css">
+    <link rel="stylesheet" href="/css/testimonials.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <script src="/js/testimonials.js" defer></script>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <main class="main-content">
+        <section class="testimonials-section">
+            <h2>What Our Clients Are Saying</h2>
+            <div class="testimonials-container" id="testimonials-container">
+                <p>Loading testimonials...</p>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script>
+        // Load header and footer
+        fetch('/header.html')
+            .then(response => response.text())
+            .then(html => document.getElementById('header-container').innerHTML = html);
+
+        fetch('/footer.html')
+            .then(response => response.text())
+            .then(html => document.getElementById('footer-container').innerHTML = html);
+    </script>
+</body>
+</html>

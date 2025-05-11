@@ -1,0 +1,97 @@
+/* Basic Form Styles */
+#ranked-choice-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Fieldset Styles */
+fieldset {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+legend {
+    font-weight: bold;
+    padding: 0 10px;
+    color: #333;
+}
+
+/* Label Styles */
+.candidate-label,
+.ranking-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Input Styles */
+.candidate-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Select Styles */
+.ranking-group select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+/* Button Styles */
+.form-button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.form-button {
+    flex: 1;
+    padding: 12px 20px;
+    background-color: #0066cc;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form-button:hover {
+    background-color: #0056a3;
+}
+
+.form-button:active {
+    background-color: #004680;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    #ranked-choice-form {
+        padding: 15px;
+    }
+
+    .form-button-group {
+        flex-direction: column;
+    }
+
+    .form-button {
+        margin-bottom: 10px;
+    }
+}

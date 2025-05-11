@@ -1,16 +1,27 @@
-<!DOCTYPE html>
-<html lang="en-us">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Neil Smith Media Group">
-    <title>Neil Smith Media</title>
-    <footer>
-        <div class="inline-block" style="background-color:gray">
-            <a href="/about-us/privacy.html" title="privacy-policy" style="color:white">Privacy Policy</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <a href="/about-us/terms-conditions.html" title="terms-conditions" style="color:white">Terms &amp; Conditions</a>
-        </div>
-        <br>
-        <p>&copy; 2025 Neil Smith Media Group, LLC | All Rights Reserved</p>
-    </footer>
-</html>
+<footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-info">
+        <p>&copy; <span id="year"></span> Neil Smith Media Group. All rights reserved.</p>
+        <p><a href="/privacy.html">Privacy Policy</a> | <a href="/terms.html">Terms & Conditions</a></p>
+      </div>
+  
+      <div class="footer-social">
+        <a href="https://www.facebook.com/NeilSmithMedia" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <img src="/images/icons/facebook.svg" alt="Facebook" />
+        </a>
+        <a href="https://www.instagram.com/NeilSmithMedia" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <img src="/images/icons/instagram.svg" alt="Instagram" />
+        </a>
+        <a href="mailto:contact@neilsmith.org" aria-label="Email">
+            <img src="/images/icons/email.svg" alt="Email" />
+        </a>
+          
+      </div>
+    </div>
+  </footer>
+  
+  <script>
+    // Auto-update year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+  

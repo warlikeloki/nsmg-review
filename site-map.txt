@@ -1,46 +1,58 @@
-/Website
+/Website/
 |- index.html
-|- header.html
+|- blog.html
+|- blog-post.html
+|- contact.html
+|- services.html
+|- testimonials.html
 |- footer.html
-|	|- about-us
-|	|	|- about.html
-|	|	|- contact-us.html
-|	|	|- privacy.html
-|	|	|- terms-conditions.html 
-|	|- css
-|	|	|- stylesheet.css
-|	|	|- banner.css
-|	|	|- blog.css
-|	|	|- components.css
-|	|	|- countdown.css
-|	|	|- footer.css
-|	|	|- form.css
-|	|	|- gallery.css
-|	|	|- hamburger.css
-|	|	|- header.css
-|	|	|- layout.css
-|	|	|- mobile.css
-|	|	|- navigation.css
-|	|	|- search.css
-|	|	|- typography.css
-|	|	|- normailze.css
-|	|- js
-|	|	|- blog.js
-|	|	|- dropdown.js
-|	|	|- hamburger.js
-|	|	|- newsletter.js
-|	|	|- nsmg.js
-|	|	|- search.js
-|	|- media
-|	|	|- media.html
-|	|	|- blog
-|	|	|	|- blog.html
-|	|	|- gallery
-|	|	|	|- gallery.html
-|	|	|- newsletter
-|	|	|	|- newsletter.html
-|	|	|- social-media
-|	|	|	|- social-media.html
-|	|- php
-|	|- services
-|	|	|- services.html
+|- header.html
+|   |- about-us/
+|   |   |- about.html
+|   |   |- privacy.html
+|   |   |- terms-conditions.html
+|   |- admin/
+|   |   |- admin.html
+|   |   |- manage_posts.html
+|   |   |- manage_testimonials.html
+|   |   |- website_settings.html
+|   |- css/
+|   |   |- global.css
+|   |   |- layout.css
+|   |   |- navigation.css
+|   |   |- sections.css
+|   |   |- blog.css
+|   |   |- mobile.css
+|   |   |- forms.css
+|   |   |- testimonials.css
+|   |   |- gallery.css
+|   |- js/
+|   |   |- main.js
+|   |   |- blog.js
+|   |   |- navigation.js
+|   |   |- testimonials.js
+|   |   |- gallery.js
+|   |- json/
+|   |   |- posts.json
+|   |   |- testimonials.json
+|   |   |- services.json
+|   |- php/
+|   |   |- contact_form.php
+|   |   |- testimonial_submission.php
+|   |   |- service_request.php
+|   |   |- subscribe.php
+|   |- media/
+|   |   |- banners/
+|   |   |- icons/
+|   |   |- logos/
+|   |   |- social/
+|   |- gallery/
+|   |   |- index.html
+|   |   |- js/
+|   |   |   |- gallery.js
+|   |   |- css/
+|   |   |   |- gallery.css
+|   |   |- photos/
+|   |- templates/
+|   |   |- header.html
+|   |   |- footer.html

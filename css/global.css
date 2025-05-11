@@ -1,243 +1,78 @@
+/* global.css */
+
+/* Color Variables */
 :root {
-    /* Core Colors */
-    --primary-color: #003e81; /* Main brand color */
-    --secondary-color: #ffcc00; /* Accent color */
-    --tertiary-color: #007bff; /* Another accent color */
-    --light-gray: #f8f9fa; /* Light background */
-    --dark-gray: #333; /* Dark text/headings */
-    --border-color: #ddd; /* Default border color */
-  
-    /* Feedback Form Specific Colors */
-    --feedback-background: #cbd5e1;
-    --feedback-background-alt: #64748b;
-    --feedback-border-active: #64748b;
-    --feedback-border-default: #94a3b8;
-    --feedback-highlight: #cbd5e1;
-    --feedback-primary: #1e293b; /* Primary color for feedback form elements */
-    --feedback-primary-active: #090f1d; /* Active state for feedback form primary */
-    --feedback-text-default: #0f172a;
-    --feedback-text-muted: #475569;
-  
-    /* Font Families */
-    --font-family-body: "Work Sans", system-ui, sans-serif; /* Preferred body font */
-    --font-family-display: "IBM Plex Serif", system-ui, serif; /* Preferred display font */
-  
-    /* Base Font Sizes (can be adjusted) */
-    --base-font-size: 1rem; /* Assuming 1rem = 16px default */
-    --heading-font-weight: 500; /* Semi-bold for headings */
-  
-    /* Border Radii */
-    --border-radius-small: 0.25rem; /* For checkboxes, radios */
-    --border-radius-medium: 0.375rem; /* For inputs, buttons, selects */
-    --border-radius-large: 0.5rem; /* For larger elements */
-    --border-radius-xl: 0.75rem; /* For even larger elements */
-    --border-radius-pill: 1.5rem; /* For pill-shaped elements */
-  
-    /* Border Styles */
-    --border-width-default: 1px;
-    --border-color-default: var(--border-color); /* Using the existing border color variable */
-    --border-default: var(--border-width-default) solid var(--border-color-default);
-  }
-  
-  /** Base **/
-  
-  *,
-  ::before,
-  ::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    border: 0;
-  }
-  
-  body {
-    -webkit-font-smoothing: antialiased;
-    font-family: var(--font-family-body);
-    font-optical-sizing: auto;
-    font-style: normal;
-    font-size: var(--base-font-size);
-    line-height: 1.6;
-    background-color: var(--light-gray);
-    color: var(--dark-gray);
-  }
-  
-  p {
-    line-height: 1.6;
-    margin-bottom: 1rem;
-  }
-  
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-family-display);
-    font-weight: var(--heading-font-weight);
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    line-height: 1.2; /* Tighter line height for headings */
-  }
-  
-  h1 {
-    font-size: 2.5em; /* Adjust as needed */
-  }
-  
-  h2 {
-    font-size: 2em;
-  }
-  
-  h3 {
-    font-size: 1.75em;
-  }
-  
-  h4 {
-    font-size: 1.5em;
-  }
-  
-  h5 {
-    font-size: 1.25em;
-  }
-  
-  h6 {
-    font-size: 1em;
-  }
-  
-  li,
-  .updates article {
-    line-height: inherit; /* Use body line height for list items and articles */
-  }
-  
-  li {
-    margin-bottom: 0.5rem;
-  }
-  
-  /* Utility Classes */
-  
-  .container {
-    width: 95%;
-    max-width: 1200px; /* Adjust max-width as needed */
-    margin: 0 auto;
-  }
-  
-  .centered-text {
-    text-align: center;
-  }
-  
-  .mt-1 {
-    margin-top: 1rem;
-  }
-  
-  .mt-2 {
-    margin-top: 2rem;
-  }
-  
-  .mb-1 {
-    margin-bottom: 1rem;
-  }
-  
-  .mb-2 {
-    margin-bottom: 2rem;
-  }
-  
-  .py-1 {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-  }
-  
-  .py-2 {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-  }
-  
-  .px-1 {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  .px-2 {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-  
-  .flex {
-    display: flex;
-  }
-  
-  .flex-column {
-    flex-direction: column;
-  }
-  
-  .flex-row {
-    flex-direction: row;
-  }
-  
-  .justify-content-center {
-    justify-content: center;
-  }
-  
-  .align-items-center {
-    align-items: center;
-  }
-  
-  .space-between {
-    justify-content: space-between;
-  }
-  
-  .grid {
-    display: grid;
-  }
-  
-  /* Base Button Styles */
-  .button {
-    display: inline-block;
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: var(--border-radius-medium);
-    font-weight: var(--heading-font-weight);
-    text-decoration: none;
-    cursor: pointer;
-    font-size: 0.875rem;
-    line-height: 1rem;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-  
-  /* Button Color Modifiers */
-  .button-primary {
-    background-color: var(--primary-color);
-    color: white;
-  }
-  
-  .button-primary:hover {
-    background-color: var(--primary-color-darker, #002e63); /* Optional darker shade */
-  }
-  
-  .button-secondary {
-    background-color: var(--secondary-color);
-    color: var(--dark-gray);
-  }
-  
-  .button-secondary:hover {
-    background-color: var(--secondary-color-darker, #d4a700); /* Optional darker shade */
-    color: var(--dark-gray-lighter, #555); /* Optional lighter shade */
-  }
-  
-  .button-tertiary {
-    background-color: var(--tertiary-color);
-    color: white;
-  }
-  
-  .button-tertiary:hover {
-    background-color: var(--tertiary-color-darker, #0056b3); /* Optional darker shade */
-  }
-  
-  .button-success {
-    background-color: #28a745; /* Green */
-    color: white;
-  }
-  
-  .button-success:hover {
-    background-color: #218838; /* Darker green */
-  }
-  
-  /* Add more button color modifiers as needed */
+  --primary-color: #333333;
+  --secondary-color: #555555;
+  --accent-color: #007bff;
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --link-color: #007bff;
+  --link-hover-color: #0056b3;
+  --button-color: #333333;
+  --button-hover-color: #555555;
+  --border-radius: 5px;
+  --spacing-unit: 1rem;
+}
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Typography */
+body {
+  font-family: Arial, sans-serif;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  line-height: 1.6;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-unit);
+}
+
+/* Links */
+a {
+  color: var(--link-color);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+/* Buttons */
+button {
+  background-color: var(--button-color);
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: var(--button-hover-color);
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--border-radius);
+}
+
+/* Containers */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-unit) 0;
+}

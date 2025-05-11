@@ -1,46 +1,93 @@
-/* --------------------------------
-* blog.css
-* --------------------------------
-* Contains:
-* - Styles for blog-specific elements
-*/
-#blog-page {
-font-family: Arial, sans-serif;
-margin: 20px;
-padding: 0;
+/* Basic Blog Styles */
+
+/* Main Blog Container */
+.blog-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
 }
 
-#blog-page header {
-text-align: center;
-margin-bottom: 20px;
+/* Blog Post Styles */
+.blog-post {
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
-#blog-page article {
-background: #f9f9f9;
-padding: 15px;
-border-radius: 5px;
-margin-bottom: 15px;
+.blog-post h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #333333;
 }
 
-#admin-section {
-max-width: 500px;
-margin: 20px auto;
-padding: 15px;
-background: #f3f3f3;
-border-radius: 5px;
+.blog-post h2 a {
+    color: #333333;
+    text-decoration: none;
 }
 
-#admin-section input,
-#admin-section textarea {
-width: 100%;
-margin: 10px 0;
-padding: 8px;
+.blog-post h2 a:hover {
+    color: #0073e6;
+    text-decoration: underline;
 }
 
-#admin-section button {
-background: #007BFF;
-color: white;
-border: none;
-padding: 10px;
-cursor: pointer;
+.blog-post .meta-info {
+    font-size: 0.9rem;
+    color: #777777;
+    margin-bottom: 15px;
+}
+
+.blog-post .post-content {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #444444;
+    margin-bottom: 20px;
+}
+
+.blog-post .read-more-btn {
+    background-color: #0073e6;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.blog-post .read-more-btn:hover {
+    background-color: #005bb5;
+}
+
+/* Blog Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination a {
+    color: #0073e6;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.pagination a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .blog-container {
+        padding: 15px;
+    }
+
+    .blog-post h2 {
+        font-size: 1.5rem;
+    }
+
+    .blog-post .post-content {
+        font-size: 0.95rem;
+    }
 }
