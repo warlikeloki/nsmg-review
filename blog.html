@@ -1,72 +1,53 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog - Neil Smith Media Group</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog - Neil Smith Media Group</title>
 
-    <!-- Favicon and App Icons -->
-    <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml">
-    <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
-    <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
-    <link rel="icon" type="image/png" href="/media/icons/favicon-96x96.png" sizes="96x96" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/media/icons/apple-touch-icon.png" />
-    <link rel="manifest" href="/media/icons/site.webmanifest" />
-    <meta name="apple-mobile-web-app-title" content="NSMG" />
-    <meta name="application-name" content="Neil Smith Media Group" />
-    <link rel="stylesheet" href="/css/global.css">
-    <link rel="stylesheet" href="/css/layout.css">
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/navigation.css">
-    <link rel="stylesheet" href="/css/blog.css">
-    <link rel="stylesheet" href="/css/footer.css">
-    <link rel="stylesheet" href="/css/mobile.css">
+  <!-- Favicon and App Icons -->
+  <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml">
+  <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
+  <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
+  <link rel="icon" type="image/png" href="/media/icons/favicon-96x96.png" sizes="96x96" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/media/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="/media/icons/site.webmanifest" />
+  <meta name="apple-mobile-web-app-title" content="NSMG" />
+  <meta name="application-name" content="Neil Smith Media Group" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/header.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/blog.css">
+  <link rel="stylesheet" href="/css/footer.css">
+  <link rel="stylesheet" href="/css/mobile.css">
 </head>
 <body>
-    <!-- HEADER -->
-    <div id="header-container"></div>
+  <!-- HEADER -->
+  <div id="header-container"></div>
 
-    <main class="blog-container">
-        <h1>Blog</h1>
+  <!-- MAIN CONTENT -->
+  <main id="blog-page">
+    <h1>Blog</h1>
+    <div id="blog-posts-container" class="blog-posts"></div>
+  </main>
 
-        <!-- Sample Blog Post 1 -->
-        <article class="blog-post">
-            <h2><a href="/blog-post-1.html">First Post Title</a></h2>
-            <p class="meta-info">Posted on March 15, 2025 by Neil Smith</p>
-            <div class="post-content">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula urna ut erat tempor, ut dictum libero aliquet. Curabitur in libero eu risus fermentum scelerisque.</p>
-            </div>
-            <a href="/blog-post-1.html" class="read-more-btn">Read More</a>
-        </article>
+  <!-- FOOTER -->
+  <div id="footer-container"></div>
 
-        <!-- Sample Blog Post 2 -->
-        <article class="blog-post">
-            <h2><a href="/blog-post-2.html">Second Post Title</a></h2>
-            <p class="meta-info">Posted on March 20, 2025 by Neil Smith</p>
-            <div class="post-content">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Phasellus vehicula urna ut erat tempor, ut dictum libero aliquet.</p>
-            </div>
-            <a href="/blog-post-2.html" class="read-more-btn">Read More</a>
-        </article>
+  <!-- Scripts -->
+  <script>
+    fetch('/header.html')
+      .then(response => response.text())
+      .then(html => document.getElementById('header-container').innerHTML = html);
 
-        <!-- Pagination -->
-        <div class="pagination">
-            <a href="#">&laquo; Previous</a>
-            <a href="#">Next &raquo;</a>
-        </div>
-    </main>
+    fetch('/footer.html')
+      .then(response => response.text())
+      .then(html => document.getElementById('footer-container').innerHTML = html);
+  </script>
 
-    <!-- FOOTER -->
-    <div id="footer-container"></div>
-
-    <script>
-        fetch('/header.html')
-            .then(response => response.text())
-            .then(html => document.getElementById('header-container').innerHTML = html);
-
-        fetch('/footer.html')
-            .then(response => response.text())
-            .then(html => document.getElementById('footer-container').innerHTML = html);
-    </script>
+  <script src="/js/blog.js" defer></script>
 </body>
 </html>

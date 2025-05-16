@@ -4,44 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Testimonials - Neil Smith Media Group</title>
-    <link rel="stylesheet" href="/css/global.css" />
-    <link rel="stylesheet" href="/css/layout.css" />
-    <link rel="stylesheet" href="/css/navigation.css" />
-    <link rel="stylesheet" href="/css/forms.css" />
-    <link rel="stylesheet" href="/css/media.css" />
-    <link rel="stylesheet" href="/css/mobile.css" />
-    <link rel="stylesheet" href="/css/header.css" />
-    <link rel="stylesheet" href="/css/footer.css" />
-    <link rel="stylesheet" href="/css/testimonials.css" />
-    <script type="module" src="/js/main.js" defer></script>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <!-- JavaScript -->
     <script type="module" src="/js/testimonials.js" defer></script>
 </head>
 <body>
-    <!-- Header -->
-    <div id="header-container"></div>
-    <script>
-        fetch('/header.html')
-            .then(response => response.text())
-            .then(html => document.getElementById('header-container').innerHTML = html);
-    </script>
-
     <!-- Main Content -->
-    <main id="manage-testimonials">
+    <main class="main-content" id="manage-testimonials">
         <h1>Manage Testimonials</h1>
-        <section>
-            <button id="add-testimonial">Add New Testimonial</button>
-            <div id="testimonials-list">
-                <!-- Testimonials will be dynamically loaded here -->
-            </div>
-        </section>
+        <button id="add-testimonial">Add New Testimonial</button>
+        <div id="testimonials-list">
+            <!-- Testimonials will be dynamically loaded here -->
+        </div>
     </main>
-
-    <!-- Footer -->
-    <div id="footer-container"></div>
-    <script>
-        fetch('/footer.html')
-            .then(response => response.text())
-            .then(html => document.getElementById('footer-container').innerHTML = html);
-    </script>
 </body>
 </html>

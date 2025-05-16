@@ -24,36 +24,46 @@
 <body>
     <div id="header-container"></div>
 
-    <main class="main-content">
-        <h1>Ranked Choice Voting</h1>
-        <form id="ranked-choice-form">
-            <fieldset>
-                <legend>Ranked Choice Voting Ballot</legend>
-                
-                <div class="candidate-group">
-                    <label for="candidate-1" class="candidate-label">Candidate 1:</label>
-                    <input type="text" id="candidate-1" name="candidate-1" class="candidate-input" placeholder="Candidate Name" required>
-                </div>
-                
-                <div class="candidate-group">
-                    <label for="candidate-2" class="candidate-label">Candidate 2:</label>
-                    <input type="text" id="candidate-2" name="candidate-2" class="candidate-input" placeholder="Candidate Name" required>
-                </div>
+<main class="ranked-choice-main">
+  <h1>Ranked Choice Voting Demo</h1>
+  <form id="ranked-choice-form">
+    
+    <!-- Candidate Count Selector -->
+    <div class="form-group">
+      <label for="candidate-count">How many candidates do you wish to show?</label>
+      <select id="candidate-count" name="candidate-count" required>
+        <option value="" disabled selected>Select number</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+      </select>
+    </div>
 
-                <div id="additional-candidates"></div>
+    <!-- Candidate Name Fields -->
+    <div id="candidate-fields" class="candidate-fields"></div>
 
-                <div id="ranking-section">
-                    <h2>Rank Your Choices</h2>
-                    <div id="ranking-groups"></div>
-                </div>
+    <!-- Ranking Dropdowns -->
+    <div id="ranking-groups" class="ranking-groups"></div>
 
-                <div class="form-button-group">
-                    <button type="button" id="add-candidate-btn" class="form-button">Add Candidate</button>
-                    <button type="submit" class="form-button">Submit Ballot</button>
-                </div>
-            </fieldset>
-        </form>
-    </main>
+    <!-- Live Ballot Preview -->
+    <section id="ballot-preview" class="ballot-preview hidden">
+      <h2>Your Ranked Choices</h2>
+      <ol id="ranked-output"></ol>
+    </section>
+
+    <!-- Submit -->
+    <div class="form-group">
+      <button type="submit" class="submit-btn">Submit Ballot</button>
+    </div>
+  </form>
+</main>
+
 
     <div id="footer-container"></div>
 

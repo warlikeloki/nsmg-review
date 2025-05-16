@@ -26,12 +26,14 @@
 |   |   |- forms.css
 |   |   |- testimonials.css
 |   |   |- gallery.css
+|   |   |- admin.css
 |   |- js/
 |   |   |- main.js
 |   |   |- blog.js
 |   |   |- navigation.js
 |   |   |- testimonials.js
 |   |   |- gallery.js
+|   |   |- settings.js
 |   |- json/
 |   |   |- posts.json
 |   |   |- testimonials.json

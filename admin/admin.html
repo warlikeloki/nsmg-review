@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Neil Smith Media Group</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/navigation.css">
+    <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/sections.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/mobile.css">
+
+    <!-- JavaScript -->
+    <script type="module" src="/js/main.js" defer></script>
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-container"></div>
+
+    <!-- Page Container -->
+    <div class="page-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar left-sidebar">
+            <div id="admin-nav">
+                <h2>Admin Navigation</h2>
+                <ul>
+                    <li><a href="#admin-home" class="active">Admin Home</a></li>
+                    <li><a href="#manage-posts">Manage Posts</a></li>
+                    <li><a href="#manage-testimonials">Manage Testimonials</a></li>
+                    <li><a href="#website-settings">Website Settings</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="admin-content">
+            <div id="admin-home-content">
+                <h1>Admin Dashboard</h1>
+                <p>Welcome to the admin dashboard. Use the navigation on the left to manage your site content.</p>
+            </div>
+        </main>
+
+        <!-- Right Sidebar (optional) -->
+        <aside class="sidebar right-sidebar"></aside>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+
+    <!-- Load Header and Footer -->
+    <script>
+        // Load header
+        fetch('/header.html')
+            .then(response => response.text())
+            .then(html => document.getElementById('header-container').innerHTML = html);
+
+        // Load footer
+        fetch('/footer.html')
+            .then(response => response.text())
+            .then(html => document.getElementById('footer-container').innerHTML = html);
+
+        // Dynamic Content Loading
+        document.addEventListener("DOMContentLoaded", () => {
+            const adminContent = document.getElementById('admin-content');
+            const navLinks = document.querySelectorAll('#admin-nav a');
+
+            // Cache the original Admin Home content
+            const initialAdminHomeContent = document.getElementById('admin-home-content').outerHTML;
+
+            // Handle navigation clicks
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    // Set active link
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const targetId = this.getAttribute('href').substring(1);
+                    loadContent(targetId);
+                });
+            });
+
+            // Load content based on target ID
+            function loadContent(targetId) {
+                switch (targetId) {
+                    case 'admin-home':
+                        adminContent.innerHTML = initialAdminHomeContent;
+                        break;
+                    case 'manage-posts':
+                        adminContent.innerHTML = '<iframe src="/admin/manage_posts.html" style="width:100%; height:600px; border:none;"></iframe>';
+                        break;
+                    case 'manage-testimonials':
+                        adminContent.innerHTML = '<iframe src="/admin/manage_testimonials.html" style="width:100%; height:600px; border:none;"></iframe>';
+                        break;
+                    case 'website-settings':
+                        adminContent.innerHTML = '<iframe src="/admin/website_settings.html" style="width:100%; height:600px; border:none;"></iframe>';
+                        break;
+                    default:
+                        adminContent.innerHTML = '<h1>Error: Content Not Found</h1><p>Sorry, the requested content could not be loaded.</p>';
+                }
+            }
+
+            // Load Admin Home content by default
+            loadContent('admin-home');
+        });
+    </script>
+</body>
+</html>

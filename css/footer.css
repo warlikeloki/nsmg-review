@@ -78,3 +78,18 @@ footer > p.credits {
     margin-top: 10px;
     font-size: 0.8em;
 }
+
+.footer-info p {
+  margin: 5px 0;
+  line-height: 1.4;
+}
+
+.footer-info a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footer-info a:hover {
+  text-decoration: underline;
+}

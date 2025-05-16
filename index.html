@@ -7,7 +7,7 @@
   <title>Neil Smith Media Group</title>
   
   <!-- Favicon and App Icons -->
-   <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml">
+  <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml">
   <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
   <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
   <link rel="icon" type="image/png" href="/media/icons/favicon-96x96.png" sizes="96x96" />
@@ -25,9 +25,11 @@
   <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/header.css" />
   <link rel="stylesheet" href="/css/footer.css" />
+  <link rel="stylesheet" href="/css/testimonials.css" />
 
   <!-- JS -->
   <script type="module" src="/js/main.js" defer></script>
+  <script src="/js/testimonials.js" defer></script>
 </head>
 <body>
   <!-- Header -->
@@ -45,6 +47,19 @@
       <p>Professional photography, videography, and media solutions to help you stand out.</p>
       <a href="/services.html" class="btn">Explore Our Services</a>
     </section>
+
+
+    <!-- Testimonials Slideshow Section -->
+<section class="testimonials-section" id="homepage-testimonials">
+  <h2>What Our Clients Say</h2>
+  <div class="testimonial-slider">
+    <button class="testimonial-nav prev" id="testimonial-prev">&#8249;</button>
+    <div id="homepage-testimonials-container" class="testimonial-slide-wrapper"></div>
+    <button class="testimonial-nav next" id="testimonial-next">&#8250;</button>
+  </div>
+</section>
+
+
   </main>
 
   <!-- Footer -->

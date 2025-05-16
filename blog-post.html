@@ -1,73 +1,100 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog Post Title - Neil Smith Media Group</title>
-      <!-- Favicon and App Icons -->
-    <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml">
-    <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
-    <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
-    <link rel="icon" type="image/png" href="/media/icons/favicon-96x96.png" sizes="96x96" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/media/icons/apple-touch-icon.png" />
-    <link rel="manifest" href="/media/icons/site.webmanifest" />
-    <meta name="apple-mobile-web-app-title" content="NSMG" />
-    <meta name="application-name" content="Neil Smith Media Group" />
-    <link rel="stylesheet" href="/css/global.css">
-    <link rel="stylesheet" href="/css/layout.css">
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/navigation.css">
-    <link rel="stylesheet" href="/css/blog.css">
-    <link rel="stylesheet" href="/css/footer.css">
-    <link rel="stylesheet" href="/css/mobile.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog Post - Neil Smith Media Group</title>
+
+  <!-- Favicon and App Icons -->
+  <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml">
+  <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
+  <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
+  <link rel="icon" type="image/png" href="/media/icons/favicon-96x96.png" sizes="96x96" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/media/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="/media/icons/site.webmanifest" />
+  <meta name="apple-mobile-web-app-title" content="NSMG" />
+  <meta name="application-name" content="Neil Smith Media Group" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/header.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/blog.css">
+  <link rel="stylesheet" href="/css/footer.css">
+  <link rel="stylesheet" href="/css/mobile.css">
 </head>
 <body>
-    <!-- HEADER -->
-    <div id="header-container"></div>
+  <!-- HEADER -->
+  <div id="header-container"></div>
 
-    <main class="blog-post-container">
-        <article class="blog-post-full">
-            <h1>Blog Post Title</h1>
-            <p class="meta-info">Posted on March 15, 2025 by Neil Smith</p>
-            
-            <div class="post-content">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula urna ut erat tempor, ut dictum libero aliquet. Curabitur in libero eu risus fermentum scelerisque.</p>
-                <p>Aliquam erat volutpat. Vestibulum venenatis purus a magna tempus, at mollis odio hendrerit. Proin ac orci fermentum, facilisis est ac, tristique lorem. Morbi sed libero ac est vehicula dictum.</p>
-                <p>Fusce ac quam eu augue placerat convallis. Vivamus dapibus, massa at consequat gravida, velit sapien feugiat justo, id tempus orci leo ac risus.</p>
-            </div>
+  <!-- MAIN CONTENT -->
+  <main id="blog-post-page" class="blog-container">
+    <article id="blog-post-content" class="blog-post">
+      <!-- Content will be injected here -->
+    </article>
+  </main>
 
-            <!-- Optional Image Section -->
-            <figure>
-                <img src="/images/sample-post-image.jpg" alt="Sample Blog Image">
-                <figcaption>A sample image to add visual appeal to the post.</figcaption>
-            </figure>
+  <!-- FOOTER -->
+  <div id="footer-container"></div>
 
-            <p>Donec et consectetur lacus. Mauris vulputate tortor non enim lacinia, non egestas arcu gravida. Fusce nec quam nec tortor consectetur posuere.</p>
+  <!-- Header/Footer Injection -->
+  <script>
+    fetch('/header.html')
+      .then(res => res.text())
+      .then(html => document.getElementById('header-container').innerHTML = html);
 
-            <!-- Author Bio Section (Optional) -->
-            <div class="author-bio">
-                <img src="/images/author-photo.jpg" alt="Neil Smith" class="author-photo">
-                <p>Neil Smith is a professional photographer, videographer, and content creator. He has a passion for storytelling through visuals and is the founder of Neil Smith Media Group.</p>
-            </div>
-        </article>
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(html => document.getElementById('footer-container').innerHTML = html);
+  </script>
 
-        <!-- Back to Blog Button -->
-        <div class="back-to-blog">
-            <a href="/blog.html">&larr; Back to Blog</a>
-        </div>
-    </main>
+  <!-- Blog Post JS -->
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const postContainer = document.getElementById("blog-post-content");
 
-    <!-- FOOTER -->
-    <div id="footer-container"></div>
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
 
-    <script>
-        fetch('/header.html')
-            .then(response => response.text())
-            .then(html => document.getElementById('header-container').innerHTML = html);
+    const postId = parseInt(getQueryParam("id"));
 
-        fetch('/footer.html')
-            .then(response => response.text())
-            .then(html => document.getElementById('footer-container').innerHTML = html);
-    </script>
+    if (isNaN(postId)) {
+      postContainer.innerHTML = "<p>Invalid post ID.</p>";
+      return;
+    }
+
+    fetch("/json/posts.json")
+      .then(res => res.json())
+      .then(posts => {
+        if (!Array.isArray(posts) || !posts[postId]) {
+          postContainer.innerHTML = "<p>Post not found.</p>";
+          return;
+        }
+
+        const post = posts[postId];
+        const hasPrev = postId > 0;
+        const hasNext = postId < posts.length - 1;
+
+        postContainer.innerHTML = `
+          <a href="/blog.html" class="back-link">&larr; Back to Blog</a>
+          <h1>${post.title}</h1>
+          <p class="meta-info">By ${post.author} &bull; ${post.date}</p>
+          <div class="post-content">${post.content}</div>
+          <div class="blog-post-nav">
+            ${hasPrev ? `<a href="/blog-post.html?id=${postId - 1}" class="nav-link prev-post">&larr; Previous Post</a>` : ""}
+            ${hasNext ? `<a href="/blog-post.html?id=${postId + 1}" class="nav-link next-post">Next Post &rarr;</a>` : ""}
+          </div>
+        `;
+      })
+      .catch(err => {
+        console.error(err);
+        postContainer.innerHTML = "<p>Error loading post.</p>";
+      });
+  });
+</script>
+
 </body>
 </html>

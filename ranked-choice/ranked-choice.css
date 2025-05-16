@@ -1,97 +1,123 @@
-/* Basic Form Styles */
-#ranked-choice-form {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+/* Ranked Choice Voting Page Styles */
+
+.ranked-choice-main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
 }
 
-/* Fieldset Styles */
-fieldset {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
+.ranked-choice-main h1 {
+  font-size: 2.2rem;
+  margin-bottom: 30px;
+  color: var(--primary-color);
+  text-align: center;
 }
 
-legend {
-    font-weight: bold;
-    padding: 0 10px;
-    color: #333;
+/* Form Group Layout */
+.form-group {
+  margin-bottom: 25px;
 }
 
-/* Label Styles */
+/* Candidate Count Dropdown */
+#candidate-count {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 8px;
+}
+
+/* Candidate and Ranking Fields */
+.candidate-group,
+.ranking-group {
+  margin-bottom: 20px;
+}
+
 .candidate-label,
 .ranking-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #333;
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
 }
 
-/* Input Styles */
-.candidate-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
+.candidate-input,
+.rank-select {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
-/* Select Styles */
-.ranking-group select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    background-color: #fff;
-    cursor: pointer;
+/* Submit Button */
+.submit-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
 }
 
-/* Button Styles */
-.form-button-group {
-    display: flex;
-    gap: 15px;
-    margin-top: 20px;
+.submit-btn:hover {
+  background-color: #005bb5;
 }
 
-.form-button {
-    flex: 1;
-    padding: 12px 20px;
-    background-color: #0066cc;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+/* Live Ballot Preview */
+.ballot-preview {
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-top: 2px solid #ccc;
+  border-radius: 6px;
 }
 
-.form-button:hover {
-    background-color: #0056a3;
+.ballot-preview h2 {
+  font-size: 1.4rem;
+  color: var(--primary-color);
+  margin-bottom: 15px;
 }
 
-.form-button:active {
-    background-color: #004680;
+#ranked-output {
+  padding-left: 20px;
 }
 
-/* Mobile Styles */
+#ranked-output li {
+  margin: 8px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Utility */
+.hidden {
+  display: none;
+}
+
+/* Responsive Design */
 @media (max-width: 600px) {
-    #ranked-choice-form {
-        padding: 15px;
-    }
+  .ranked-choice-main {
+    padding: 20px 15px;
+  }
 
-    .form-button-group {
-        flex-direction: column;
-    }
+  .ranked-choice-main h1 {
+    font-size: 1.8rem;
+  }
 
-    .form-button {
-        margin-bottom: 10px;
-    }
+  .submit-btn {
+    font-size: 0.95rem;
+  }
+
+  .candidate-input,
+  .rank-select {
+    font-size: 0.95rem;
+  }
 }
