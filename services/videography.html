@@ -7,35 +7,66 @@
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/global.css">
-    <link rel="stylesheet" href="/css/layout.css">
-    <link rel="stylesheet" href="/css/navigation.css">
-    <link rel="stylesheet" href="/css/forms.css">
-    <link rel="stylesheet" href="/css/media.css">
-    <link rel="stylesheet" href="/css/mobile.css">
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/footer.css">
-    <link rel="stylesheet" href="/css/equipment.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/header.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/footer.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/mobile.css">
+  <link rel="stylesheet" href="/css/equipment.css">
+
+  <!-- JavaScript -->
+  <script src="/js/equipment.js" defer></script>
 </head>
 <body>
   <div id="header-container"></div>
 
-  <main class="page-content">
-    <h1>Videography Services</h1>
-    <p>This page will showcase our video production offerings including events, interviews, and commercial shoots. Content coming soon.</p>
-    <div id="equipment-list" data-category="videography"></div>
+  <div class="page-container">
+    <!-- Left Sidebar -->
+    <aside class="sidebar left-sidebar">
+      <!-- Placeholder for future tools, highlights, or navigation -->
+    </aside>
 
-  </main>
+    <!-- Main Content -->
+    <main class="main-content">
+      <section class="hero-section">
+        <h1>Videography Services</h1>
+        <p>We specialize in storytelling through motion. Whether it’s an event, interview, promotional video, or documentary, our videography services deliver cinematic results with technical precision.</p>
+      </section>
+
+      <section class="services-offered">
+        <h2>What We Offer</h2>
+        <ul>
+          <li>Full HD and 4K video recording</li>
+          <li>Multi-camera event coverage</li>
+          <li>Corporate interviews and promotional content</li>
+          <li>Cinematic storytelling for campaigns and causes</li>
+          <li>On-location audio capture and lighting</li>
+        </ul>
+      </section>
+
+      <section class="equipment-section">
+        <h2>Videography Equipment</h2>
+        <div id="equipment-list" data-category="videography"></div>
+      </section>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="sidebar right-sidebar">
+      <!-- Placeholder for testimonial snippets, upcoming projects, or quick links -->
+    </aside>
+  </div>
 
   <div id="footer-container"></div>
-<script src="/js/equipment.js" defer></script>
 
   <script>
-    fetch('/header.html').then(res => res.text()).then(html => {
-      document.getElementById('header-container').innerHTML = html;
-    });
-    fetch('/footer.html').then(res => res.text()).then(html => {
-      document.getElementById('footer-container').innerHTML = html;
-    });
+    fetch('/header.html')
+      .then(res => res.text())
+      .then(html => document.getElementById('header-container').innerHTML = html);
+
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(html => document.getElementById('footer-container').innerHTML = html);
   </script>
 </body>
 </html>

@@ -7,6 +7,7 @@
 |- testimonials.html
 |- footer.html
 |- header.html
+|- portfolio.html
 |   |- about-us/
 |   |   |- about.html
 |   |   |- privacy.html
@@ -27,34 +28,40 @@
 |   |   |- testimonials.css
 |   |   |- gallery.css
 |   |   |- admin.css
+|   |   |- header.css
+|   |   |- images.css
+|   |   |- footer.css
+|   |   |- equipment.css
 |   |- js/
 |   |   |- main.js
 |   |   |- blog.js
 |   |   |- navigation.js
 |   |   |- testimonials.js
-|   |   |- gallery.js
 |   |   |- settings.js
+|   |   |- equipment.js
 |   |- json/
+|   |   |- equipment.json
 |   |   |- posts.json
 |   |   |- testimonials.json
 |   |   |- services.json
 |   |- php/
-|   |   |- contact_form.php
-|   |   |- testimonial_submission.php
-|   |   |- service_request.php
-|   |   |- subscribe.php
+|   |   |- contact_form.php (FUTURE)
+|   |   |- testimonial_submission.php (FUTURE)
+|   |   |- service_request.php (FUTURE)
+|   |   |- subscribe.php (FUTURE)
 |   |- media/
 |   |   |- banners/
 |   |   |- icons/
 |   |   |- logos/
 |   |   |- social/
+|   |- ranked-choice/
+|   |   |- ranked-choice.html
+|   |   |- ranked-choice.css
+|   |   |- ranked-choice.js
+|   |- services/
+|   |   |- photography.html
+|   |   |- videography.html
+|   |   |- editing.html
+|   |   |- other-services.html
 |   |- gallery/
-|   |   |- index.html
-|   |   |- js/
-|   |   |   |- gallery.js
-|   |   |- css/
-|   |   |   |- gallery.css
-|   |   |- photos/
-|   |- templates/
-|   |   |- header.html
-|   |   |- footer.html
+|   |   |- gallery.html

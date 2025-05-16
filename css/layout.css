@@ -57,3 +57,23 @@ section a:hover {
       padding: 1.5rem 0.75rem;
   }
 }
+
+.page-container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  gap: 20px;
+}
+
+.sidebar {
+  flex: 1;
+  min-width: 150px;
+  max-width: 200px;
+}
+
+.main-content {
+  flex: 3;
+  max-width: 100%;
+}
