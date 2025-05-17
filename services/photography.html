@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photography Services - Neil Smith Media Group</title>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/header.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/footer.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/mobile.css">
+  <link rel="stylesheet" href="/css/equipment.css">
+
+  <!-- JavaScript -->
+  <script src="/js/equipment.js" defer></script>
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <div class="page-container">
+    <!-- Left Sidebar -->
+    <aside class="sidebar left-sidebar">
+      <!-- Placeholder for optional widgets -->
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <section class="hero-section">
+        <h1>Photography Services</h1>
+        <p>Capture every moment with professional precision. Our photography services cover everything from portraits and events to editorial and commercial shoots.</p>
+      </section>
+
+      <section class="services-offered">
+        <h2>What We Offer</h2>
+        <ul>
+          <li>Portrait sessions (individual, family, and corporate)</li>
+          <li>Event coverage (weddings, graduations, galas)</li>
+          <li>Commercial photography (products, advertising)</li>
+          <li>Location scouting and concept development</li>
+          <li>Post-production editing and delivery in multiple formats</li>
+        </ul>
+      </section>
+
+      <section class="equipment-section">
+        <h2>Photography Equipment</h2>
+        <div id="equipment-list" data-category="photography"></div>
+      </section>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="sidebar right-sidebar">
+      <!-- Placeholder for future testimonials or service highlights -->
+    </aside>
+  </div>
+
+  <div id="footer-container"></div>
+
+  <script>
+    fetch('/header.html')
+      .then(res => res.text())
+      .then(html => document.getElementById('header-container').innerHTML = html);
+
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(html => document.getElementById('footer-container').innerHTML = html);
+  </script>
+</body>
+</html>

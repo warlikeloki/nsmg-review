@@ -1,0 +1,55 @@
+/* Portfolio Page Styles */
+
+.filter-buttons {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.filter-buttons button {
+  margin: 0 10px;
+  padding: 8px 16px;
+  border: 1px solid #0073e6;
+  background-color: white;
+  color: #0073e6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-buttons button.active,
+.filter-buttons button:hover {
+  background-color: #0073e6;
+  color: white;
+}
+
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.portfolio-item {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.portfolio-item img {
+  width: 100%;
+  border-radius: 4px;
+  height: auto;
+  object-fit: cover;
+}
+
+.portfolio-item h3 {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.portfolio-item.hidden {
+  display: none;
+}

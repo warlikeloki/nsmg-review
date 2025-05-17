@@ -1,12 +1,72 @@
 [
-    {
-        "title": "First Blog Post",
-        "date": "February 18, 2025",
-        "content": "This is my first blog post. Welcome to my blog!"
-    },
-    {
-        "title": "Second Blog Post",
-        "date": "February 19, 2025",
-        "content": "This is my second blog post. More content coming soon!"
-    }
+  {
+    "title": "Fighting for Affordable Housing in Virginia Beach",
+    "author": "Neil Smith",
+    "date": "2025-05-01",
+    "teaser": "Virginia Beach families are struggling with rising rent costs. Here's what we can do to address it.",
+    "content": "Housing costs in our city have skyrocketed. To combat this, we must invest in mixed-income development, reform zoning laws, and expand rent relief programs. Local government should work with nonprofits and developers to ensure affordable options exist for every family."
+  },
+  {
+    "title": "Why State-Level Elections Matter More Than Ever",
+    "author": "Neil Smith",
+    "date": "2025-04-25",
+    "teaser": "Voter turnout drops dramatically for off-cycle elections — and that’s costing us real progress.",
+    "content": "State legislatures control redistricting, abortion access, gun regulations, and education standards. Ignoring these elections cedes power to extremists. It's time we treat state races with the same urgency as federal ones — because the stakes are just as high."
+  },
+  {
+    "title": "The Real Impact of Book Bans in Our Schools",
+    "author": "Neil Smith",
+    "date": "2025-04-20",
+    "teaser": "Banning books doesn’t protect students — it deprives them of critical thinking and representation.",
+    "content": "Across the country, right-wing school boards are removing books that center LGBTQ+ characters and racial justice. This silencing endangers students by erasing their stories and undermining education. We must stand with librarians, teachers, and students resisting censorship."
+  },
+  {
+    "title": "Behind the Scenes of a Campaign Launch",
+    "author": "Neil Smith",
+    "date": "2025-04-15",
+    "teaser": "Launching a campaign isn't glamorous — it's strategy, sweat, and spreadsheets.",
+    "content": "From designing a message to building a volunteer base, campaign launches require more than speeches. Here's a look into our team’s work: organizing precincts, targeting messaging, and setting grassroots fundraising goals — all before day one on the trail."
+  },
+  {
+    "title": "Restoring Voting Rights to Returning Citizens",
+    "author": "Neil Smith",
+    "date": "2025-04-10",
+    "teaser": "A felony shouldn’t mean losing your voice forever. Let’s talk about voting rights restoration.",
+    "content": "In Virginia and beyond, many formerly incarcerated people are barred from voting — even after serving their time. This practice is unjust and disproportionately affects Black communities. We need legislation that automatically restores rights and treats voting as a basic human right."
+  },
+  {
+    "title": "Why I Believe in Ranked-Choice Voting",
+    "author": "Neil Smith",
+    "date": "2025-04-05",
+    "teaser": "RCV strengthens democracy by giving voters more choice — and more voice.",
+    "content": "Ranked-choice voting allows voters to rank candidates in order of preference, reducing strategic voting and spoiler effects. It encourages coalition-building and issue-focused campaigns. Let’s bring RCV to Virginia Beach and empower a more representative democracy."
+  },
+  {
+    "title": "Holding Developers Accountable in Our City",
+    "author": "Neil Smith",
+    "date": "2025-04-01",
+    "teaser": "Development can’t come at the cost of livability — here’s what accountability looks like.",
+    "content": "Too often, developers get tax breaks without community benefit. We need impact assessments, transparent approval processes, and real commitments to affordable housing, transit, and sustainability. Residents deserve a seat at the table before construction begins."
+  },
+  {
+    "title": "The Case for a Green New Deal — Locally",
+    "author": "Neil Smith",
+    "date": "2025-03-28",
+    "teaser": "Climate justice starts right here in our neighborhoods.",
+    "content": "A local Green New Deal means investing in clean transit, flood mitigation, renewable energy jobs, and environmental equity. Let’s start with school retrofits, solar incentives, and a youth green jobs program that uplifts our most impacted communities."
+  },
+  {
+    "title": "What We Lose When Local News Dies",
+    "author": "Neil Smith",
+    "date": "2025-03-25",
+    "teaser": "Local journalism is democracy’s first responder — and it's under attack.",
+    "content": "News deserts are growing as newspapers close. When local coverage disappears, so does accountability. Corruption rises, turnout drops, and residents are left in the dark. Supporting local journalism is supporting transparency — and we need it now more than ever."
+  },
+  {
+    "title": "Campaign Finance Reform Is Not Optional",
+    "author": "Neil Smith",
+    "date": "2025-03-20",
+    "teaser": "Until we fix how campaigns are funded, we won’t fix how decisions are made.",
+    "content": "Corporate PACs drown out community voices. Dark money undermines trust. Real reform means public financing, donor transparency, and limits on special interest influence. It's time to build a democracy that answers to people — not profits."
+  }
 ]

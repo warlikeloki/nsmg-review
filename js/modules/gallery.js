@@ -1,62 +1,74 @@
-// gallery.js (or whatever you name it)
-/* This portion is commented out due to being for backend functionality and not currently needed.
+/*
 document.addEventListener("DOMContentLoaded", () => {
-    const gallery = document.getElementById('gallery');
+  const gallery = document.getElementById('gallery');
 
-    fetch('/php/get_images.php')
-        .then(response => response.json())
-        .then(images => {
-            images.forEach(image => {
-                let imgElement = document.createElement('img');
-                imgElement.src = '/media/photos/' + image; // Relative path from gallery.html
-                imgElement.alt = image;
-                imgElement.classList.add('gallery-item');
-                imgElement.addEventListener('click', () => openLightbox(imgElement.src));
-                gallery.appendChild(imgElement);
-            });
-        })
-        .catch(error => console.error('Error fetching images:', error));
+  fetch('/php/get_images.php')
+    .then(response => {
+      if (!response.ok) throw new Error("Failed to fetch images.");
+      return response.json();
+    })
+    .then(images => {
+      images.forEach(image => {
+        const imgElement = document.createElement('img');
+        imgElement.src = '/media/photos/' + image;
+        imgElement.alt = image;
+        imgElement.classList.add('gallery-item');
+        imgElement.addEventListener('click', () => openLightbox(imgElement.src));
+        gallery.appendChild(imgElement);
+      });
+    })
+    .catch(error => {
+      console.error('Backend image loading error:', error);
+    });
+
+  // Lightbox functionality and listeners already handled globally
+});
+*/
+
+
+/* The following code will be commented out once moved to backend functionality. */
+document.addEventListener("DOMContentLoaded", () => {
+  const gallery = document.getElementById('gallery');
+
+  fetch('/json/images.json')
+    .then(response => response.json())
+    .then(images => {
+      images.forEach(image => {
+        let imgElement = document.createElement('img');
+        imgElement.src = '/media/photos/' + image;
+        imgElement.alt = image;
+        imgElement.classList.add('gallery-item');
+        imgElement.addEventListener('click', () => openLightbox(imgElement.src));
+        gallery.appendChild(imgElement);
+      });
+    })
+    .catch(error => console.error('Error fetching images:', error));
+
+  // Lightbox close on click background
+  const lightbox = document.getElementById('lightbox');
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) {
+      closeLightbox();
+    }
+  });
+
+  // Close on ESC key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeLightbox();
+    }
+  });
 });
 
-// Lightbox functionality
 function openLightbox(src) {
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    lightbox.style.display = 'flex';
-    lightboxImg.src = src;
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  lightbox.classList.add('active');
+  lightboxImg.src = src;
 }
 
 function closeLightbox() {
-    document.getElementById('lightbox').style.display = 'none';
+  const lightbox = document.getElementById('lightbox');
+  lightbox.classList.remove('active');
+  document.getElementById('lightbox-img').src = '';
 }
-This is the end of the commented out portion. */
-/* The following code will be commented out once moved to backend functionality. */
-document.addEventListener("DOMContentLoaded", () => {
-    const gallery = document.getElementById('gallery');
-  
-    fetch('/json/images.json')
-      .then(response => response.json())
-      .then(images => {
-        images.forEach(image => {
-          let imgElement = document.createElement('img');
-          imgElement.src = '/media/photos/' + image; // Path relative to public directory
-          imgElement.alt = image;
-          imgElement.classList.add('gallery-item');
-          imgElement.addEventListener('click', () => openLightbox(imgElement.src));
-          gallery.appendChild(imgElement);
-        });
-      })
-      .catch(error => console.error('Error fetching images:', error));
-  });
-  
-  // Lightbox functionality
-  function openLightbox(src) {
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    lightbox.style.display = 'flex';
-    lightboxImg.src = src;
-  }
-  
-  function closeLightbox() {
-    document.getElementById('lightbox').style.display = 'none';
-  }

@@ -1,0 +1,165 @@
+[
+  {
+    "name": "Canon EOS 5D Mark IV WG",
+    "type": ["photography", "videography"],
+    "category": "camera",
+    "description": "A professional full-frame DSLR camera ideal for high-resolution photography and versatile video shooting."
+  },
+  {
+    "name": "Blackmagic Design Pocket Cinema Camera 6K Pro",
+    "type": ["videography"],
+    "category": "camera",
+    "description": "A compact, cinematic 6K video camera with RAW recording, built-in ND filters, and advanced color science."
+  },
+  {
+    "name": "Canon XA40",
+    "type": ["videography"],
+    "category": "camera",
+    "description": "A lightweight 4K camcorder with a 20x optical zoom and professional audio inputs, perfect for run-and-gun shooting."
+  },
+  {
+    "name": "Canon EOS C300 Mark 1 EF",
+    "type": ["videography"],
+    "category": "camera",
+    "description": "A cinema-grade camera used for documentaries and narrative film, with EF lens support and large sensor quality."
+  },
+  {
+    "name": "Zoom Q2n-4K",
+    "type": ["videography"],
+    "category": "camera",
+    "description": "A pocket-sized 4K video recorder with high-quality audio, designed specifically for musicians and performers."
+  },
+   {
+    "name": "Zoom H6 Handy Recorder",
+    "type": ["videography"],
+    "category": "microphone/recorder",
+    "description": "A 6-input portable audio recorder with swappable mic capsules, ideal for multi-person interviews and field recording."
+  },
+  {
+    "name": "Zoom PodTrak P8",
+    "type": ["videography"],
+    "category": "microphone/recorder",
+    "description": "An 8-track podcast recorder with built-in sound pads and touch-screen control, tailored for talk show-style recordings."
+  },
+  {
+    "name": "DaVinci Resolve Studio",
+    "type": ["editing","videography"],
+    "category": "software",
+    "description": "Professional post-production software combining editing, color grading, visual effects, and audio mastering in one suite."
+  },
+  {
+    "name": "Fusion Studio",
+    "type": ["editing","videography"],
+    "category": "software",
+    "description": "Advanced node-based compositing software used for visual effects, motion graphics, and 3D rendering in high-end productions."
+  },
+  {
+    "name": "Adobe Premiere Pro",
+    "type": ["editing", "videography"],
+    "category": "software",
+    "description": "Industry-standard non-linear video editing software known for its flexibility, integration, and real-time editing power."
+  },
+   {
+    "name": "Adobe Lightroom",
+    "type": ["photography", "editing"],
+    "category": "software",
+    "description": "A powerful tool for professional photo editing and organization, especially suited for batch processing and RAW image workflows."
+  },
+  {
+    "name": "Adobe Photoshop",
+    "type": ["photography", "editing"],
+    "category": "software",
+    "description": "The industry-leading image manipulation tool used for advanced retouching, compositing, and design work."
+  },
+  {
+    "name": "Adobe Audition",
+    "type": ["editing"],
+    "category": "software",
+    "description": "A professional-grade digital audio workstation (DAW) for cleaning, editing, and mixing voiceovers and soundtracks."
+  },
+  {
+    "name": "Adobe After Effects",
+    "type": ["editing", "videography"],
+    "category": "software",
+    "description": "A visual effects and motion graphics powerhouse, ideal for creating animations, titles, and compositing tasks."
+  },
+  {
+    "name": "DJI Mic",
+    "type": ["videography"],
+    "category": "microphone/recorder",
+    "description": "A dual-channel wireless microphone system with real-time monitoring, built-in recording, and ultra-compact design."
+  },
+
+  {
+    "name": "Rode Wireless GO II",
+    "type": ["videography"],
+    "category": "microphone/recorder",
+    "description": "A compact dual-channel wireless microphone system with onboard recording and high-quality audio for run-and-gun videography."
+  },
+  {
+    "name": "Rode Wireless Pro",
+    "type": ["videography"],
+    "category": "microphone/recorder",
+    "description": "An advanced wireless mic kit with timecode sync, dual-channel recording, and pro-level audio features for broadcast and film."
+  },
+  {
+    "name": "DJI RS 4 Pro",
+    "type": ["videography"],
+    "category": "other accessories",
+    "description": "A high-end camera gimbal stabilizer designed for smooth cinematic shots with DSLR and cinema cameras, featuring intelligent tracking."
+  },
+  {
+    "name": "Canon EF 16-35mm f/4 L IS USM",
+    "type": ["photography", "videography"],
+    "category": "lens",
+    "description": "A sharp, ultra-wide L-series zoom lens with image stabilization, ideal for landscapes, real estate, and wide-angle video."
+  },
+  {
+    "name": "Rokinon EF 50mm T1.5 AS UMC Cine DS Lens",
+    "type": ["videography"],
+    "category": "lens",
+    "description": "A fast manual-focus cine lens with geared rings and de-clicked aperture, perfect for low-light narrative filmmaking."
+  },
+  {
+    "name": "Canon EF 28-135mm f/3.5-5.6 IS USM",
+    "type": ["photography", "videography"],
+    "category": "lens",
+    "description": "A versatile zoom lens with image stabilization, great for general-purpose photography and flexible video framing."
+  },
+  {
+    "name": "Canon EF 75-300mm f/4-5.6 IS USM",
+    "type": ["photography", "videography"],
+    "category": "lens",
+    "description": "A lightweight telephoto zoom lens suitable for sports, wildlife, and distant portraiture work."
+  },
+  {
+    "name": "Canon Speedlite 430EX III-RT",
+    "type": ["photography"],
+    "category": "lighting",
+    "description": "A compact and powerful flash unit with radio transmission and bounce/swivel capability for off-camera lighting."
+  },
+  {
+    "name": "Green Screen Backdrop",
+    "type": ["photography", "videography"],
+    "category": "set piece",
+    "description": "A collapsible chroma key background used for compositing and background replacement in video production."
+  },
+  {
+    "name": "Black Backdrop",
+    "type": ["photography", "videography"],
+    "category": "set piece",
+    "description": "A classic neutral backdrop that creates dramatic portraits and eliminates background distractions."
+  },
+  {
+    "name": "White Backdrop",
+    "type": ["photography", "videography"],
+    "category": "set piece",
+    "description": "A clean, bright background perfect for product shots, interviews, and high-key lighting setups."
+  },
+  {
+    "name": "DJI Mini 2 Drone",
+    "type": ["photography", "videography"],
+    "category": "other accessories",
+    "description": "A miniature drone with 4K video capabilities, ideal for capturing aerial shots and landscapes with ease."
+  }
+]

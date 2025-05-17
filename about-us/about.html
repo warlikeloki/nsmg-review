@@ -1,74 +1,86 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Neil Smith Media Group">
-    <title>Neil Smith Media</title>
-    <link rel="stylesheet" href="/css/stylesheet.css">
-    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    <script defer src="/js/hamburger.js"></script>
-	<script defer src="/js/dropdown.js"></script>
-	<script defer src="/js/newsletter.js"></script>
-	<script defer src="/js/search.js"></script>
-	<script defer src="/js/blog.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Neil Smith Media Group</title>
+  <link rel="stylesheet" href="/css/global.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/css/footer.css" />
+  <link rel="stylesheet" href="/css/about.css" />
+  <link rel="stylesheet" href="/css/navigation.css" />
+  <link rel="stylesheet" href="/css/forms.css" />
+  <link rel="stylesheet" href="/css/media.css" />
+  <link rel="stylesheet" href="/css/mobile.css" />
+  <link rel="icon" type="image/png" href="/media/icons/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
+  <link rel="shortcut icon" href="/media/icons/favicon.ico" />
 </head>
 <body>
-<!-- HEADER -->
-    <script>
-        fetch('/header.html')
-            .then(response => response.text())
-            .then(html => document.getElementById('header-container').innerHTML - html);
-    </script>
-    <!--<div class="banner-container">
-        <img src="[image]" alt="Banner Image Description">
-    </div> FOR LATER -->
-<!-- PAGE CONTAINER -->
-    <div class="page-container">
-        <aside class="sidebar left-sidebar">
-            <h3>Upcoming Events</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-        </aside>
+  <!-- Header -->
+  <div id="header-container"></div>
 
-        <main class="main-content">
-            <section class="welcome-section">
-                <h1>Neil Smith Media Group</h1>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.<br>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                <a class="join-btn" href="membership/membership.html" title="Join Now">Join Now</a>
-            </section>
-            <section class="updates">
-                <h2>Latest News &amp; Updates</h2>
-                <article>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                </article>
-                <article>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                </article>
 
-            </section>
+  <!-- Page Content with Sidebars -->
+  <div class="page-container">
+    <!-- Left Sidebar -->
+    <aside class="sidebar left-sidebar"></aside>
 
-            <section class="newsletter">
-                <h2>Stay Updated</h2>
-                <form>
-                    <input type="email" placeholder="Enter your email" id="email-signup" name="email">
-                    <button type="submit" title="Subscribe">Subscribe</button>
-                </form>
-            </section>
-        </main>
+    <!-- Main Content -->
+    <main class="main-content">
+      <section class="about-section">
+        <h1>About Neil Smith Media Group</h1>
+        <p>
+          At Neil Smith Media Group, we believe that powerful stories deserve to be told with clarity, creativity, and care. Whether you're launching a brand, planning a wedding, organizing a community event, or promoting a campaign, we bring your vision to life through compelling photography, dynamic video, and thoughtful post-production. We work closely with each client to ensure their message resonates — not just visually, but emotionally. With a flexible approach, professional-grade equipment, and a passion for elevating ideas, Neil Smith Media Group is the creative partner you've been looking for. We don’t just capture moments — we craft lasting impressions that help you connect, engage, and grow.
+        </p>
 
-        <aside class="sidebar right-sidebar">
-            <h3>Blog Posts</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-        </aside>
-    </div>
+        <h2>Meet the Team</h2>
 
-<!-- FOOTER -->
-<div id=""footer-container"></div>
-<script>
-    fetch('footer.html')
-        .then(response +> response.text())
-        .then(html => document.getElementById('footer-container').innerHTML = html);  
-</script>
+        <div class="team-member">
+          <img src="/media/team/neil-smith.jpg" alt="Neil Smith" class="team-photo" />
+          <h3>Neil Smith</h3> 
+          <p>Founder, Photographer, Videographer, and Creative Director</p> 
+          <p> Neil is a multimedia professional with a sharp eye for detail, a passion for visual storytelling, and over a decade of hands-on experience in photography, videography, and post-production. From concept development to final delivery, Neil brings a calm, confident presence to every project — whether it's capturing live events, producing corporate content, or developing creative assets for campaigns and clients. His approach blends technical skill with creative insight, ensuring every frame tells a story and every project exceeds expectations. </p> 
+          <p> When not behind the camera or editing suite, Neil is often refining his gear setup, consulting on creative strategy, or — let's be honest — indulging his canine intern's unspoken demand for regular breaks and treats. </p>
+        </div>
 
+        <div class="team-member">
+          <img src="/media/team/intern.jpg" alt="Tallulah the Intern" class="team-photo" />
+          <h3>Tallulah</h3>
+          <p>Intern (Unofficial CEO and Cuddling Coordinator)</p>
+          <p>
+            Tallulah may have "intern" in her title, but don’t let that fool you — she runs a tight ship. Equal parts adorable and authoritative, she supervises every project from the comfort of a sunny spot on the floor. Her favorite tasks include barking during video calls, overseeing snack breaks, and enforcing mandatory petting sessions. As far as she’s concerned, she’s the boss — and honestly, she probably is.
+          </p>
+        </div>
+
+        <h2>Why Choose Neil Smith Media Group?</h2>
+        <ul>
+          <li>Personalized service with a creative touch</li>
+          <li>Attention to detail that makes your brand shine</li>
+          <li>Over a decade of experience in digital media and content creation</li>
+          <li>Flexibility to handle projects of any size — from solo entrepreneurs to larger businesses</li>
+        </ul>
+
+        <p>
+          Ready to bring your vision to life? <a href="/contact.html">Let's Connect</a> and make something amazing together.
+        </p>
+      </section>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="sidebar right-sidebar"></aside>
+  </div>
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+  <script>
+    fetch('/footer.html')
+      .then(response => response.text())
+      .then(html => document.getElementById('footer-container').innerHTML = html);
+    fetch('/header.html')
+      .then(response => response.text())
+      .then(html => document.getElementById('header-container').innerHTML = html);
+  </script>
 </body>
 </html>

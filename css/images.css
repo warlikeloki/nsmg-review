@@ -1,90 +1,126 @@
-/* --------------------------------
-* images.css
-* --------------------------------
-* Contains:
-* - Styles for images
-*/
-
-.banner-container {
-width: 100%;
-overflow: hidden;
+/* Global Image Styles */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 4px;
 }
 
-.banner-container img {
-width: 100%;
-height: 300px;
-display: block;
-object-fit: cover;
-background-color: rgba(255, 255, 255, 0.5);
+/* Image Wrappers */
+.image-wrapper {
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 1rem;
 }
 
-.banner-construction {
-    width: 100%;
+/* Image Hover Effects */
+.image-hover-zoom {
+    transition: transform 0.3s ease;
 }
 
-.banner-construction img {
-    width: 95%;
-    object-fit: contain;
-    max-height: 400px;
+.image-hover-zoom:hover {
+    transform: scale(1.05);
 }
 
-.banner-container {
-margin-bottom: 20px;
+/* Image Borders */
+.image-bordered {
+    border: 2px solid #ddd;
+    padding: 4px;
+    border-radius: 8px;
 }
 
-.gallery {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-grid-gap: 10px;
-padding: 10px;
+/* Image Alignment */
+.image-left {
+    float: left;
+    margin-right: 15px;
+    margin-bottom: 15px;
 }
 
-.gallery img {
-width: 100%;
-height: auto;
-display: block;
-border-radius: 5px;
-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-transition: transform 0.3s ease;
-object-fit: cover;
-cursor: pointer;
+.image-right {
+    float: right;
+    margin-left: 15px;
+    margin-bottom: 15px;
 }
 
-.gallery img:hover {
-transform: scale(1.05);
+/* Responsive Image Grids */
+.image-grid {
+    display: grid;
+    gap: 15px;
 }
 
+.image-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.image-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.image-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+@media screen and (max-width: 768px) {
+    .image-grid-2, .image-grid-3, .image-grid-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .image-left, .image-right {
+        float: none;
+        margin: 0 0 15px 0;
+    }
+}
+
+/* Lightbox Styles */
 .lightbox {
-    display: none; /* Initially hidden */
+    display: none;
     position: fixed;
-    z-index: 1000;
+    z-index: 999;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.9);
     justify-content: center;
     align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .lightbox img {
     max-width: 90%;
     max-height: 90%;
+    border-radius: 4px;
 }
 
-.lightbox .close {
+.lightbox:target {
+    display: flex;
+}
+
+.lightbox-close {
     position: absolute;
-    top: 15px;
-    right: 35px;
-    color: #f1f1f1;
-    font-size: 40px;
+    top: 20px;
+    right: 30px;
+    color: #fff;
+    font-size: 30px;
+    text-decoration: none;
     font-weight: bold;
-    transition: 0.3s;
+    z-index: 1000;
 }
 
-.lightbox .close:hover,
-.lightbox .close:focus {
-    color: #bbb;
-    text-decoration: none;
-    cursor: pointer;
+.lightbox-close:hover {
+    color: #f00;
+}
+
+/* Utility Classes */
+.centered-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+}
+
+.rounded-image {
+    border-radius: 50%;
 }

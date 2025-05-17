@@ -45,3 +45,13 @@ dropdowns.forEach(dropdown => {
         }
     });
 });
+
+// Mobile Menu Toggle
+document.addEventListener("DOMContentLoaded", () => {
+    const menuIcon = document.getElementById("mobile-menu-icon");
+    const navMenu = document.querySelector(".nav-menu");
+
+    menuIcon.addEventListener("click", () => {
+        navMenu.classList.toggle("open");
+    });
+});

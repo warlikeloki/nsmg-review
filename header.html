@@ -1,52 +1,40 @@
-<!DOCTYPE html>
-<html lang="en-us">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Common Header</title>
-    </head>
-<header class="main-header">
-    <div class="logo-container">
-        <a href="/index.html" aria-label="Neil Smith Media Group Home">
-            <!--<img src="[image]" alt="Neil Smith Media Group Logo"> for later-->
-        </a>
-        <div class="title">Neil Smith Media Group</div>
+<header class="nav-container">
+    <div class="container">
+        <!-- Logo and Navigation -->
+        <div class="nav-logo">
+            <a href="/">
+                <img src="/media/logos/Logo-wordmarkv2.png" alt="Neil Smith Media Group Logo" class="site-logo">
+            </a>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about-us/about.html">About</a></li>
+                <li>
+                    <a href="/services.html">Services</a>
+                    <ul class="dropdown">
+                        <li><a href="/services.html">Services</a></li>
+                        <li><a href="/services/photography.html">Photography</a></li>
+                        <li><a href="/services/videography.html">Videography</a></li>
+                        <li><a href="/services/editing.html">Editing</a></li>
+                        <li><a href="/services/other-services.html">Other Available Services</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/portfolio.html">Portfolio</a>
+                    <ul class="dropdown">
+                        <li><a href="/portfolio.html">Portfolio</a></li>
+                        <li><a href="/gallery/gallery.html">Gallery</a></li>
+                    </ul>
+                </li>
+                <li><a href="/contact.html">Contact</a></li>
+            </ul>
+            <div class="mobile-menu-icon" id="mobile-menu-icon">&#9776;</div>
+        </nav>
     </div>
-    <button class="hamburger" aria-label="Menu" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
-<!-- FUTURE: Need to make the main reference clickable, i.e. When Media & Events clicked it will take you to media.html without having to click on a dropdown page -->
-    <nav class="nav-menu">
-        <ul>
-            <li><a href="/index.html" title="Home">Home</a></li>
-            <li class="dropdown">
-                <a href="/media/media.html" title="Media &amp Events" aria-haspopup="true" aria-expanded="false">Media</a>
-                <ul class="dropdown-content">
-                    <li><a href="/media/blog/blog.html" title="Blog">Blog</a></li>
-                    <li><a href="/media/social-media/social-media.html" title="Social Media">Social Media</a></li>
-                    <li><a href="/media/newsletter/newsletter.html" title="Newsletters">Newsletters</a></li>
-                    <li><a href="/media/gallery/gallery.html" title="Gallery">Gallery</a></li>
-                </ul>
-            </li>
-            <li><a href="/services/services.html" title="Services">Services</a></li>
-            <li><a href="/events/events.html" title="Events">Events</a></li>    
-            <li class="dropdown">
-                <a href="/about-us/about.html" title="About Us" aria-haspopup="true" aria-expanded="false">About Us</a>
-                <ul class="dropdown-content">
-                    <li><a href="/about-us/about.html" title="Who We Are">Who We Are</a></li>
-                    <li><a href="/about-us/contact-us.html" title="Contact Us">Contact Us</a></li>
-                    <li><a href="/about-us/terms-conditions.html" title="Terms &amp Conditions">Terms &amp; Conditions</a></li>
-                    <li><a href="/about-us/privacy.html" title="Privacy Policy">Privacy Policy</a></li>
-                </ul>
-            </li>
-        </ul>
-    </nav>
-<!-- FUTURE: Smaller search text area because it takes up too much space. Likely a CSS and/or JS coding update. 
-    <div class="search-container">
-<input type="text" id="searchInput" placeholder="Enter search term">
-<button id="searchButton">Search</button>  </div>
-<div id="searchResults"></div>-->
+
+    <!-- Banner Section -->
+    <!--<div class="banner">
+        <img src="/media/banners/NSMG-LogoWithWordmark_draft.png" alt="Neil Smith Media Group Banner" class="banner-image">
+    </div>-->
 </header>
-</html>

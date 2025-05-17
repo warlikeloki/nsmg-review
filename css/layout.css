@@ -1,129 +1,109 @@
-/* --------------------------------
-* layout.css
-* --------------------------------
-* Contains:
-* - CSS Grid and Flexbox styles for page layout
-*/
+/* Basic Section Styles */
+section {
+  padding: 2rem 1rem;
+  margin-bottom: 2rem;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Headings */
+section h1,
+section h2,
+section h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Paragraphs */
+section p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  color: #555;
+}
+
+/* Links */
+section a {
+  color: #0056b3;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+section a:hover {
+  color: #003366;
+  text-decoration: underline;
+}
+
+/* Button Styles */
+.section-button {
+  background-color: #0056b3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.section-button:hover {
+  background-color: #003366;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  section {
+      padding: 1.5rem 0.75rem;
+  }
+}
+
 .page-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    width: 95%;
-    margin: 0 auto;
-    padding-top: 20px;
-    padding-bottom: 20px;
-  }
-  
-  .sidebar {
-    min-height: 100vh;
-    width: 20%;
-    min-width: 250px;
-    background-color: #f1f1f1;
-    padding: 20px;
-    text-align: left;
-  }
-  
-  .sidebar ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .sidebar li {
-    margin-bottom: 10px;
-  }
-  
-  .sidebar a {
-    text-decoration: none;
-    color: var(--dark-gray);
-  }
-  
-  .left-sidebar {
-    background-color: #78b9ff;
-  }
-  
-  .right-sidebar {
-    background-color: #78b9ff;
-  }
-  
-  .main-content {
-    flex: 1;
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    margin: 0 20px;
-  }
-  
-  .horizontal-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    display: flex;
-    flex-wrap: wrap; /* Keep wrap for responsiveness */
-    gap: 10px; /* Reduced gap */
-    justify-content: space-between; /* Distribute items */
-  }
-  
-  .horizontal-list li {
-    margin-right: 0;
-    flex: 1 0 auto; /* Allow items to grow and shrink, but not initially */
-    display: flex; /* added for centering */
-    justify-content: center; /* added for centering */
-  }
-  
-  .horizontal-list li a {
-    color: #0078d7;
-    text-decoration: none;
-    font-weight: bold;
-    padding: 8px 12px; /* Slightly reduced horizontal padding */
-    border-radius: 5px;
-    border: 1px solid #0078d7;
-    display: block;
-    white-space: nowrap; /* Prevent text wrapping inside the link */
-    text-align: center; /* Center the text within the link */
-    width: 100%; /* Make link take up full width of the li */
-    box-sizing: border-box; /* Include padding and border in element's total width and height */
-  }
-  /* Code below is for images in the horizontal list, if any
-  .horizontal-list li a:hover {
-    opacity: 0.8;
-  }
-  
-  .horizontal-list li img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 5px;
-  }
-  
-  @media (max-width: 768px) {
-    .horizontal-list {
-      flex-direction: column;
-      gap: 10px;
-    }
-    .horizontal-list li {
-      flex: none;
-    }
-  }
-  */
-  .horizontal-list li a:hover {
-    background-color: #0078d7;
-    color: white;
-  }
-  @media (max-width: 600px) {
-    .horizontal-list {
-      flex-direction: column;
-    }
-  }
-  
-  .pdf-container {
-    width: 100%;
-    height: 80vh;
-    border: var(--border-default);
-    margin-bottom: 20px;
-    overflow: auto;
-  }
-  embed {
-    width: 100%;
-    height: 100%;
-  }
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  gap: 20px;
+}
+
+.sidebar {
+  flex: 1;
+  min-width: 150px;
+  max-width: 200px;
+}
+
+.main-content {
+  flex: 3;
+  max-width: 100%;
+}
+
+#services-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#services-nav .admin-button {
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 1rem;
+  text-align: left;
+  border: 1px solid var(--primary-color, #0073e6);
+  background-color: #fff;
+  color: var(--primary-color, #0073e6);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#services-nav .admin-button:hover {
+  background-color: var(--primary-color, #0073e6);
+  color: #fff;
+}
+
+#services-nav .admin-button.active {
+  background-color: var(--primary-color, #0073e6);
+  color: #fff;
+  font-weight: bold;
+}
