@@ -155,5 +155,11 @@
     "type": ["photography", "videography"],
     "category": "set piece",
     "description": "A clean, bright background perfect for product shots, interviews, and high-key lighting setups."
+  },
+  {
+    "name": "DJI Mini 2 Drone",
+    "type": ["photography", "videography"],
+    "category": "other accessories",
+    "description": "A miniature drone with 4K video capabilities, ideal for capturing aerial shots and landscapes with ease."
   }
 ]
