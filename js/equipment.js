@@ -77,3 +77,40 @@ li.addEventListener("click", () => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   }
 });
+
+window.loadEquipment = function () {
+  const container = document.getElementById("equipment-list");
+  if (!container) return;
+  const pageCategory = container.getAttribute("data-category");
+
+  fetch("/json/equipment.json")
+    .then(res => res.json())
+    .then(items => {
+      const filtered = pageCategory
+        ? items.filter(i => i.type.includes(pageCategory))
+        : items;
+
+      const grouped = {};
+      filtered.forEach(i => {
+        const key = i.category || "Other";
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(i);
+      });
+
+      container.innerHTML = '';
+      for (const [cat, group] of Object.entries(grouped)) {
+        const section = document.createElement("section");
+        const title = document.createElement("h3");
+        title.textContent = cat;
+        const ul = document.createElement("ul");
+        group.forEach(item => {
+          const li = document.createElement("li");
+          li.textContent = item.name;
+          ul.appendChild(li);
+        });
+        section.appendChild(title);
+        section.appendChild(ul);
+        container.appendChild(section);
+      }
+    });
+};

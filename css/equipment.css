@@ -62,3 +62,20 @@
   color: var(--primary-color, #0073e6);
 }
 
+/* Compact equipment list for sidebar */
+.compact-equipment-list {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.compact-equipment-list ul {
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+
+.compact-equipment-list li {
+  margin-bottom: 6px;
+}

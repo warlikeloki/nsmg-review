@@ -93,3 +93,15 @@ footer > p.credits {
 .footer-info a:hover {
   text-decoration: underline;
 }
+
+.footer-social a img {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  margin-right: 8px;
+  transition: transform 0.2s ease;
+}
+
+.footer-social a:hover img {
+  transform: scale(1.2);
+}

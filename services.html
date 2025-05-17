@@ -1,67 +1,98 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Services - Neil Smith Media Group</title>
-    <link rel="stylesheet" href="/css/global.css">
-    <link rel="stylesheet" href="/css/layout.css">
-    <link rel="stylesheet" href="/css/navigation.css">
-    <link rel="stylesheet" href="/css/forms.css">
-    <link rel="stylesheet" href="/css/media.css">
-    <link rel="stylesheet" href="/css/mobile.css">
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/footer.css">
-    <link rel="stylesheet" href="/css/equipment.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Services - Neil Smith Media Group</title>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/global.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/css/navigation.css" />
+  <link rel="stylesheet" href="/css/footer.css" />
+  <link rel="stylesheet" href="/css/forms.css" />
+  <link rel="stylesheet" href="/css/mobile.css" />
+  <link rel="stylesheet" href="/css/equipment.css" />
+
+  <!-- Scripts -->
+  <script src="/js/equipment.js" defer></script>
 </head>
 <body>
-    <!-- Header -->
-    <div id="header-container"></div>
+  <div id="header-container"></div>
 
-    <main class="main-content">
-        <section class="services-section">
-            <h1>Our Services</h1>
-            <p>At Neil Smith Media Group, we offer a range of professional media services designed to capture your vision and bring your story to life. Explore our offerings below:</p>
+  <div class="page-container">
+<!-- Left Sidebar: Button Navigation -->
+<aside class="sidebar left-sidebar">
+  <div id="services-nav">
+    <h2>Our Services</h2>
+    <button class="admin-button" data-service="photography">Photography</button>
+    <button class="admin-button" data-service="videography">Videography</button>
+    <button class="admin-button" data-service="editing">Editing</button>
+    <button class="admin-button" data-service="other-services">Other Services</button>
+  </div>
+</aside>
 
-            <div class="service-cards">
-                <article class="service-card">
-                    <img src="/media/images/photography.jpg" alt="Photography" class="service-image">
-                    <h2>Photography</h2>
-                    <p>From portraits to events, we capture moments that tell your story. Our photography services include professional headshots, event coverage, and creative shoots.</p>
-                    <a href="/services/photography.html" class="service-link">Learn More</a>
-                </article>
+<!-- Main Content -->
+<main class="main-content" id="services-content">
+  <div id="service-placeholder">
+    <h1>Our Services</h1>
+    <p>Select a service from the left to learn more about what we offer.</p>
+  </div>
+</main>
 
-                <article class="service-card">
-                    <img src="/media/images/videography.jpg" alt="Videography" class="service-image">
-                    <h2>Videography</h2>
-                    <p>Professional video production for businesses, events, and creative projects. We handle everything from concept to final cut, ensuring a polished, high-quality result.</p>
-                    <a href="/services/videography.html" class="service-link">Learn More</a>
-                </article>
+    <!-- Right Sidebar: Equipment List -->
+    <aside class="sidebar right-sidebar">
 
-                <article class="service-card">
-                    <img src="/media/images/editing.jpg" alt="Editing" class="service-image">
-                    <h2>Editing</h2>
-                    <p>From color correction to full post-production, we bring your raw footage to life. Our editing services ensure your project looks and sounds its best.</p>
-                    <a href="/services/editing.html" class="service-link">Learn More</a>
-                </article>
-            </div>
-            <div id="equipment-list"></div>
+</aside>
+  </div>
 
-        </section>
-    </main>
+  <div id="footer-container"></div>
 
-    <!-- Footer -->
-    <div id="footer-container"></div>
-<script src="/js/equipment.js" defer></script>
+  <script>
+  fetch('/header.html')
+    .then(res => res.text())
+    .then(html => document.getElementById('header-container').innerHTML = html);
 
-    <script>
-        // Load header and footer
-        fetch('/header.html')
-            .then(response => response.text())
-            .then(html => document.getElementById('header-container').innerHTML = html);
-        fetch('/footer.html')
-            .then(response => response.text())
-            .then(html => document.getElementById('footer-container').innerHTML = html);
-    </script>
+  fetch('/footer.html')
+    .then(res => res.text())
+    .then(html => document.getElementById('footer-container').innerHTML = html);
+
+  // Load main content only from service pages
+  document.addEventListener("DOMContentLoaded", () => {
+    const navButtons = document.querySelectorAll("#services-nav .admin-button");
+    const content = document.getElementById("services-content");
+
+    navButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    // Remove 'active' from all buttons
+    navButtons.forEach(btn => btn.classList.remove("active"));
+    
+    // Add 'active' to the clicked one
+    button.classList.add("active");
+
+    const service = button.getAttribute("data-service");
+    fetch(`/services/${service}.html`)
+      .then(res => res.text())
+      .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+        const mainContent = doc.querySelector("main");
+        content.innerHTML = mainContent ? mainContent.innerHTML : "<p>Unable to load service content.</p>";
+
+        if (typeof loadEquipment === 'function') {
+          loadEquipment();
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        content.innerHTML = "<p>Error loading content.</p>";
+      });
+  });
+});
+
+  });
+</script>
+
 </body>
 </html>

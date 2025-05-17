@@ -77,3 +77,33 @@ section a:hover {
   flex: 3;
   max-width: 100%;
 }
+
+#services-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#services-nav .admin-button {
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 1rem;
+  text-align: left;
+  border: 1px solid var(--primary-color, #0073e6);
+  background-color: #fff;
+  color: var(--primary-color, #0073e6);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#services-nav .admin-button:hover {
+  background-color: var(--primary-color, #0073e6);
+  color: #fff;
+}
+
+#services-nav .admin-button.active {
+  background-color: var(--primary-color, #0073e6);
+  color: #fff;
+  font-weight: bold;
+}
