@@ -97,6 +97,99 @@
   color: #333;
 }
 
+/* Create Ballot Form Styles */
+.form-section {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.form-section h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: var(--primary-color, #0073e6);
+  text-align: center;
+}
+
+#create-ballot-form label {
+  display: block;
+  margin: 16px 0 6px;
+  font-weight: 600;
+  color: #333;
+}
+
+#create-ballot-form input[type="text"],
+#create-ballot-form input[type="datetime-local"],
+#create-ballot-form textarea {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+#create-ballot-form input:focus,
+#create-ballot-form textarea:focus {
+  border-color: var(--primary-color, #0073e6);
+  outline: none;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 115, 230, 0.1);
+}
+
+#candidate-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#candidate-list input[type="text"] {
+  margin-top: 4px;
+}
+
+#add-candidate-btn {
+  margin-top: 5px;
+  background-color: #39abfd;
+  border: none;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#add-candidate-btn:hover {
+  background-color: #228be6;
+}
+
+button.btn {
+  background-color: var(--primary-color, #0073e6);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border-radius: 6px;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.btn:hover {
+  background-color: var(--primary-dark, #005bb5);
+}
+
+.form-status {
+  margin-top: 15px;
+  font-weight: 600;
+  color: var(--primary-color, #0073e6);
+}
+
 /* Utility */
 .hidden {
   display: none;
@@ -104,20 +197,32 @@
 
 /* Responsive Design */
 @media (max-width: 600px) {
-  .ranked-choice-main {
+  .ranked-choice-main,
+  .form-section {
     padding: 20px 15px;
   }
 
-  .ranked-choice-main h1 {
+  .ranked-choice-main h1,
+  .form-section h1 {
     font-size: 1.8rem;
   }
 
-  .submit-btn {
+  .submit-btn,
+  button.btn {
     font-size: 0.95rem;
   }
 
   .candidate-input,
-  .rank-select {
+  .rank-select,
+  #create-ballot-form input,
+  #create-ballot-form textarea {
     font-size: 0.95rem;
   }
+}
+
+#final-result-chart {
+  max-width: 700px;
+  height: 400px;
+  margin: 40px auto 0;
+  display: block;
 }

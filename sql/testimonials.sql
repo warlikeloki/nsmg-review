@@ -1,0 +1,7 @@
+CREATE TABLE testimonials (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL,
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_approved BOOLEAN DEFAULT FALSE
+);

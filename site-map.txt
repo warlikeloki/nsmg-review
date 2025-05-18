@@ -8,60 +8,74 @@
 |- footer.html
 |- header.html
 |- portfolio.html
-|   |- about-us/
-|   |   |- about.html
-|   |   |- privacy.html
-|   |   |- terms-conditions.html
-|   |- admin/
-|   |   |- admin.html
-|   |   |- manage_posts.html
-|   |   |- manage_testimonials.html
-|   |   |- website_settings.html
-|   |- css/
-|   |   |- global.css
-|   |   |- layout.css
-|   |   |- navigation.css
-|   |   |- sections.css
-|   |   |- blog.css
-|   |   |- mobile.css
-|   |   |- forms.css
-|   |   |- testimonials.css
-|   |   |- gallery.css
-|   |   |- admin.css
-|   |   |- header.css
-|   |   |- images.css
-|   |   |- footer.css
-|   |   |- equipment.css
-|   |- js/
-|   |   |- main.js
-|   |   |- blog.js
-|   |   |- navigation.js
-|   |   |- testimonials.js
-|   |   |- settings.js
-|   |   |- equipment.js
-|   |- json/
-|   |   |- equipment.json
-|   |   |- posts.json
-|   |   |- testimonials.json
-|   |   |- services.json
-|   |- php/
-|   |   |- contact_form.php (FUTURE)
-|   |   |- testimonial_submission.php (FUTURE)
-|   |   |- service_request.php (FUTURE)
-|   |   |- subscribe.php (FUTURE)
-|   |- media/
-|   |   |- banners/
-|   |   |- icons/
-|   |   |- logos/
-|   |   |- social/
-|   |- ranked-choice/
-|   |   |- ranked-choice.html
-|   |   |- ranked-choice.css
-|   |   |- ranked-choice.js
-|   |- services/
-|   |   |- photography.html
-|   |   |- videography.html
-|   |   |- editing.html
-|   |   |- other-services.html
-|   |- gallery/
-|   |   |- gallery.html
+|- about-us/
+|   |- about.html
+|   |- privacy.html
+|   |- terms-conditions.html
+|- admin/
+|   |- admin.html
+|   |- manage_posts.html
+|   |- manage_testimonials.html
+|   |- website_settings.html
+|- css/
+|   |- global.css
+|   |- layout.css
+|   |- navigation.css
+|   |- sections.css
+|   |- blog.css
+|   |- mobile.css
+|   |- forms.css
+|   |- testimonials.css
+|   |- gallery.css
+|   |- admin.css
+|   |- header.css
+|   |- images.css
+|   |- footer.css
+|   |- equipment.css
+|   |- portfolio.css
+|   |- pricing.css
+|- js/
+|   |- main.js
+|   |- blog.js
+|   |- navigation.js
+|   |- testimonials.js
+|   |- settings.js
+|   |- equipment.js
+|   |- contact.js
+|   |- service-request.js
+|   |- portfolio.js
+|- json/
+|   |- equipment.json
+|   |- posts.json
+|   |- testimonials.json
+|   |- services.json
+|- php/
+|   |- contact_form.php
+|   |- get_pricing.php
+|   |- testimonial_submission.php (FUTURE)
+|   |- service_request.php
+|   |- subscribe.php (FUTURE)
+|- media/
+|   |- banners/
+|   |- icons/
+|   |- logos/
+|   |- social/
+|- ranked-choice/
+|   |- ranked-choice.html
+|   |- ranked-choice.css
+|   |- ranked-choice.js
+|- services/
+|   |- photography.html
+|   |- videography.html
+|   |- editing.html
+|   |- other-services.html
+|   |- pricing.html
+|   |- request-form.html
+|- gallery/
+|   |- gallery.html
+|- sql/
+|   |- contact_messages.sql
+|   |- testimonials.sql
+|   |- blog_posts.sql
+|   |- equipment.sql
+|   |- pricing.sql
