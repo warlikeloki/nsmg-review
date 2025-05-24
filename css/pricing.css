@@ -1,17 +1,18 @@
 /* Pricing Page Styles */
 
 .pricing-section {
+  max-width: 900px;
+  margin: 40px auto;
   padding: 20px;
 }
 
-.pricing-section h1 {
-  margin-bottom: 10px;
+.pricing-section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+  color: var(--primary-color, #0073e6);
 }
 
-.pricing-section p {
-  margin-bottom: 20px;
-}
-
+/* Pricing Tables */
 .pricing-table {
   width: 100%;
   border-collapse: collapse;
@@ -21,18 +22,24 @@
 .pricing-table th,
 .pricing-table td {
   border: 1px solid #ddd;
-  padding: 12px 15px;
+  padding: 12px;
   text-align: left;
 }
 
 .pricing-table th {
-  background-color: #f5f5f5;
-  font-weight: bold;
+  background-color: var(--primary-color, #0073e6);
+  color: #ffffff;
 }
 
-.category-heading {
-  margin-top: 40px;
-  font-size: 1.5rem;
-  border-bottom: 2px solid #ccc;
-  padding-bottom: 5px;
+/* Responsive: allow horizontal scroll on small screens */
+@media (max-width: 768px) {
+  .pricing-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .pricing-table th,
+  .pricing-table td {
+    padding: 8px;
+  }
 }

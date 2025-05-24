@@ -30,6 +30,9 @@
     <button class="admin-button" data-service="videography">Videography</button>
     <button class="admin-button" data-service="editing">Editing</button>
     <button class="admin-button" data-service="other-services">Other Services</button>
+    <button class="admin-button" data-service="request-form">Request a Service</button>
+
+    
   </div>
 </aside>
 
@@ -72,18 +75,19 @@
     button.classList.add("active");
 
     const service = button.getAttribute("data-service");
-    fetch(`/services/${service}.html`)
+      fetch(`/services/${service}.html`)
       .then(res => res.text())
       .then(html => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
-        const mainContent = doc.querySelector("main");
-        content.innerHTML = mainContent ? mainContent.innerHTML : "<p>Unable to load service content.</p>";
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const mainContent = doc.querySelector("main, body"); // fallback to <body> for form pages
+    content.innerHTML = mainContent ? mainContent.innerHTML : "<p>Unable to load service content.</p>";
 
-        if (typeof loadEquipment === 'function') {
-          loadEquipment();
-        }
-      })
+    if (typeof loadEquipment === 'function') {
+      loadEquipment();
+    }
+  })
+
       .catch(err => {
         console.error(err);
         content.innerHTML = "<p>Error loading content.</p>";

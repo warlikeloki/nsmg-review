@@ -211,3 +211,9 @@ button[type="submit"]:hover {
         text-align: center;
     }
 }
+
+.admin-button.active {
+  background-color: var(--accent-color, #39abfd);
+  color: #fff;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
