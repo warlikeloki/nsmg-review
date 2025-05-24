@@ -1,0 +1,11 @@
+CREATE TABLE accounting_entries (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  entry_date DATE NOT NULL,
+  type ENUM('income','expense') NOT NULL,
+  category VARCHAR(100),
+  amount DECIMAL(10,2) NOT NULL,
+  description TEXT,
+  reference VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
