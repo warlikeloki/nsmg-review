@@ -37,7 +37,7 @@
   <!-- FOOTER -->
   <div id="footer-container"></div>
 
-  <!-- Scripts -->
+  <!-- Load header and footer -->
   <script>
     fetch('/header.html')
       .then(response => response.text())
@@ -48,6 +48,7 @@
       .then(html => document.getElementById('footer-container').innerHTML = html);
   </script>
 
-  <script src="/js/blog.js" defer></script>
+  <!-- Load all JS modules -->
+  <script type="module" src="/js/main.js" defer></script>
 </body>
 </html>

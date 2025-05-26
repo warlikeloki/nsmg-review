@@ -38,63 +38,18 @@
   <!-- FOOTER -->
   <div id="footer-container"></div>
 
-  <!-- Header/Footer Injection -->
+  <!-- Load header and footer -->
   <script>
     fetch('/header.html')
-      .then(res => res.text())
+      .then(r => r.text())
       .then(html => document.getElementById('header-container').innerHTML = html);
 
     fetch('/footer.html')
-      .then(res => res.text())
+      .then(r => r.text())
       .then(html => document.getElementById('footer-container').innerHTML = html);
   </script>
 
-  <!-- Blog Post JS -->
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const postContainer = document.getElementById("blog-post-content");
-
-    function getQueryParam(name) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(name);
-    }
-
-    const postId = parseInt(getQueryParam("id"));
-
-    if (isNaN(postId)) {
-      postContainer.innerHTML = "<p>Invalid post ID.</p>";
-      return;
-    }
-
-    fetch("/json/posts.json")
-      .then(res => res.json())
-      .then(posts => {
-        if (!Array.isArray(posts) || !posts[postId]) {
-          postContainer.innerHTML = "<p>Post not found.</p>";
-          return;
-        }
-
-        const post = posts[postId];
-        const hasPrev = postId > 0;
-        const hasNext = postId < posts.length - 1;
-
-        postContainer.innerHTML = `
-          <a href="/blog.html" class="back-link">&larr; Back to Blog</a>
-          <h1>${post.title}</h1>
-          <p class="meta-info">By ${post.author} &bull; ${post.date}</p>
-          <div class="post-content">${post.content}</div>
-          <div class="blog-post-nav">
-            ${hasPrev ? `<a href="/blog-post.html?id=${postId - 1}" class="nav-link prev-post">&larr; Previous Post</a>` : ""}
-            ${hasNext ? `<a href="/blog-post.html?id=${postId + 1}" class="nav-link next-post">Next Post &rarr;</a>` : ""}
-          </div>
-        `;
-      })
-      .catch(err => {
-        console.error(err);
-        postContainer.innerHTML = "<p>Error loading post.</p>";
-      });
-  });
-</script>
-
+  <!-- Load all JS modules -->
+  <script type="module" src="/js/main.js" defer></script>
 </body>
 </html>
