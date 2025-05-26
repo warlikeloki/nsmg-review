@@ -1,0 +1,13 @@
+{
+  "name": "neilsmith-media-website",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "sitemap": "node generate-sitemap.js"
+  },
+  "devDependencies": {
+    "glob": "^11.0.2",
+    "sitemap": "^8.0.0"
+  }
+}
+
