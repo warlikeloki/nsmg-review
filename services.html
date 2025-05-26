@@ -15,88 +15,117 @@
   <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/equipment.css" />
 
-  <!-- Scripts -->
-  <script src="/js/equipment.js" defer></script>
+  <!-- All logic now in main.js -->
 </head>
 <body>
   <div id="header-container"></div>
 
   <div class="page-container">
-<!-- Left Sidebar: Button Navigation -->
-<aside class="sidebar left-sidebar">
-  <div id="services-nav">
-    <h2>Our Services</h2>
-    <button class="admin-button" data-service="photography">Photography</button>
-    <button class="admin-button" data-service="videography">Videography</button>
-    <button class="admin-button" data-service="editing">Editing</button>
-    <button class="admin-button" data-service="other-services">Other Services</button>
-    <button class="admin-button" data-service="request-form">Request a Service</button>
+    <!-- Left Sidebar: Button Navigation -->
+    <aside class="sidebar left-sidebar">
+      <div id="services-nav">
+        <h2>Our Services</h2>
+        <button class="admin-button" data-service="photography">Photography</button>
+        <button class="admin-button" data-service="videography">Videography</button>
+        <button class="admin-button" data-service="editing">Editing</button>
+        <button class="admin-button" data-service="other-services">Other Services</button>
+        <button class="admin-button" data-service="pricing">Pricing</button>
+        <button class="admin-button" data-service="request-form">Request a Service</button>
+      </div>
+    </aside>
 
-    
-  </div>
-</aside>
-
-<!-- Main Content -->
-<main class="main-content" id="services-content">
-  <div id="service-placeholder">
-    <h1>Our Services</h1>
-    <p>Select a service from the left to learn more about what we offer.</p>
-  </div>
-</main>
+    <!-- Main Content -->
+    <main class="main-content" id="services-content">
+      <div id="service-placeholder">
+        <h1>Our Services</h1>
+        <p>Select a service from the left to learn more about what we offer.</p>
+      </div>
+    </main>
 
     <!-- Right Sidebar: Equipment List -->
-    <aside class="sidebar right-sidebar">
-
-</aside>
+    <aside class="sidebar right-sidebar" id="equipment-sidebar">
+      <div id="equipment-list" data-category=""></div>
+    </aside>
   </div>
 
   <div id="footer-container"></div>
 
   <script>
-  fetch('/header.html')
-    .then(res => res.text())
-    .then(html => document.getElementById('header-container').innerHTML = html);
+    // Load header & footer
+    fetch('/header.html').then(r => r.text()).then(html => document.getElementById('header-container').innerHTML = html);
+    fetch('/footer.html').then(r => r.text()).then(html => document.getElementById('footer-container').innerHTML = html);
 
-  fetch('/footer.html')
-    .then(res => res.text())
-    .then(html => document.getElementById('footer-container').innerHTML = html);
+    document.addEventListener("DOMContentLoaded", () => {
+      const navButtons      = document.querySelectorAll("#services-nav .admin-button");
+      const content         = document.getElementById("services-content");
+      const equipmentSidebar = document.getElementById("equipment-sidebar");
+      const equipmentList   = document.getElementById("equipment-list");
 
-  // Load main content only from service pages
-  document.addEventListener("DOMContentLoaded", () => {
-    const navButtons = document.querySelectorAll("#services-nav .admin-button");
-    const content = document.getElementById("services-content");
+      navButtons.forEach(button => {
+        button.addEventListener("click", () => {
+          // Highlight active button
+          navButtons.forEach(btn => btn.classList.remove("active"));
+          button.classList.add("active");
 
-    navButtons.forEach(button => {
-  button.addEventListener("click", () => {
-    // Remove 'active' from all buttons
-    navButtons.forEach(btn => btn.classList.remove("active"));
-    
-    // Add 'active' to the clicked one
-    button.classList.add("active");
+          const service = button.getAttribute("data-service");
 
-    const service = button.getAttribute("data-service");
-      fetch(`/services/${service}.html`)
-      .then(res => res.text())
-      .then(html => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-    const mainContent = doc.querySelector("main, body"); // fallback to <body> for form pages
-    content.innerHTML = mainContent ? mainContent.innerHTML : "<p>Unable to load service content.</p>";
+          if (service === 'pricing') {
+            // Hide equipment sidebar
+            equipmentSidebar.style.display = 'none';
+            // Inject pricing markup
+            content.innerHTML = `
+              <h1>Pricing</h1>
+              <section id="packages-section">
+                <h2>Packages</h2>
+                <table class="pricing-table">
+                  <thead>
+                    <tr><th>Package</th><th>Description</th><th>Price</th></tr>
+                  </thead>
+                  <tbody id="packages-body"></tbody>
+                </table>
+              </section>
+              <section id="ala-carte-section">
+                <h2>À La Carte</h2>
+                <table class="pricing-table">
+                  <thead>
+                    <tr><th>Service</th><th>Description</th><th>Rate</th></tr>
+                  </thead>
+                  <tbody id="ala-carte-body"></tbody>
+                </table>
+              </section>
+            `;
+            // Call the pricing module
+            if (typeof loadPricing === 'function') loadPricing();
+            return;
+          }
 
-    if (typeof loadEquipment === 'function') {
-      loadEquipment();
-    }
-  })
+          // For all other services, show equipment sidebar
+          equipmentSidebar.style.display = '';
 
-      .catch(err => {
-        console.error(err);
-        content.innerHTML = "<p>Error loading content.</p>";
+          // Load the specific service HTML
+          fetch(`/services/${service}.html`)
+            .then(res => res.text())
+            .then(html => {
+              const doc         = new DOMParser().parseFromString(html, "text/html");
+              const mainContent = doc.querySelector("main, body");
+              content.innerHTML = mainContent ? mainContent.innerHTML
+                                              : "<p>Unable to load service content.</p>";
+              // Update equipment category and reload
+              equipmentList.setAttribute("data-category", service);
+              if (typeof loadEquipment === 'function') loadEquipment();
+            })
+            .catch(err => {
+              console.error(err);
+              content.innerHTML = "<p>Error loading content.</p>";
+            });
+        });
       });
-  });
-});
+    });
+  </script>
 
-  });
-</script>
-
+  <!-- Load all JS modules -->
+  <script type="module" src="/js/main.js" defer></script>
 </body>
 </html>
+
+<!-- Issue #46 -->
