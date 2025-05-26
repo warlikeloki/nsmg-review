@@ -1,40 +1,53 @@
 <header class="nav-container">
-    <div class="container">
-        <!-- Logo and Navigation -->
-        <div class="nav-logo">
-            <a href="/">
-                <img src="/media/logos/Logo-wordmarkv2.png" alt="Neil Smith Media Group Logo" class="site-logo">
-            </a>
-        </div>
-        <nav>
-            <ul class="nav-menu">
-                <li><a href="/">Home</a></li>
-                <li><a href="/about-us/about.html">About</a></li>
-                <li>
-                    <a href="/services.html">Services</a>
-                    <ul class="dropdown">
-                        <li><a href="/services.html">Services</a></li>
-                        <li><a href="/services/photography.html">Photography</a></li>
-                        <li><a href="/services/videography.html">Videography</a></li>
-                        <li><a href="/services/editing.html">Editing</a></li>
-                        <li><a href="/services/other-services.html">Other Available Services</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="/portfolio.html">Portfolio</a>
-                    <ul class="dropdown">
-                        <li><a href="/portfolio.html">Portfolio</a></li>
-                        <li><a href="/gallery/gallery.html">Gallery</a></li>
-                    </ul>
-                </li>
-                <li><a href="/contact.html">Contact</a></li>
-            </ul>
-            <div class="mobile-menu-icon" id="mobile-menu-icon">&#9776;</div>
-        </nav>
+  <div class="container">
+    <!-- Logo -->
+    <div class="nav-logo">
+      <a href="/">
+        <img src="/media/logos/Logo-wordmarkv2.png"
+             alt="Neil Smith Media Group Logo"
+             class="site-logo">
+      </a>
     </div>
 
-    <!-- Banner Section -->
-    <!--<div class="banner">
-        <img src="/media/banners/NSMG-LogoWithWordmark_draft.png" alt="Neil Smith Media Group Banner" class="banner-image">
-    </div>-->
+    <!-- Mobile menu toggle -->
+    <div id="mobile-menu-icon"
+         class="hamburger"
+         role="button"
+         tabindex="0"
+         aria-label="Toggle navigation"
+         aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <!-- Nav links -->
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about-us/about.html">About</a></li>
+        <li>
+          <a href="/services.html" aria-expanded="false">Services</a>
+          <ul class="dropdown">
+            <li><a href="/services.html">All Services</a></li>
+            <li><a href="/services/photography.html">Photography</a></li>
+            <li><a href="/services/videography.html">Videography</a></li>
+            <li><a href="/services/editing.html">Editing</a></li>
+            <li><a href="/services/other-services.html">Other Services</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="/portfolio.html" aria-expanded="false">Portfolio</a>
+          <ul class="dropdown">
+            <li><a href="/portfolio.html">Portfolio</a></li>
+            <li><a href="/gallery/gallery.html">Gallery</a></li>
+          </ul>
+        </li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+
+<script type="module" src="/js/main.js" defer></script>
+
 </header>

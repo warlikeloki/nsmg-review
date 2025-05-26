@@ -1,13 +1,12 @@
-// nsmg.js
+// /js/main.js
 import './modules/navigation.js';
-import './modules/newsletter.js';
-import './modules/active-link.js';
-import './modules/countdown.js';
-import './modules/search.js';
-import './modules/blog.js'; // Make sure this line exists
-import './modules/components-loader.js';
-import './modules/events.js';
-import './modules/gallery.js';
-import './modules/merch.js';
-import './modules/paypal.js';
-import './modules/read-more.js';
+import './modules/blog.js';
+import './modules/blog-post.js';
+import './modules/testimonials.js';
+import './modules/equipment.js';
+import './modules/contact.js';           // <— added Issue #47
+import './modules/service-request.js';   // <— added Issue #47
+import './modules/portfolio.js';
+import './modules/admin.js';
+import './modules/pricing.js';
+import './modules/settings.js';
