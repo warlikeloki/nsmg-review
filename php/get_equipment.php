@@ -1,28 +1,37 @@
 <?php
-header("Content-Type: application/json");
-require_once __DIR__ . '/db_connect.php';
+// /php/get_equipment.php
 
-try {
-    $pdo = new PDO($dsn, $db_user, $db_pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-    ]);
+header('Content-Type: application/json; charset=utf-8');
 
-    $stmt = $pdo->query("
-      SELECT 
-        id, name, category, owner, `condition`, is_retired, last_used_at, created_at 
-      FROM equipment
-      ORDER BY name
-    ");
-    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// 1) Connect to the database
+require_once __DIR__ . '/db_connect.php';  
+// (Assumes db_connect.php sets up a PDO $pdo)
 
-    echo json_encode([
-      "success" => true,
-      "data"    => $rows
-    ]);
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode([
-      "success" => false,
-      "message" => "Server error."
-    ]);
+// 2) Read & sanitize category
+$category = isset($_GET['category']) ? trim($_GET['category']) : '';
+if (empty($category)) {
+    echo json_encode([]);
+    exit;
 }
+
+// 3) Query for equipment in that category
+$sql = "
+  SELECT 
+    e.id,
+    e.name,
+    e.category,
+    e.description,
+    e.image_url,
+    e.quantity
+  FROM equipment AS e
+  JOIN equipment_to_types AS et ON e.id = et.equipment_id
+  JOIN equipment_types      AS t  ON et.type_id = t.id
+  WHERE t.slug = :category
+  ORDER BY e.name
+";
+$stmt = $pdo->prepare($sql);
+$stmt->execute(['category' => $category]);
+$items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// 4) Output JSON
+echo json_encode($items, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);

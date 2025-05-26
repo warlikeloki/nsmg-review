@@ -1,43 +1,33 @@
 <?php
-header("Content-Type: application/json");
+header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__ . '/db_connect.php';
 
-// TEMPORARY: Simulated pricing data (replace with DB query later)
-$pricingData = [
-    [
-        "service" => "Portrait Session",
-        "price" => 150.00,
-        "unit" => "flat",
-        "category" => "Photography",
-        "description" => "1 hour session, 10 edited images",
-        "is_package" => false
-    ],
-    [
-        "service" => "Event Videography",
-        "price" => 150.00,
-        "unit" => "per hour",
-        "category" => "Videography",
-        "description" => "Live event coverage, raw or edited output",
-        "is_package" => false
-    ],
-    [
-        "service" => "Photo + Video Package",
-        "price" => 1000.00,
-        "unit" => "flat",
-        "category" => "Package",
-        "description" => "Combined photo & video coverage for 1 event",
-        "is_package" => true
-    ]
-];
+try {
+    // Initialize PDO
+    $pdo = new PDO($dsn, $db_user, $db_pass, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+    ]);
 
-// Optional filter by category
-$category = isset($_GET['category']) ? strtolower($_GET['category']) : null;
+    $sql = <<<SQL
+SELECT
+  s.name        AS service,
+  s.description AS description,
+  p.price       AS price,
+  p.unit        AS unit,
+  p.is_package  AS is_package
+FROM pricing p
+JOIN services s
+  ON p.service_id = s.id
+ORDER BY p.is_package DESC, s.name
+SQL;
 
-if ($category) {
-    $filtered = array_filter($pricingData, function ($item) use ($category) {
-        return strtolower($item['category']) === $category;
-    });
-    echo json_encode(array_values($filtered));
-} else {
-    echo json_encode($pricingData);
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo json_encode($rows, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "Server error: " . $e->getMessage()]);
 }
-?>
+//--- /php/get_pricing.php (Issue #49) ---

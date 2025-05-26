@@ -111,4 +111,10 @@
    ├─ invoices.sql
    ├─ accounting_entries.sql
    ├─ ranked_ballots.sql
+   ├─ audit_logs.sql
+   ├─ gallery_images.sql
+   ├─ services.sql
+   ├─ sessions.sql
+   ├─ subscribers.sql
+   ├─ users.sql
    └─ ranked_votes.sql
