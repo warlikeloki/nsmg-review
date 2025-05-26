@@ -1,8 +1,10 @@
-// js/pricing.js
+//--- /js/modules/pricing.js (Issue #49) ---
+// /js/modules/pricing.js
+// Fetches pricing data from server and renders Packages & À La Carte tables
 
 document.addEventListener('DOMContentLoaded', () => {
-  const packagesBody   = document.getElementById('packages-body');
-  const alaCarteBody   = document.getElementById('ala-carte-body');
+  const packagesBody = document.getElementById('packages-body');
+  const alaCarteBody = document.getElementById('ala-carte-body');
 
   if (!packagesBody || !alaCarteBody) return;
 
@@ -12,11 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return res.json();
     })
     .then(items => {
-      // Split into packages vs à la carte
-      const packages = items.filter(item => parseInt(item.is_package, 10) === 1);
-      const alaCarte = items.filter(item => parseInt(item.is_package, 10) === 0);
+      // items is an array of {service, description, price, unit, is_package}
+      const packages = items.filter(item => Number(item.is_package) === 1);
+      const alaCarte = items.filter(item => Number(item.is_package) === 0);
 
-      // Render Packages table
+      // Render Packages
       if (packages.length) {
         packagesBody.innerHTML = packages.map(item => `
           <tr>
@@ -29,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         packagesBody.innerHTML = '<tr><td colspan="3">No packages available.</td></tr>';
       }
 
-      // Render À La Carte table
+      // Render À La Carte
       if (alaCarte.length) {
         alaCarteBody.innerHTML = alaCarte.map(item => `
           <tr>
@@ -44,11 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(err => {
       console.error('Pricing load error:', err);
-      packagesBody.innerHTML = '<tr><td colspan="3">Error loading pricing.</td></tr>';
-      alaCarteBody.innerHTML = '<tr><td colspan="3">Error loading pricing.</td></tr>';
+      const msg = '<tr><td colspan="3">Error loading pricing.</td></tr>';
+      packagesBody.innerHTML = msg;
+      alaCarteBody.innerHTML = msg;
     });
 
-  // Helper to format price + unit
   function formatPrice(price, unit) {
     const amt = typeof price === 'number'
       ? `$${price.toFixed(2)}`

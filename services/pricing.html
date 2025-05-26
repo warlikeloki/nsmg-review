@@ -1,3 +1,4 @@
+<!-- --- /pricing.html (Issue #49) --- -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,10 +15,15 @@
   <link rel="stylesheet" href="/css/mobile.css" />
 </head>
 <body>
-  <!-- Header -->
+  <!-- HEADER -->
   <div id="header-container"></div>
+  <script>
+    fetch('/header.html')
+      .then(r => r.text())
+      .then(html => document.getElementById('header-container').innerHTML = html);
+  </script>
 
-  <!-- Main Content -->
+  <!-- MAIN CONTENT -->
   <main class="pricing-section">
     <section id="packages-section">
       <h2>Packages</h2>
@@ -52,21 +58,15 @@
     </section>
   </main>
 
-  <!-- Footer -->
+  <!-- FOOTER -->
   <div id="footer-container"></div>
-
-  <!-- Load Header & Footer -->
   <script>
-    fetch('/header.html')
-      .then(r => r.text())
-      .then(html => document.getElementById('header-container').innerHTML = html);
-
     fetch('/footer.html')
       .then(r => r.text())
       .then(html => document.getElementById('footer-container').innerHTML = html);
   </script>
 
-  <!-- Pricing Page Logic -->
-  <script src="/js/pricing.js" defer></script>
+  <!-- Load all JS modules (including pricing) -->
+  <script type="module" src="/js/main.js" defer></script>
 </body>
 </html>

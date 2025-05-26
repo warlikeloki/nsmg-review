@@ -1,29 +1,33 @@
 <?php
-// php/get_pricing.php
-
 header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__ . '/db_connect.php';
 
-// 1) Connect to the database
-require_once __DIR__ . '/db_connect.php';  // assumes $pdo is your PDO instance
+try {
+    // Initialize PDO
+    $pdo = new PDO($dsn, $db_user, $db_pass, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+    ]);
 
-// 2) Fetch all pricing joined with service details
-$sql = <<<SQL
+    $sql = <<<SQL
 SELECT
-  s.name         AS service,
-  s.description  AS description,
-  p.price        AS price,
-  p.unit         AS unit,
-  p.is_package   AS is_package
+  s.name        AS service,
+  s.description AS description,
+  p.price       AS price,
+  p.unit        AS unit,
+  p.is_package  AS is_package
 FROM pricing p
 JOIN services s
   ON p.service_id = s.id
 ORDER BY p.is_package DESC, s.name
 SQL;
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// 3) Return JSON
-echo json_encode($rows, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
-
+    echo json_encode($rows, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "Server error: " . $e->getMessage()]);
+}
+//--- /php/get_pricing.php (Issue #49) ---
