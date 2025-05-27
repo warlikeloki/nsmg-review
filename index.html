@@ -19,66 +19,61 @@
   <!-- CSS -->
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/layout.css" />
-  <link rel="stylesheet" href="/css/navigation.css" />
-  <link rel="stylesheet" href="/css/forms.css" />
-  <link rel="stylesheet" href="/css/media.css" />
-  <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/header.css" />
-  <link rel="stylesheet" href="/css/footer.css" />
+  <link rel="stylesheet" href="/css/navigation.css" />
   <link rel="stylesheet" href="/css/testimonials.css" />
+  <link rel="stylesheet" href="/css/mobile.css" />
+  <link rel="stylesheet" href="/css/footer.css" />
+  <!-- <link rel="stylesheet" href="/css/media.css" />  Remove if that file doesn’t exist -->
 
   <!-- JS -->
   <script type="module" src="/js/main.js" defer></script>
-
 </head>
 <body>
   <!-- Header -->
   <div id="header-container"></div>
   <script>
     fetch('/header.html')
-      .then(response => response.text())
+      .then(r => r.text())
       .then(html => document.getElementById('header-container').innerHTML = html);
   </script>
 
-<div class="page-container">
-  <!-- Left Sidebar -->
-  <aside class="sidebar left-sidebar">
-    <!-- Optional content like social links, quick menu, or brand highlights -->
-  </aside>
+  <div class="page-container">
+    <!-- Left Sidebar -->
+    <aside class="sidebar left-sidebar">
+      <!-- Optional content like social links, quick menu, or brand highlights -->
+    </aside>
 
-  <!-- Main Content -->
-  <main class="main-content" id="home">
-    <section class="hero">
-      <h1>Welcome to Neil Smith Media Group</h1>
-      <p>Professional photography, videography, and media solutions to help you stand out.</p>
-      <a href="/services.html" class="btn">Explore Our Services</a>
-    </section>
+    <!-- Main Content -->
+    <main class="main-content" id="home">
+      <section class="hero">
+        <h1>Welcome to Neil Smith Media Group</h1>
+        <p>Professional photography, videography, and media solutions to help you stand out.</p>
+        <a href="/services.html" class="btn">Explore Our Services</a>
+      </section>
 
+      <!-- Testimonials Slideshow Section -->
+      <section class="testimonials-section" id="homepage-testimonials">
+        <h2>What Our Clients Say</h2>
+        <div class="testimonial-slider">
+          <button class="testimonial-nav prev" id="testimonial-prev">&#8249;</button>
+          <div id="homepage-testimonials-container" class="testimonial-slide-wrapper"></div>
+          <button class="testimonial-nav next" id="testimonial-next">&#8250;</button>
+        </div>
+      </section>
+    </main>
 
-    <!-- Testimonials Slideshow Section -->
-<section class="testimonials-section" id="homepage-testimonials">
-  <h2>What Our Clients Say</h2>
-  <div class="testimonial-slider">
-    <button class="testimonial-nav prev" id="testimonial-prev">&#8249;</button>
-    <div id="homepage-testimonials-container" class="testimonial-slide-wrapper"></div>
-    <button class="testimonial-nav next" id="testimonial-next">&#8250;</button>
+    <!-- Right Sidebar -->
+    <aside class="sidebar right-sidebar">
+      <!-- Optional content like booking button, recent blog posts, or featured equipment -->
+    </aside>
   </div>
-</section>
-
-
-  </main>
-
-  <!-- Right Sidebar -->
-  <aside class="sidebar right-sidebar">
-    <!-- Optional content like booking button, recent blog posts, or featured equipment -->
-  </aside>
-</div>
 
   <!-- Footer -->
   <div id="footer-container"></div>
   <script>
     fetch('/footer.html')
-      .then(response => response.text())
+      .then(r => r.text())
       .then(html => document.getElementById('footer-container').innerHTML = html);
   </script>
 </body>

@@ -2,8 +2,11 @@
 // Handles Issue #47: Contact Form Integration
 
 document.addEventListener("DOMContentLoaded", () => {
-  const form   = document.getElementById("contact-form");
+  const form = document.getElementById("contact-form");
   const status = document.getElementById("form-status");
+
+  // Only proceed if form and status elements are present
+  if (!form || !status) return;
 
   form.addEventListener("submit", async e => {
     e.preventDefault();
