@@ -1,12 +1,14 @@
 // /js/modules/blog-post.js
-// Dynamically fetch and render a single blog post based on query param
+// Dynamically fetch and render a single blog post based on query param, with null checks
 
 document.addEventListener('DOMContentLoaded', async () => {
   const postContainer = document.getElementById('blog-post-content');
+  if (!postContainer) return; // guard if element not present
 
   // Utility to read ?id= from URL
   const params = new URLSearchParams(window.location.search);
-  const id = parseInt(params.get('id'), 10);
+  const idParam = params.get('id');
+  const id = parseInt(idParam, 10);
   if (isNaN(id)) {
     postContainer.innerHTML = '<p>Invalid post ID.</p>';
     return;
@@ -16,10 +18,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const response = await fetch('/php/get_posts.php');
     if (!response.ok) throw new Error(`Network error: ${response.status}`);
     const json = await response.json();
-    if (!json.success || !Array.isArray(json.data)) throw new Error('Invalid data');
+    if (!json.success || !Array.isArray(json.data)) throw new Error('Invalid data format');
 
     const posts = json.data;
-    if (!posts[id]) {
+    if (id < 0 || id >= posts.length) {
       postContainer.innerHTML = '<p>Post not found.</p>';
       return;
     }
@@ -28,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hasPrev = id > 0;
     const hasNext = id < posts.length - 1;
 
+    // Render content
     postContainer.innerHTML = `
       <a href="/blog.html" class="back-link">&larr; Back to Blog</a>
       <h1>${post.title}</h1>
@@ -39,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>
     `;
   } catch (err) {
-    console.error(err);
+    console.error('Blog post load error:', err);
     postContainer.innerHTML = '<p>Error loading post.</p>';
   }
 });

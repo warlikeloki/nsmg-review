@@ -1,8 +1,9 @@
-// /js/modules/blog.js  
-// Dynamically fetch and render blog posts on the public blog page
+// /js/modules/blog.js
+// Dynamically fetch and render blog posts on the public blog page, with null-check guards
 
 document.addEventListener("DOMContentLoaded", async () => {
   const container = document.getElementById("blog-posts-container");
+  if (!container) return; // guard if element is missing
 
   try {
     const response = await fetch("/php/get_posts.php");
@@ -31,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     `).join("");
 
   } catch (err) {
-    console.error(err);
+    console.error('Blog load error:', err);
     container.innerHTML = "<p>Unable to load blog posts at this time.</p>";
   }
 });

@@ -2,8 +2,11 @@
 // Handles Issue #47: Service Request Form Integration
 
 document.addEventListener("DOMContentLoaded", () => {
-  const form   = document.getElementById("service-request-form");
+  const form = document.getElementById("service-request-form");
   const status = document.getElementById("request-status");
+
+  // Only proceed if form and status elements are present
+  if (!form || !status) return;
 
   form.addEventListener("submit", async e => {
     e.preventDefault();
