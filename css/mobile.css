@@ -1,13 +1,14 @@
 /* mobile.css */
 
 @media (max-width: 768px) {
-  /* --- Navigation --- */
+  /* Ensure nav sits at top of viewport */
   .nav-container {
     position: relative;
   }
 
+  /* --- Hamburger Icon --- */
   .hamburger {
-    display: flex;             /* show hamburger */
+    display: flex;
     flex-direction: column;
     justify-content: space-between;
     width: 30px;
@@ -22,7 +23,6 @@
     transform: translateY(-50%);
     z-index: 1001;
   }
-
   .hamburger span {
     display: block;
     width: 100%;
@@ -31,7 +31,6 @@
     border-radius: 3px;
     transition: transform 0.3s ease, opacity 0.3s ease;
   }
-
   .hamburger.active span:nth-child(1) {
     transform: rotate(45deg) translate(5px, 5px);
   }
@@ -42,32 +41,30 @@
     transform: rotate(-45deg) translate(5px, -5px);
   }
 
-  /* --- Mobile Menu --- */
+  /* --- Mobile Nav Menu --- */
   .nav-menu {
-    display: none;            /* hidden by default */
+    display: none;
     flex-direction: column;
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
-    background-color: var(--primary-color);
-    padding: 0;
+    background: var(--primary-color);
     margin: 0;
-    list-style: none;
-    z-index: 1000;
-  }
-
-  .nav-menu.active {
-    display: block;
-    height: auto;
+    padding: 0;
     overflow: visible;
+  }
+  .nav-menu.active {
+    display: flex !important;
+  flex-direction: column;
+  height: auto !important;
+    /* allow height to grow smoothly */
   }
 
   .nav-menu li {
     width: 100%;
     text-align: center;
   }
-
   .nav-menu a {
     display: block;
     padding: 15px;
@@ -77,24 +74,29 @@
   }
   .nav-menu a:hover,
   .nav-menu a.active {
-    background-color: var(--accent-color);
-  }
+    color: var(--accent-color);      /* highlight text in your accent color */
+    font-weight: bold;               /* make it stand out */
+    border-bottom: 2px solid var(--accent-color); /* subtle underline */
+    padding-bottom: 0.25rem;         /* give the underline some breathing room */
+}
 
-  /* --- Dropdowns on Mobile --- */
+  /* --- Mobile Submenus --- */
+  /* Hide all submenus by default */
   .nav-menu .dropdown {
     display: none;
-    flex-direction: column;
-    background-color: var(--primary-color);
+    position: static;    /* ensure it flows in the menu */
+    background: var(--primary-color);
   }
+  /* Show the one we’ve toggled open */
   .nav-menu .dropdown.active {
-    display: flex;
+    display: block;
   }
   .nav-menu .dropdown li a {
     padding-left: 30px;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  /* --- Page Layout for Mobile --- */
+  /* --- Layout Adjustments --- */
   .left-sidebar,
   .right-sidebar {
     display: none;
@@ -107,7 +109,7 @@
     padding: 0;
   }
 
-  /* --- Additional Mobile Tweaks --- */
+  /* --- Misc Mobile Styles --- */
   body {
     font-size: 16px;
     line-height: 1.6;
@@ -127,5 +129,7 @@
     border-radius: 5px;
   }
   textarea { min-height: 100px; }
-}
 
+  /* Slide-down keyframe */
+
+}
