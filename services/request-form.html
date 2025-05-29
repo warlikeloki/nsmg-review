@@ -21,7 +21,12 @@
       .then(r => r.text())
       .then(html => document.getElementById('header-container').innerHTML = html);
   </script>
-
+  <!-- INJECTED PAGE CONTENT WITH SIDEBARS -->
+  <div class="page-container">
+    <!-- Left Sidebar (Issue #29) -->
+    <aside class="sidebar left-sidebar">
+      <!-- e.g. quick links, social icons, site map… -->
+    </aside>
   <main class="main-content">
     <section class="request-form-section">
       <h2>Request a Quote</h2>
@@ -62,7 +67,11 @@
       </form>
     </section>
   </main>
-
+    <!-- Right Sidebar (Issue #29) -->
+    <aside class="sidebar right-sidebar">
+      <!-- e.g. recent posts, contact widget… -->
+    </aside>
+  </div>
   <!-- FOOTER -->
   <div id="footer-container"></div>
   <script>
