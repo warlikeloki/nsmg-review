@@ -1,15 +1,18 @@
 <?php
+// php/get_pricing.php
+
+// Enable error reporting for debugging (remove in production)
 ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
 header('Content-Type: application/json; charset=utf-8');
-require_once __DIR__ . '/db_connect.php';
+
+// 1) Connect to the database
+require_once __DIR__ . '/db_connect.php';  // This file should define and initialize $pdo
 
 try {
-    // Initialize PDO
-    $pdo = new PDO($dsn, $db_user, $db_pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-    ]);
-
+    // 2) Fetch all pricing joined with service details
     $sql = <<<SQL
 SELECT
   s.name        AS service,
@@ -27,9 +30,14 @@ SQL;
     $stmt->execute();
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // 3) Return JSON
     echo json_encode($rows, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-} catch (Exception $e) {
+
+} catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(["success" => false, "message" => "Server error: " . $e->getMessage()]);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Database error: ' . $e->getMessage()
+    ]);
+    exit;
 }
-//--- /php/get_pricing.php (Issue #49) ---
