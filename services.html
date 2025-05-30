@@ -76,11 +76,7 @@
 
           const service = button.getAttribute("data-service");
 
-          // Pricing as standalone
-          if (service === 'pricing') {
-            window.location.href = '/services/pricing.html';
-            return;
-          }
+
 
           // Load other services via AJAX
 const url = service === 'request-form'
