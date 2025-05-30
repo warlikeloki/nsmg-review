@@ -1,6 +1,8 @@
+/* mobile.css */
+
 @media (max-width: 768px) {
-  /* Ensure nav container provides positioning context */
-  nav {
+  /* Ensure nav sits at top of viewport */
+  .nav-container {
     position: relative;
   }
 
@@ -11,19 +13,20 @@
     justify-content: space-between;
     width: 30px;
     height: 20px;
-    cursor: pointer;
     padding: 5px;
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    z-index: 1001;
-    background: transparent;
     border: none;
+    background: transparent;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    z-index: 1001;
   }
   .hamburger span {
     display: block;
-    height: 2px;
     width: 100%;
+    height: 2px;
     background-color: white;
     border-radius: 3px;
     transition: transform 0.3s ease, opacity 0.3s ease;
@@ -38,62 +41,66 @@
     transform: rotate(-45deg) translate(5px, -5px);
   }
 
-  /* --- Mobile Nav Menu (static flow) --- */
+  /* --- Mobile Nav Menu --- */
   .nav-menu {
     display: none;
     flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
     background: var(--primary-color);
-    width: 100%;
     margin: 0;
     padding: 0;
-    list-style: none;
+    overflow: visible;
   }
   .nav-menu.active {
-    display: flex;
+    display: flex !important;
+  flex-direction: column;
+  height: auto !important;
+    /* allow height to grow smoothly */
   }
 
-  /* Nav links styling */
   .nav-menu li {
     width: 100%;
+    text-align: center;
   }
   .nav-menu a {
     display: block;
     padding: 15px;
     color: white;
     text-decoration: none;
-    font-size: 1rem;
     transition: background-color 0.3s;
   }
   .nav-menu a:hover,
   .nav-menu a.active {
-    background-color: var(--accent-color);
-    color: white;
-  }
+    color: var(--accent-color);      /* highlight text in your accent color */
+    font-weight: bold;               /* make it stand out */
+    border-bottom: 2px solid var(--accent-color); /* subtle underline */
+    padding-bottom: 0.25rem;         /* give the underline some breathing room */
+}
 
-  /* --- Sub-menu (dropdown) --- */
+  /* --- Mobile Submenus --- */
+  /* Hide all submenus by default */
   .nav-menu .dropdown {
     display: none;
-    flex-direction: column;
+    position: static;    /* ensure it flows in the menu */
     background: var(--primary-color);
-    margin: 0;
-    padding: 0;
-    list-style: none;
   }
+  /* Show the one we’ve toggled open */
   .nav-menu .dropdown.active {
-    display: flex;
+    display: block;
   }
   .nav-menu .dropdown li a {
     padding-left: 30px;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  /* Hide sidebars on mobile */
+  /* --- Layout Adjustments --- */
   .left-sidebar,
   .right-sidebar {
     display: none;
   }
-
-  /* Stack main content vertically */
   .page-container {
     flex-direction: column;
   }
@@ -101,4 +108,28 @@
     width: 100%;
     padding: 0;
   }
+
+  /* --- Misc Mobile Styles --- */
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  h1 { font-size: 2.2em; }
+  h2 { font-size: 1.8em; }
+  img { max-width: 100%; height: auto; }
+  button, .btn {
+    padding: 12px 24px;
+    font-size: 1.1em;
+  }
+  input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  textarea { min-height: 100px; }
+
+  /* Slide-down keyframe */
+
 }

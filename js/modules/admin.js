@@ -1,20 +1,25 @@
 // /js/admin.js
+// Robust Admin Panel script with null-check guards
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Core DOM elements
   const navButtons = document.querySelectorAll('#admin-nav .admin-button');
   const content    = document.getElementById('admin-content');
   const homeElem   = document.getElementById('admin-home-content');
   const initial    = homeElem ? homeElem.outerHTML : '';
 
+  // Bail out if essential elements are missing
+  if (!navButtons.length || !content) return;
+
   // Compute base path for admin files
   const parts = window.location.pathname.split('/');
-  parts.pop(); // remove 'admin.html'
+  parts.pop(); // remove current filename
   const basePath = parts.join('/') + '/';
 
-  // —————————————————————————————
-  // Service Requests loader
+  // ——— Data loaders with null-checks ———
   function loadServiceRequests() {
     const tbody = document.querySelector('#service-requests-table tbody');
+    if (!tbody) return;
     tbody.innerHTML = "<tr><td colspan='10'>Loading...</td></tr>";
 
     fetch('/php/get_service_requests.php')
@@ -41,15 +46,13 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(err => {
         console.error(err);
-        document.querySelector('#service-requests-table tbody').innerHTML =
-          "<tr><td colspan='10'>Error loading requests.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='10'>Error loading requests.</td></tr>";
       });
   }
 
-  // —————————————————————————————
-  // Equipment loader
   function loadEquipment() {
     const tbody = document.querySelector('#equipment-table tbody');
+    if (!tbody) return;
     tbody.innerHTML = "<tr><td colspan='8'>Loading...</td></tr>";
 
     fetch('/php/get_equipment.php')
@@ -74,15 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(err => {
         console.error(err);
-        document.querySelector('#equipment-table tbody').innerHTML =
-          "<tr><td colspan='8'>Error loading equipment.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='8'>Error loading equipment.</td></tr>";
       });
   }
 
-  // —————————————————————————————
-  // Invoicing loader
   function loadInvoicing() {
     const tbody = document.querySelector('#invoices-table tbody');
+    if (!tbody) return;
     tbody.innerHTML = "<tr><td colspan='10'>Loading...</td></tr>";
 
     fetch('/php/get_invoices.php')
@@ -109,15 +110,13 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(err => {
         console.error(err);
-        document.querySelector('#invoices-table tbody').innerHTML =
-          "<tr><td colspan='10'>Error loading invoices.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='10'>Error loading invoices.</td></tr>";
       });
   }
 
-  // —————————————————————————————
-  // Accounting loader
   function loadAccounting() {
     const tbody = document.querySelector('#accounting-table tbody');
+    if (!tbody) return;
     tbody.innerHTML = "<tr><td colspan='9'>Loading...</td></tr>";
 
     fetch('/php/get_accounting.php')
@@ -143,15 +142,13 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(err => {
         console.error(err);
-        document.querySelector('#accounting-table tbody').innerHTML =
-          "<tr><td colspan='9'>Error loading entries.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='9'>Error loading entries.</td></tr>";
       });
   }
 
-  // —————————————————————————————
-  // Manage Posts loader
   function loadManagePosts() {
     const tbody = document.querySelector('#posts-table tbody');
+    if (!tbody) return;
     tbody.innerHTML = '<tr><td colspan="4">Loading…</td></tr>';
 
     fetch('/php/get_posts.php')
@@ -175,15 +172,13 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(err => {
         console.error(err);
-        document.querySelector('#posts-table tbody').innerHTML =
-          '<tr><td colspan="4">Error loading posts.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4">Error loading posts.</td></tr>';
       });
   }
 
-  // —————————————————————————————
-  // Manage Testimonials loader
   function loadManageTestimonials() {
     const tbody = document.querySelector('#testimonials-table tbody');
+    if (!tbody) return;
     tbody.innerHTML = "<tr><td colspan='2'>Loading...</td></tr>";
 
     fetch('/php/get_testimonials.php')
@@ -202,13 +197,11 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(err => {
         console.error(err);
-        document.querySelector('#testimonials-table tbody').innerHTML =
-          "<tr><td colspan='2'>Error loading testimonials.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='2'>Error loading testimonials.</td></tr>";
       });
   }
 
-  // —————————————————————————————
-  // Load a given section’s HTML and inject its <main>
+  // ——— Load arbitrary section HTML ———
   function loadSection(section) {
     if (section === 'admin-home') {
       content.innerHTML = initial;
@@ -231,8 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // —————————————————————————————
-  // Wire up navigation
+  // ——— Navigation wiring ———
   navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       navButtons.forEach(b => b.classList.remove('active'));
@@ -241,23 +233,36 @@ document.addEventListener('DOMContentLoaded', () => {
       const section = btn.dataset.section;
       loadSection(section);
 
-      if (section === 'manage-posts')       loadManagePosts();
-      if (section === 'manage-testimonials') loadManageTestimonials();
-      if (section === 'website-settings')    {/* future */}
-      if (section === 'service-requests')   loadServiceRequests();
-      if (section === 'equipment')          loadEquipment();
-      if (section === 'invoicing')          loadInvoicing();
-      if (section === 'accounting')         loadAccounting();
+      switch (section) {
+        case 'service-requests':   loadServiceRequests();   break;
+        case 'equipment':          loadEquipment();         break;
+        case 'invoicing':          loadInvoicing();         break;
+        case 'accounting':         loadAccounting();        break;
+        case 'manage-posts':       loadManagePosts();       break;
+        case 'manage-testimonials':loadManageTestimonials();break;
+        case 'website-settings':
+          loadWebsiteSettings();
+          // bind save handler
+          const form = document.getElementById('settings-form');
+          if (form) {
+            form.addEventListener('submit', e => {
+              e.preventDefault();
+              saveWebsiteSettings();
+            });
+          }
+          break;
+      }
     });
   });
 
   // Initial load
   loadSection('admin-home');
 });
-// —————————————————————————————
-// Website Settings loader & saver
+
+// ——— Website settings handlers (global scope) ———
 function loadWebsiteSettings() {
   const statusEl = document.getElementById('settings-status');
+  if (!statusEl) return;
   fetch('/php/get_settings.php')
     .then(r => r.json())
     .then(json => {
@@ -277,15 +282,14 @@ function loadWebsiteSettings() {
 
 function saveWebsiteSettings() {
   const statusEl = document.getElementById('settings-status');
+  if (!statusEl) return;
   statusEl.textContent = 'Saving…';
 
   const form = document.getElementById('settings-form');
+  if (!form) return;
   const formData = new FormData(form);
 
-  fetch('/php/update_settings.php', {
-    method: 'POST',
-    body: formData
-  })
+  fetch('/php/update_settings.php', { method: 'POST', body: formData })
     .then(r => r.json())
     .then(json => {
       if (!json.success) throw new Error(json.message);
@@ -295,18 +299,4 @@ function saveWebsiteSettings() {
       console.error(err);
       statusEl.textContent = 'Error saving settings.';
     });
-}
-
-// Hook into the admin-nav click logic (near where you handle other sections):
-// after loadSection('website-settings'):
-if (section === 'website-settings') {
-  loadWebsiteSettings();
-  // ensure we bind the submit handler once
-  const form = document.getElementById('settings-form');
-  if (form) {
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      saveWebsiteSettings();
-    });
-  }
 }
