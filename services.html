@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/header.css" />
-  <link rel="stylesheet" href="/css/footer.css" />
   <link rel="stylesheet" href="/css/navigation.css" />
   <link rel="stylesheet" href="/css/forms.css" />
+  <link rel="stylesheet" href="/css/footer.css" />
   <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/equipment.css" />
 
@@ -23,7 +23,7 @@
   <div id="header-container"></div>
   <script>
     fetch('/header.html')
-      .then(res => res.text())
+      .then(r => r.text())
       .then(html => document.getElementById('header-container').innerHTML = html);
   </script>
 
@@ -38,7 +38,6 @@
         <button class="admin-button" data-service="other-services">Other Services</button>
         <button class="admin-button" data-service="pricing">Pricing</button>
         <button class="admin-button" data-service="request-form">Request a Service</button>
-        <!-- Request Service removed; only in admin dashboard -->
       </div>
     </aside>
 
@@ -58,7 +57,7 @@
   <div id="footer-container"></div>
   <script>
     fetch('/footer.html')
-      .then(res => res.text())
+      .then(r => r.text())
       .then(html => document.getElementById('footer-container').innerHTML = html);
   </script>
 
@@ -76,40 +75,35 @@
 
           const service = button.getAttribute("data-service");
 
-
-
-          // Load other services via AJAX
-const url = service === 'request-form'
+          // Build URL for all services, including request-form
+          const url = service === 'request-form'
             ? '/services/request-form.html'
             : `/services/${service}.html`;
 
           fetch(url)
             .then(res => {
-              if (!res.ok) throw new Error('Content not found');
+              if (!res.ok) throw new Error(`Content not found: ${url}`);
               return res.text();
             })
             .then(html => {
               const parser = new DOMParser();
               const doc = parser.parseFromString(html, 'text/html');
-              const mainContent = doc.querySelector('main');
-              content.innerHTML = mainContent
-                ? mainContent.innerHTML
-                : '<p>Unable to load service content.</p>';
+              const main = doc.querySelector('main');
+              content.innerHTML = main ? main.innerHTML : '<p>Unable to load content.</p>';
 
-              // If equipment loader exists, refresh it
+              // Reload equipment if needed
               if (typeof loadEquipment === 'function') loadEquipment();
-
-              // If request form, ensure its JS runs
+              // For request form, ensure handler attaches
               if (service === 'request-form') {
-                const script = document.createElement('script');
-                script.src = '/js/service-request.js';
-                script.defer = true;
-                document.body.appendChild(script);
+                const s = document.createElement('script');
+                s.src = '/js/modules/service-request.js';
+                s.defer = true;
+                document.body.appendChild(s);
               }
             })
             .catch(err => {
               console.error(err);
-              content.innerHTML = '<p>Error loading content.</p>';
+              content.innerHTML = `<p>Error loading content: ${err.message}</p>`;
             });
         });
       });
