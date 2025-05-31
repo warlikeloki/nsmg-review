@@ -1,33 +1,35 @@
 // File: /js/modules/pricing.js
-// Option A: Table‐Based Pricing Renderer
+// Table‐based renderer that handles either `service` or `name` from the JSON.
 
 export async function loadPricing() {
-  // Get references to the <tbody> elements
   const pkgBody = document.getElementById('packages-body');
   const alaBody = document.getElementById('ala-carte-body');
-  if (!pkgBody || !alaBody) {
-    // If either table body is missing, do nothing
-    return;
-  }
+  if (!pkgBody || !alaBody) return; // If these <tbody> elements are missing, do nothing
 
   try {
     const res = await fetch('/php/get_pricing.php');
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-    // The endpoint should return a JSON array of objects
-    const items = await res.json();
+    const items = await res.json(); // Expecting an array
 
-    // Split items into packages (is_package == 1) vs à la carte (is_package == 0)
-    const packages = items.filter(i => Number(i.is_package) === 1);
-    const alaCarte = items.filter(i => Number(i.is_package) === 0);
+    // Determine which property holds the service title ("service" vs "name")
+    // We’ll check the first item:
+    const keyName = items.length > 0 && items[0].hasOwnProperty('service')
+      ? 'service'
+      : 'name';
 
-    // Populate the Packages table
+    // Split into packages vs à la carte
+    const packages   = items.filter(i => Number(i.is_package) === 1);
+    const alaCarte   = items.filter(i => Number(i.is_package) === 0);
+
+    // Helper to get either item.service or item.name
+    const getTitle = i => (i[keyName] ?? '').trim();
+
+    // Populate Packages table
     if (packages.length) {
       pkgBody.innerHTML = packages.map(item => `
         <tr>
-          <td>${item.service}</td>
+          <td>${getTitle(item)}</td>
           <td>${item.description || ''}</td>
           <td>${formatPrice(item.price, item.unit)}</td>
         </tr>
@@ -36,11 +38,11 @@ export async function loadPricing() {
       pkgBody.innerHTML = '<tr><td colspan="3">No packages available.</td></tr>';
     }
 
-    // Populate the À La Carte table
+    // Populate À La Carte table
     if (alaCarte.length) {
       alaBody.innerHTML = alaCarte.map(item => `
         <tr>
-          <td>${item.service}</td>
+          <td>${getTitle(item)}</td>
           <td>${item.description || ''}</td>
           <td>${formatPrice(item.price, item.unit)}</td>
         </tr>
@@ -57,22 +59,19 @@ export async function loadPricing() {
   }
 }
 
-// If the user visits pricing.html directly, auto‐invoke loadPricing()
+// Auto‐invoke loadPricing() when page loads (if the <tbody> exists)
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('packages-body')) {
     loadPricing();
   }
 });
 
-// Helper to format a numeric price and optional unit
 function formatPrice(price, unit) {
-  // If price is a number, format with two decimals and a leading $
   const amt = !isNaN(parseFloat(price))
     ? `$${parseFloat(price).toFixed(2)}`
     : price;
   return unit ? `${amt} ${unit}` : amt;
 }
 
-// In case you ever want to trigger from another page (e.g. Services Dashboard),
-// expose loadPricing() on window
+// Expose for potential later use (Services dashboard integration)
 window.loadPricing = loadPricing;
