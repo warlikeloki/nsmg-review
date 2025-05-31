@@ -24,11 +24,13 @@
 - **#46** Services Page Equipment Filter
 - **#49** Pricing Page Backend Hookup
 - **#51** Improve Mobile Dropdown Behavior
+- **#90** Pricing page missing sidebars and data
+- **#77** Sprint 1 Testing
+
 ---
 
 Sprint Sprint 1
-Issue #77 – Sprint 1 Testing – Priority A – Sprint Sprint 1 – In progress
-Issue #90 – Pricing page missing sidebars and data – Priority B – Sprint Sprint 1 – Ready
+COMPLETE
 
 Sprint Sprint 2
 Issue #45 – Dynamic testimonials page – Priority C – Sprint Sprint 2 – Backlog
