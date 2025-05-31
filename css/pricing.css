@@ -1,45 +1,89 @@
-/* Pricing Page Styles */
+/* ===================================
+   pricing.css – Detailed, Professional Layout
+   =================================== */
 
+/* Overall section wrapper */
 .pricing-section {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 20px;
+  padding: 2rem 1rem;
+  background-color: #fff;           /* White background for clarity */
 }
 
+/* Section headings */
 .pricing-section h2 {
-  font-size: 1.8rem;
-  margin-bottom: 12px;
-  color: var(--primary-color, #0073e6);
+  font-family: var(--font-sans);    /* Match your site’s main font */
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  color: var(--primary-color);      /* Adjust to your brand’s primary hue */
+  border-bottom: 2px solid var(--accent-color);
+  display: inline-block;
+  padding-bottom: 0.25rem;
 }
 
-/* Pricing Tables */
+/* Table container spacing */
+.pricing-section table {
+  margin-bottom: 2rem;
+}
+
+/* Base reset for tables */
 .pricing-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 40px;
+  margin: 0 auto;         /* Center in its container */
+  font-family: var(--font-sans);
+  background-color: #fafafa;
 }
 
-.pricing-table th,
-.pricing-table td {
-  border: 1px solid #ddd;
-  padding: 12px;
+/* Table header row */
+.pricing-table thead th {
+  background-color: var(--accent-color);
+  color: #ffffff;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid darken(var(--accent-color), 10%);
   text-align: left;
 }
 
-.pricing-table th {
-  background-color: var(--primary-color, #0073e6);
-  color: #ffffff;
+/* Table body cells */
+.pricing-table tbody td {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  color: var(--text-color);
 }
 
-/* Responsive: allow horizontal scroll on small screens */
+/* Zebra‐striping: every even row */
+.pricing-table tbody tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Hover highlight for rows */
+.pricing-table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Center‐aligned “No data” message */
+.pricing-table tbody td[colspan] {
+  text-align: center;
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Responsive behavior: allow horizontal scroll on narrow screens */
 @media (max-width: 768px) {
   .pricing-table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
-  .pricing-table th,
-  .pricing-table td {
-    padding: 8px;
+}
+
+/* Tighter spacing on very small screens */
+@media (max-width: 480px) {
+  .pricing-table thead th,
+  .pricing-table tbody td {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
   }
 }
