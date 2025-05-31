@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-us">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pricing · Neil Smith Media Group</title>
 
-    <!-- Favicon and App Icons -->
+  <!-- Favicon and App Icons -->
   <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml">
   <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
   <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
@@ -32,80 +32,83 @@
 </head>
 <body>
   <!-- HEADER INJECTION -->
-  <div id="header"></div>
+  <div id="header-container"></div>
+
   <div class="page-container">
     <!-- Left Sidebar -->
     <aside class="sidebar left-sidebar">
       <!-- Optional content like social links, quick menu, or brand highlights -->
     </aside>
-<main class="pricing-section main-content">
-  <section id="packages-section">
-    <h2>Packages</h2>
-    <table class="pricing-table" id="packages-table">
-      <thead>
-        <tr>
-          <th>Package</th>
-          <th>Description</th>
-          <th>Price</th>
-        </tr>
-      </thead>
-      <tbody id="packages-body">
-        <!-- JS will inject <tr><td>…</td></tr> rows here -->
-        <tr><td colspan="3">Loading prices...</td></tr>
-      </tbody>
-    </table>
-  </section>
 
-  <section id="ala-carte-section">
-    <h2>À La Carte</h2>
-    <table class="pricing-table" id="ala-carte-table">
-      <thead>
-        <tr>
-          <th>Service</th>
-          <th>Description</th>
-          <th>Rate</th>
-        </tr>
-      </thead>
-      <tbody id="ala-carte-body">
-        <!-- JS will inject rows here -->
-        <tr><td colspan="3">Loading prices...</td></tr>
-      </tbody>
-    </table>
-  </section>
-</main>
+    <!-- MAIN CONTENT -->
+    <main class="pricing-section main-content">
+      <section id="packages-section">
+        <h2>Packages</h2>
+        <table class="pricing-table" id="packages-table">
+          <thead>
+            <tr>
+              <th>Package</th>
+              <th>Description</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody id="packages-body">
+            <!-- JS will inject <tr><td>…</td></tr> rows here -->
+            <tr><td colspan="3">Loading prices...</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="ala-carte-section">
+        <h2>À La Carte</h2>
+        <table class="pricing-table" id="ala-carte-table">
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Description</th>
+              <th>Rate</th>
+            </tr>
+          </thead>
+          <tbody id="ala-carte-body">
+            <!-- JS will inject rows here -->
+            <tr><td colspan="3">Loading prices...</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
 
     <!-- Right Sidebar -->
     <aside class="sidebar right-sidebar">
       <!-- Optional content like booking button, recent blog posts, or featured equipment -->
     </aside>
   </div>
-  <!-- FOOTER INJECTION -->
-  <div id="footer"></div>
 
-  <!-- ================= HEADER & FOOTER INJECTION SCRIPT ================= -->
+  <!-- FOOTER INJECTION -->
+  <div id="footer-container"></div>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Load header.html into #header
+      // Load header.html into #header-container
       fetch('/header.html')
         .then((res) => {
           if (!res.ok) throw new Error(`Failed to load header: ${res.status}`);
           return res.text();
         })
         .then((html) => {
-          document.getElementById('header').innerHTML = html;
+          document.getElementById('header-container').innerHTML = html;
         })
         .catch((err) => {
           console.error(err);
         });
 
-      // Load footer.html into #footer
+      // Load footer.html into #footer-container
       fetch('/footer.html')
         .then((res) => {
           if (!res.ok) throw new Error(`Failed to load footer: ${res.status}`);
           return res.text();
         })
         .then((html) => {
-          document.getElementById('footer').innerHTML = html;
+          document.getElementById('footer-container').innerHTML = html;
         })
         .catch((err) => {
           console.error(err);
@@ -113,11 +116,8 @@
     });
   </script>
 
-  <!-- ================= MAIN.JS ENTRY POINT ================= -->
-  <!-- 
-    We no longer include pricing.js directly because main.js already imports it.
-    Ensure that /js/main.js has a line like: `import '/js/pricing.js';`
-  -->
+  <!-- MAIN.JS ENTRY POINT -->
+  <!-- main.js already imports /js/modules/pricing.js -->
   <script type="module" src="/js/main.js"></script>
 </body>
 </html>
