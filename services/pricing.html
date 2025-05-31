@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pricing · Neil Smith Media Group</title>
 
+    <!-- Favicon and App Icons -->
+  <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml">
+  <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
+  <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
+  <link rel="icon" type="image/png" href="/media/icons/favicon-96x96.png" sizes="96x96" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/media/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="/media/icons/site.webmanifest" />
+  <meta name="apple-mobile-web-app-title" content="NSMG" />
+  <meta name="application-name" content="Neil Smith Media Group" />
+  
   <!-- Global Styles -->
   <link rel="stylesheet" href="/css/global.css" />
 
@@ -12,6 +22,7 @@
   <link rel="stylesheet" href="/css/navigation.css" />
   <link rel="stylesheet" href="/css/header.css" />
   <link rel="stylesheet" href="/css/footer.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
 
   <!-- Page-Specific Styles -->
   <link rel="stylesheet" href="/css/pricing.css" />
@@ -22,7 +33,11 @@
 <body>
   <!-- HEADER INJECTION -->
   <div id="header"></div>
-
+  <div class="page-container">
+    <!-- Left Sidebar -->
+    <aside class="sidebar left-sidebar">
+      <!-- Optional content like social links, quick menu, or brand highlights -->
+    </aside>
   <main id="main-content">
     <h1>Our Services &amp; Pricing</h1>
 
@@ -31,7 +46,11 @@
       <p>Loading pricing…</p>
     </div>
   </main>
-
+    <!-- Right Sidebar -->
+    <aside class="sidebar right-sidebar">
+      <!-- Optional content like booking button, recent blog posts, or featured equipment -->
+    </aside>
+  </div>
   <!-- FOOTER INJECTION -->
   <div id="footer"></div>
 
