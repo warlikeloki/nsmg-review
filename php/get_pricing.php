@@ -15,15 +15,16 @@ try {
     // 2) Fetch all pricing joined with service details
     $sql = <<<SQL
 SELECT
-  s.name        AS service,
-  s.description AS description,
-  p.price       AS price,
-  p.unit        AS unit,
-  p.is_package  AS is_package
-FROM pricing p
-JOIN services s
-  ON p.service_id = s.id
-ORDER BY p.is_package DESC, s.name
+  s.id,
+  s.name,
+  s.description,
+  s.unit,
+  s.is_package,
+  p.price
+FROM services s
+JOIN pricing p ON p.service_id = s.id
+ORDER BY s.is_package, s.name;
+
 SQL;
 
     $stmt = $pdo->prepare($sql);
