@@ -14,7 +14,7 @@
   <link rel="manifest" href="/media/icons/site.webmanifest" />
   <meta name="apple-mobile-web-app-title" content="NSMG" />
   <meta name="application-name" content="Neil Smith Media Group" />
-  
+
   <!-- Global Styles -->
   <link rel="stylesheet" href="/css/global.css" />
 
@@ -38,14 +38,42 @@
     <aside class="sidebar left-sidebar">
       <!-- Optional content like social links, quick menu, or brand highlights -->
     </aside>
-  <main id="main-content">
-    <h1>Our Services &amp; Pricing</h1>
+<main class="pricing-section main-content">
+  <section id="packages-section">
+    <h2>Packages</h2>
+    <table class="pricing-table" id="packages-table">
+      <thead>
+        <tr>
+          <th>Package</th>
+          <th>Description</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody id="packages-body">
+        <!-- JS will inject <tr><td>…</td></tr> rows here -->
+        <tr><td colspan="3">Loading prices...</td></tr>
+      </tbody>
+    </table>
+  </section>
 
-    <!-- PRICING CONTAINER: JavaScript Will Populate This -->
-    <div id="pricing-container">
-      <p>Loading pricing…</p>
-    </div>
-  </main>
+  <section id="ala-carte-section">
+    <h2>À La Carte</h2>
+    <table class="pricing-table" id="ala-carte-table">
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>Description</th>
+          <th>Rate</th>
+        </tr>
+      </thead>
+      <tbody id="ala-carte-body">
+        <!-- JS will inject rows here -->
+        <tr><td colspan="3">Loading prices...</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
     <!-- Right Sidebar -->
     <aside class="sidebar right-sidebar">
       <!-- Optional content like booking button, recent blog posts, or featured equipment -->
