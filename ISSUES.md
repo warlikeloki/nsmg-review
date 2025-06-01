@@ -30,7 +30,8 @@
 ---
 
 Sprint Sprint 1
-COMPLETE
+Issue #75 – Set up custom domain neilsmith.org – Priority B – Sprint Sprint 1 – In progress
+Issue #97 – Install & Configure SSL/HTTPS – Priority None – Sprint Sprint 1 – In progress
 
 Sprint Sprint 2
 Issue #45 – Dynamic testimonials page – Priority C – Sprint Sprint 2 – Backlog
@@ -39,19 +40,19 @@ Issue #52 – Conduct Accessibility Audit – Priority B – Sprint Sprint 2 –
 Issue #53 – Add SEO Metadata & JSON-LD – Priority B – Sprint Sprint 2 – Backlog
 Issue #55 – Harden security & configuration – Priority A – Sprint Sprint 2 – Backlog
 Issue #68 – Harden SSH & Deployment Security – Priority A – Sprint Sprint 2 – Ready
-Issue #69 – Configure and Associate Elastic IP – Priority B – Sprint Sprint 2 – Backlog
-Issue #75 – Set up custom domain neilsmith.org – Priority B – Sprint Sprint 2 – Ready
 Issue #78 – Add Blog to header – Priority C – Sprint Sprint 2 – Backlog
 Issue #85 – Confirm the “Pricing” button shows the pricing tables and hides equipment sidebar – Priority B – Sprint Sprint 2 – Backlog
 Issue #86 – Enter valid data → “Thank you! Your request has been submitted.” success – Priority A – Sprint Sprint 2 – Backlog
 Issue #89 – Request Service Form bug fix – Priority A – Sprint Sprint 2 – Ready
 
 Sprint Sprint 3
+Issue #50 – Implement Gallery Keyboard & Arrow Navigation – Priority D – Sprint Sprint 3 – Backlog
 Issue #54 – Optimize performance & Caching – Priority C – Sprint Sprint 3 – Backlog
 Issue #56 – Set Up CI/CD Pipeline – Priority C – Sprint Sprint 3 – Backlog
 Issue #57 – Perform Cross-Browser QA – Priority D – Sprint Sprint 3 – Backlog
 Issue #79 – Admin access – Priority A – Sprint Sprint 3 – Backlog
 Issue #87 – Tap same parent again → its submenu collapses – Priority C – Sprint Sprint 3 – Backlog
+Issue #99 – Create Manage Services Admin Panel – Priority B – Sprint Sprint 3 – Backlog
 
 Sprint Sprint 4
 Issue #26 – Review and update global CSS variables – Priority E – Sprint Sprint 4 – Backlog
@@ -71,8 +72,4 @@ Issue #63 – PWA Offline Support – Priority X – Sprint Sprint 6 – Backlog
 Sprint Sprint 7
 Issue #64 – RSS Feed for Blog – Priority X – Sprint Sprint 7 – Backlog
 Issue #65 – Blog Categories/Tags – Priority X – Sprint Sprint 7 – Backlog
-
-Sprint Backlog
-Issue #34 – Create SQL code for tables – Priority X – Sprint Backlog – Backlog
-Issue #50 – Implement Gallery Keyboard & Arrow Navigation – Priority D – Sprint Backlog – Backlog
 

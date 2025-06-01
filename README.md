@@ -8,3 +8,6 @@ The intended domain is https://neilsmith.org
 
 The site was created by Neil Smith, beginning in 2025. It is written in HTML, CSS, & JS with PHP and SQL.
 All content of the site is property of Neil Smith and/or Neil Smith Media Group, unless otherwise annotated.
+
+to update the ISSUES.md file, use the following in powershell:
+'python update_issues.py issues.tsv ISSUES.md'
