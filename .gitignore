@@ -2,3 +2,7 @@ NeilSmith.code-workspace
 # dependencies
 node_modules/
 priceListing.md
+cypress/
+templates/
+cypress.config.js
+issues.tsv
