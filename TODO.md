@@ -254,19 +254,19 @@ Items marked **(??)** are uncertain—if not yet addressed, they remain; if alre
   - Allocate new Elastic IP in EC2  
   - Associate with instance  
   - Update `EC2_HOST` GitHub secret (or switch to domain)  
-  **Status:** Backlog (#69)
+  **Status:** Done (#69)
 
 - **Point Custom Domain to EC2**  
   - Create A record for `neilsmith.org` → Elastic IP  
   - Verify DNS propagation  
-  **Status:** Done (#75)
+  **Status:** In Progress (#75)
 
 - **Install & Configure SSL/HTTPS**  
   - Open port 443 (Security Group + UFW)  
   - Run Certbot to obtain Let’s Encrypt certificate  
   - Update Apache/Nginx config to use cert  
   - Test `https://` access  
-  **Status:** In Progress (#??)
+  **Status:** In Progress (#97)
 
 - **Move Database Credentials Out of Code**  
   - Use environment variables (e.g. `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`)  
