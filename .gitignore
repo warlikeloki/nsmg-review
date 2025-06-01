@@ -6,3 +6,4 @@ cypress/
 templates/
 cypress.config.js
 issues.tsv
+nsmg_db.sql
