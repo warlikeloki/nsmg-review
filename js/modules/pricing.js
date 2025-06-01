@@ -39,12 +39,12 @@ export async function loadPricing() {
     // Build Package rows
     if (packages.length) {
       pkgBody.innerHTML = packages.map(item => `
-        <tr>
-          <td>${item.name}</td>
-          <td>${item.description || ''}</td>
-          <td>${formatPrice(item.price, item.unit)}</td>
-        </tr>
-      `).join('');
+  <tr>
+    <td>${item.service}</td>
+    <td>${item.description || ''}</td>
+    <td>${formatPrice(item.price, item.unit)}</td>
+  </tr>
+`).join('');
     } else {
       pkgBody.innerHTML = '<tr><td colspan="3">No packages available.</td></tr>';
     }
@@ -52,12 +52,12 @@ export async function loadPricing() {
     // Build À La Carte rows
     if (alaCarte.length) {
       alaBody.innerHTML = alaCarte.map(item => `
-        <tr>
-          <td>${item.name}</td>
-          <td>${item.description || ''}</td>
-          <td>${formatPrice(item.price, item.unit)}</td>
-        </tr>
-      `).join('');
+  <tr>
+    <td>${item.service}</td>
+    <td>${item.description || ''}</td>
+    <td>${formatPrice(item.price, item.unit)}</td>
+  </tr>
+`).join('');
     } else {
       alaBody.innerHTML = '<tr><td colspan="3">No à la carte services available.</td></tr>';
     }

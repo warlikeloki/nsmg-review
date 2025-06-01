@@ -1,52 +1,60 @@
-Title	URL	Assignees	Status	Priority	Estimate	Size	Sprint
-Sprint 1 Testing	https://github.com/warlikeloki/Website/issues/77	warlikeloki	In progress	A		L	Sprint 1
-Mobile navigation collapse	https://github.com/warlikeloki/Website/issues/42	warlikeloki	Done	A			Sprint 1
-Contact and Service-request form integration	https://github.com/warlikeloki/Website/issues/47	warlikeloki	Done	A			Sprint 1
-Harden SSH & Deployment Security	https://github.com/warlikeloki/Website/issues/68	warlikeloki	Ready	A			Sprint 2
-Request Service Form bug fix	https://github.com/warlikeloki/Website/issues/89	warlikeloki	Ready	A			Sprint 2
-Harden security & configuration	https://github.com/warlikeloki/Website/issues/55	warlikeloki	Backlog	A			Sprint 2
-Enter valid data → “Thank you! Your request has been submitted.” success	https://github.com/warlikeloki/Website/issues/86	warlikeloki	Backlog	A			Sprint 2
-Admin access	https://github.com/warlikeloki/Website/issues/79	warlikeloki	Backlog	A			Sprint 3
-Services page - equipment filter	https://github.com/warlikeloki/Website/issues/46	warlikeloki	Done	B			Sprint 1
-Improve mobile dropdown behavior	https://github.com/warlikeloki/Website/issues/51	warlikeloki	Done	B			Sprint 1
-Add Main.js to all HTML templates	https://github.com/warlikeloki/Website/issues/71	warlikeloki	Done	B			Sprint 1
-Pricing page missing sidebars and data	https://github.com/warlikeloki/Website/issues/90	warlikeloki	Ready	B			Sprint 1
-Set up custom domain neilsmith.org	https://github.com/warlikeloki/Website/issues/75	warlikeloki	Ready	B			Sprint 2
-Conduct Accessibility Audit	https://github.com/warlikeloki/Website/issues/52	warlikeloki	Backlog	B			Sprint 2
-Add SEO Metadata & JSON-LD	https://github.com/warlikeloki/Website/issues/53	warlikeloki	Backlog	B			Sprint 2
-Configure and Associate Elastic IP	https://github.com/warlikeloki/Website/issues/69	warlikeloki	Backlog	B			Sprint 2
-Confirm the “Pricing” button shows the pricing tables and hides equipment sidebar	https://github.com/warlikeloki/Website/issues/85	warlikeloki	Backlog	B			Sprint 2
-Pricing page backend hookup	https://github.com/warlikeloki/Website/issues/49	warlikeloki	Done	C			Sprint 1
-Dynamic testimonials page	https://github.com/warlikeloki/Website/issues/45	warlikeloki	Backlog	C			Sprint 2
-Portfolio/Gallery Dynamic loading	https://github.com/warlikeloki/Website/issues/48	warlikeloki	Backlog	C			Sprint 2
-Add Blog to header	https://github.com/warlikeloki/Website/issues/78	warlikeloki	Backlog	C			Sprint 2
-Set Up CI/CD Pipeline	https://github.com/warlikeloki/Website/issues/56	warlikeloki	Backlog	C			Sprint 3
-Optimize performance & Caching	https://github.com/warlikeloki/Website/issues/54	warlikeloki	Backlog	C			Sprint 3
-Tap same parent again → its submenu collapses	https://github.com/warlikeloki/Website/issues/87	warlikeloki	Backlog	C			Sprint 3
-Add sidebars to all pages	https://github.com/warlikeloki/Website/issues/29	warlikeloki	Done	D			Sprint 1
-Perform Cross-Browser QA	https://github.com/warlikeloki/Website/issues/57	warlikeloki	Backlog	D			Sprint 3
-Expand Admin dashboard	https://github.com/warlikeloki/Website/issues/35	warlikeloki	Backlog	D			Sprint 4
-Implement Gallery Keyboard & Arrow Navigation	https://github.com/warlikeloki/Website/issues/50	warlikeloki	Backlog	D			
-Sitemap update	https://github.com/warlikeloki/Website/issues/43	warlikeloki	Done	E			Sprint 1
-Review and update global CSS variables	https://github.com/warlikeloki/Website/issues/26	warlikeloki	Backlog	E			Sprint 4
-Add Blog post data to populate blog page	https://github.com/warlikeloki/Website/issues/44	warlikeloki	Backlog	E			Sprint 4
-Blog pagination	https://github.com/warlikeloki/Website/issues/58	warlikeloki	Backlog	X			Sprint 5
-Blog Search & Filtering	https://github.com/warlikeloki/Website/issues/59	warlikeloki	Backlog	X			Sprint 5
-Custom Error pages 404 & 500	https://github.com/warlikeloki/Website/issues/60	warlikeloki	Backlog	X			Sprint 5
-Analytics Integration	https://github.com/warlikeloki/Website/issues/61	warlikeloki	Backlog	X			Sprint 6
-Form Spam protection	https://github.com/warlikeloki/Website/issues/62	warlikeloki	Backlog	X			Sprint 6
-PWA Offline Support	https://github.com/warlikeloki/Website/issues/63	warlikeloki	Backlog	X			Sprint 6
-Blog Categories/Tags	https://github.com/warlikeloki/Website/issues/65	warlikeloki	Backlog	X			Sprint 7
-RSS Feed for Blog	https://github.com/warlikeloki/Website/issues/64	warlikeloki	Backlog	X			Sprint 7
-Create SQL code for tables	https://github.com/warlikeloki/Website/issues/34	warlikeloki	Backlog	X		XL	
-services page equipment filter, pull from SQL, pricing page setup. Is…	https://github.com/warlikeloki/Website/pull/70	warlikeloki	Done				
-mobile menu updates to address issue Mobile navigation collapse #42	https://github.com/warlikeloki/Website/pull/72	warlikeloki	Done				
-mobile menu updates to address issue Mobile navigation collapse #42	https://github.com/warlikeloki/Website/pull/73	warlikeloki	Done				
-51 improve mobile dropdown behavior	https://github.com/warlikeloki/Website/pull/74	warlikeloki	Done				
-Updates to all pages that did not include sidebars and/or referenced …	https://github.com/warlikeloki/Website/pull/76	warlikeloki	Done				
-Sprint 1	https://github.com/warlikeloki/Website/pull/80	warlikeloki	Done				
-Correcting issues from testing via issue Sprint 1 Testing #77	https://github.com/warlikeloki/Website/pull/81	warlikeloki	Done				
-issues found during testing.	https://github.com/warlikeloki/Website/pull/82	warlikeloki	Done				
-Sprint 1	https://github.com/warlikeloki/Website/pull/83	warlikeloki	Done				
-more bugs including updates to other-services and adding pricing to h…	https://github.com/warlikeloki/Website/pull/84	warlikeloki	Done				
-pricing updates. Added markdown files for reference.	https://github.com/warlikeloki/Website/pull/88	warlikeloki	Done				
+Title	URL	Milestone	Priority	Sprint	Status
+Sitemap update	https://github.com/warlikeloki/Website/issues/43	Rev 0.1.0-beta	E	Sprint 1	Done
+Add Main.js to all HTML templates	https://github.com/warlikeloki/Website/issues/71	Rev 0.1.0-beta	B	Sprint 1	Done
+Add sidebars to all pages	https://github.com/warlikeloki/Website/issues/29	Rev 0.1.0-beta	D	Sprint 1	Done
+Create SQL code for tables	https://github.com/warlikeloki/Website/issues/34	Rev 0.1.0-beta	X		Done
+Install & Configure SSL/HTTPS	https://github.com/warlikeloki/Website/issues/97	Rev 0.2.0		Sprint 1	In progress
+Set up custom domain neilsmith.org	https://github.com/warlikeloki/Website/issues/75	Rev 0.2.0-beta	B	Sprint 1	In progress
+Harden SSH & Deployment Security	https://github.com/warlikeloki/Website/issues/68	Rev 0.2.0-beta	A	Sprint 2	Ready
+Request Service Form bug fix	https://github.com/warlikeloki/Website/issues/89	Rev 0.2.0-beta	A	Sprint 2	Ready
+Sprint 1 Testing	https://github.com/warlikeloki/Website/issues/77	Rev 0.2.0-beta	A	Sprint 1	Done
+Mobile navigation collapse	https://github.com/warlikeloki/Website/issues/42	Rev 0.2.0-beta	A	Sprint 1	Done
+Pricing page missing sidebars and data	https://github.com/warlikeloki/Website/issues/90	Rev 0.2.0-beta	B	Sprint 1	Done
+Services page - equipment filter	https://github.com/warlikeloki/Website/issues/46	Rev 0.2.0-beta	B	Sprint 1	Done
+Pricing page backend hookup	https://github.com/warlikeloki/Website/issues/49	Rev 0.2.0-beta	C	Sprint 1	Done
+Improve mobile dropdown behavior	https://github.com/warlikeloki/Website/issues/51	Rev 0.2.0-beta	B	Sprint 1	Done
+Contact and Service-request form integration	https://github.com/warlikeloki/Website/issues/47	Rev 0.2.0-beta	A	Sprint 1	Done
+Configure and Associate Elastic IP	https://github.com/warlikeloki/Website/issues/69	Rev 0.2.0-beta	B	Sprint 1	Done
+Conduct Accessibility Audit	https://github.com/warlikeloki/Website/issues/52	Rev 0.2.0-beta	B	Sprint 2	Backlog
+Add SEO Metadata & JSON-LD	https://github.com/warlikeloki/Website/issues/53	Rev 0.2.0-beta	B	Sprint 2	Backlog
+Dynamic testimonials page	https://github.com/warlikeloki/Website/issues/45	Rev 0.2.0-beta	C	Sprint 2	Backlog
+Portfolio/Gallery Dynamic loading	https://github.com/warlikeloki/Website/issues/48	Rev 0.2.0-beta	C	Sprint 2	Backlog
+Harden security & configuration	https://github.com/warlikeloki/Website/issues/55	Rev 0.2.0-beta	A	Sprint 2	Backlog
+Add Blog to header	https://github.com/warlikeloki/Website/issues/78	Rev 0.2.0-beta	C	Sprint 2	Backlog
+Confirm the “Pricing” button shows the pricing tables and hides equipment sidebar	https://github.com/warlikeloki/Website/issues/85	Rev 0.2.0-beta	B	Sprint 2	Backlog
+Enter valid data → “Thank you! Your request has been submitted.” success	https://github.com/warlikeloki/Website/issues/86	Rev 0.2.0-beta	A	Sprint 2	Backlog
+pricing updates. Added markdown files for reference.	https://github.com/warlikeloki/Website/pull/88	Rev 0.2.0-beta			Done
+pricing update and issue tracking	https://github.com/warlikeloki/Website/pull/91	Rev 0.2.0-beta			Done
+Sprint 1	https://github.com/warlikeloki/Website/pull/92	Rev 0.2.0-beta			Done
+updated pricing.js to correct name/service loading. Issue #90	https://github.com/warlikeloki/Website/pull/93	Rev 0.2.0-beta			Done
+Update pricing.js to correctly unwrap the JSON response (handling dat…	https://github.com/warlikeloki/Website/pull/94	Rev 0.2.0-beta			Done
+Set Up CI/CD Pipeline	https://github.com/warlikeloki/Website/issues/56	Rev 0.3.0-beta	C	Sprint 3	Backlog
+Implement Gallery Keyboard & Arrow Navigation	https://github.com/warlikeloki/Website/issues/50	Rev 0.3.0-beta	D	Sprint 3	Backlog
+Perform Cross-Browser QA	https://github.com/warlikeloki/Website/issues/57	Rev 0.3.0-beta	D	Sprint 3	Backlog
+Admin access	https://github.com/warlikeloki/Website/issues/79	Rev 0.3.0-beta	A	Sprint 3	Backlog
+Tap same parent again → its submenu collapses	https://github.com/warlikeloki/Website/issues/87	Rev 0.3.0-beta	C	Sprint 3	Backlog
+Create Manage Services Admin Panel	https://github.com/warlikeloki/Website/issues/99	Rev 0.3.0-beta	B	Sprint 3	Backlog
+Blog pagination	https://github.com/warlikeloki/Website/issues/58	Rev 1.0.0-beta	X	Sprint 5	Backlog
+Blog Search & Filtering	https://github.com/warlikeloki/Website/issues/59	Rev 1.0.0-beta	X	Sprint 5	Backlog
+Custom Error pages 404 & 500	https://github.com/warlikeloki/Website/issues/60	Rev 1.0.0-beta	X	Sprint 5	Backlog
+Analytics Integration	https://github.com/warlikeloki/Website/issues/61	Rev 1.0.0-beta	X	Sprint 6	Backlog
+Blog Categories/Tags	https://github.com/warlikeloki/Website/issues/65	Rev 1.0.0-beta	X	Sprint 7	Backlog
+Form Spam protection	https://github.com/warlikeloki/Website/issues/62	Rev 1.0.0-beta	X	Sprint 6	Backlog
+RSS Feed for Blog	https://github.com/warlikeloki/Website/issues/64	Rev 1.0.0-beta	X	Sprint 7	Backlog
+PWA Offline Support	https://github.com/warlikeloki/Website/issues/63	Rev 1.0.0-beta	X	Sprint 6	Backlog
+Review and update global CSS variables	https://github.com/warlikeloki/Website/issues/26	Rev 1.0.0-beta	E	Sprint 4	Backlog
+Add Blog post data to populate blog page	https://github.com/warlikeloki/Website/issues/44	Rev 1.0.0-beta	E	Sprint 4	Backlog
+Optimize performance & Caching	https://github.com/warlikeloki/Website/issues/54	Rev 1.0.0-beta	C	Sprint 3	Backlog
+Expand Admin dashboard	https://github.com/warlikeloki/Website/issues/35	Rev 1.0.0-beta	D	Sprint 4	Backlog
+services page equipment filter, pull from SQL, pricing page setup. Is…	https://github.com/warlikeloki/Website/pull/70				Done
+mobile menu updates to address issue Mobile navigation collapse #42	https://github.com/warlikeloki/Website/pull/72				Done
+mobile menu updates to address issue Mobile navigation collapse #42	https://github.com/warlikeloki/Website/pull/73				Done
+51 improve mobile dropdown behavior	https://github.com/warlikeloki/Website/pull/74				Done
+Updates to all pages that did not include sidebars and/or referenced …	https://github.com/warlikeloki/Website/pull/76				Done
+Sprint 1	https://github.com/warlikeloki/Website/pull/80				Done
+Correcting issues from testing via issue Sprint 1 Testing #77	https://github.com/warlikeloki/Website/pull/81				Done
+issues found during testing.	https://github.com/warlikeloki/Website/pull/82				Done
+Sprint 1	https://github.com/warlikeloki/Website/pull/83				Done
+more bugs including updates to other-services and adding pricing to h…	https://github.com/warlikeloki/Website/pull/84				Done
+verifying latest updates work with elastic IP.	https://github.com/warlikeloki/Website/pull/96				Done
+Sprint_1_backlog	https://github.com/warlikeloki/Website/pull/98				Done
