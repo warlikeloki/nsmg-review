@@ -7,3 +7,5 @@ templates/
 cypress.config.js
 issues.tsv
 nsmg_db.sql
+github_issues.csv
+jira_issues_ready.csv
