@@ -10,3 +10,4 @@ import './modules/portfolio.js';
 import './modules/admin.js';
 import './modules/pricing.js';
 import './modules/settings.js';
+import './modules/other-services.js';   // <- NEW 

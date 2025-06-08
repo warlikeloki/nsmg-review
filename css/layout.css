@@ -107,3 +107,45 @@ section a:hover {
   color: #fff;
   font-weight: bold;
 }
+
+/* other-services.css */
+
+/* Container around the entire services list */
+#other-services-section {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Placeholder wrapper before we inject the list */
+#other-services-container {
+  margin-top: 1rem;
+}
+
+/* The generated UL */
+.other-services-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+/* Each LI in the list */
+.other-service-item {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+/* Highlight the title in each item */
+.other-service-item strong {
+  display: block;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+  margin-bottom: 0.25rem;
+}
+
+/* The description text */
+.other-service-item span {
+  display: block;
+  color: var(--secondary-color);
+}
