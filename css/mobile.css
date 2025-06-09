@@ -27,7 +27,7 @@
     display: block;
     width: 100%;
     height: 2px;
-    background-color: white;
+    background-color: var(--text-light, white);
     border-radius: 3px;
     transition: transform 0.3s ease, opacity 0.3s ease;
   }
@@ -56,8 +56,8 @@
   }
   .nav-menu.active {
     display: flex !important;
-  flex-direction: column;
-  height: auto !important;
+    flex-direction: column;
+    height: auto !important;
     /* allow height to grow smoothly */
   }
 
@@ -68,7 +68,7 @@
   .nav-menu a {
     display: block;
     padding: 15px;
-    color: white;
+    color: var(--text-light, white);
     text-decoration: none;
     transition: background-color 0.3s;
   }
@@ -78,7 +78,7 @@
     font-weight: bold;               /* make it stand out */
     border-bottom: 2px solid var(--accent-color); /* subtle underline */
     padding-bottom: 0.25rem;         /* give the underline some breathing room */
-}
+  }
 
   /* --- Mobile Submenus --- */
   /* Hide all submenus by default */
@@ -93,7 +93,7 @@
   }
   .nav-menu .dropdown li a {
     padding-left: 30px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--mobile-dropdown-border, rgba(255, 255, 255, 0.1));
   }
 
   /* --- Layout Adjustments --- */
@@ -125,11 +125,9 @@
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: var(--border-radius, 5px);
   }
   textarea { min-height: 100px; }
-
-  /* Slide-down keyframe */
-
 }
+

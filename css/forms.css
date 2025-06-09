@@ -3,16 +3,16 @@ form {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  background: var(--background-card, #ffffff);
+  border-radius: var(--border-radius, 8px);
+  box-shadow: 0 4px 15px rgba(var(--shadow-color, 0,0,0), 0.05);
 }
 
 form label {
   display: block;
   margin-bottom: 6px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-main, #333);
   margin-top: 16px;
 }
 
@@ -21,11 +21,11 @@ form select,
 form textarea {
   width: 100%;
   padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: var(--border-radius, 6px);
   font-size: 1rem;
   margin-bottom: 12px;
-  background-color: #f9f9f9;
+  background-color: var(--background-input, #f9f9f9);
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
@@ -34,16 +34,16 @@ form select:focus,
 form textarea:focus {
   border-color: var(--primary-color, #0073e6);
   outline: none;
-  background-color: #fff;
-  box-shadow: 0 0 0 3px rgba(0, 115, 230, 0.1);
+  background-color: var(--background-card, #fff);
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb, 0, 115, 230), 0.1);
 }
 
 form button.btn {
   background-color: var(--primary-color, #0073e6);
-  color: #fff;
+  color: var(--text-light, #fff);
   padding: 12px 20px;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--border-radius, 6px);
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
@@ -74,7 +74,7 @@ form button.btn:hover {
   align-items: center;
   gap: 8px;
   font-weight: 500;
-  color: #333;
+  color: var(--text-main, #333);
 }
 
 .checkbox-group input[type="checkbox"] {
