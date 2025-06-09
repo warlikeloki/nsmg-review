@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="/css/testimonials.css" />
   <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/footer.css" />
+  <link rel="stylesheet" href="/css/homepage.css" />
   <!-- <link rel="stylesheet" href="/css/media.css" />  Remove if that file doesn’t exist -->
 
   <!-- JS -->
@@ -45,23 +46,71 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="main-content" id="home">
-      <section class="hero">
-        <h1>Welcome to Neil Smith Media Group</h1>
-        <p>Professional photography, videography, and media solutions to help you stand out.</p>
-        <a href="/services.html" class="btn">Explore Our Services</a>
-      </section>
+<main id="homepage">
+  <!-- HERO -->
+  <section id="hero" class="homepage-section">
+    <div class="hero-content">
+      <h1>Your Story. Captured. Edited. Delivered.</h1>
+      <p>Neil Smith Media Group offers photography, videography, and editing services with a focus on creativity and client satisfaction.</p>
+      <a href="/services.html" class="hero-cta">View Our Services</a>
+    </div>
+  </section>
 
-      <!-- Testimonials Slideshow Section -->
-      <section class="testimonials-section" id="homepage-testimonials">
-        <h2>What Our Clients Say</h2>
-        <div class="testimonial-slider">
-          <button class="testimonial-nav prev" id="testimonial-prev">&#8249;</button>
-          <div id="homepage-testimonials-container" class="testimonial-slide-wrapper"></div>
-          <button class="testimonial-nav next" id="testimonial-next">&#8250;</button>
-        </div>
-      </section>
-    </main>
+  <!-- SERVICES PREVIEW -->
+  <section id="services-preview" class="homepage-section">
+    <h2>Our Services</h2>
+    <div class="services-cards">
+      <!-- Dynamically loaded by JS -->
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS CAROUSEL -->
+  <section id="testimonials-carousel" class="homepage-section">
+    <h2>Testimonials</h2>
+    <div class="testimonials-slider">
+      <!-- Carousel populated by JS -->
+    </div>
+    <a href="/testimonials.html" class="testimonials-link">View All Testimonials</a>
+  </section>
+
+  <!-- PORTFOLIO PREVIEW -->
+  <section id="portfolio-preview" class="homepage-section">
+    <h2>Featured Work</h2>
+    <div class="portfolio-thumbnails">
+      <!-- Thumbnails injected by JS -->
+    </div>
+    <a href="/portfolio.html" class="portfolio-link">See More Work</a>
+  </section>
+
+  <!-- BLOG TEASER -->
+  <section id="blog-teaser" class="homepage-section">
+    <h2>Latest From Our Blog</h2>
+    <div class="blog-post-preview">
+      <!-- Latest post populated by JS -->
+    </div>
+    <a href="/blog.html" class="blog-link">Read More Posts</a>
+  </section>
+
+  <!-- ABOUT PREVIEW -->
+  <section id="about-preview" class="homepage-section">
+    <h2>About Neil Smith Media Group</h2>
+    <div class="about-content">
+      <img src="/images/nsmg-logo.png" alt="Neil Smith Media Group Logo" class="about-logo">
+      <div>
+        <p>We’re passionate about telling authentic stories through images and video. Our mission is to make every client look and feel their best on camera.</p>
+        <a href="/about-us/about.html" class="about-link">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta" class="homepage-section">
+    <h2>Ready to Get Started?</h2>
+    <a href="/contact.html" class="cta-btn">Contact Us</a>
+    <a href="/services/request-form.html" class="cta-btn secondary">Request a Quote</a>
+  </section>
+</main>
+
 
     <!-- Right Sidebar -->
     <aside class="sidebar right-sidebar">

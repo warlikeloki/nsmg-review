@@ -3,7 +3,7 @@
 /* Nav container */
 .nav-container {
   background-color: var(--primary-color);
-  color: #fff;
+  color: var(--text-light, #fff);
   padding: 0.75rem 0;
   position: sticky;
   top: 0;
@@ -36,7 +36,7 @@
 
 /* Links */
 .nav-menu a {
-  color: #fff;
+  color: var(--text-light, #fff);
   text-decoration: none;
   font-size: 1rem;
   padding: 0.5rem 0;
@@ -64,12 +64,12 @@
   position: absolute;
   top: 100%;
   left: 0;
-  background: #fff;
+  background: var(--background-card, #fff);
   color: var(--primary-color);
   min-width: 200px;
   padding: 0.5rem 0;
   border-radius: var(--border-radius);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 10px rgba(var(--shadow-color, 0,0,0), 0.2);
   z-index: 999;
 }
 
@@ -85,7 +85,7 @@
 
 .nav-menu li ul.dropdown a:hover {
   background-color: var(--primary-color);
-  color: #fff;
+  color: var(--text-light, #fff);
 }
 
 /* Mobile menu icon (hidden desktop) */
@@ -95,33 +95,7 @@
   cursor: pointer;
   background: none;
   border: none;
-  color: #fff;
+  color: var(--text-light, #fff);
 }
 
 /* === MOBILE STYLES ARE IN mobile.css === */
-/* In mobile.css, ensure you have: */
-
-/*
-.nav-menu {
-  flex-direction: column;
-  background: var(--primary-color);
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  display: none;            <-- hidden by default
-  padding: 1rem 0;
-}
-
-.nav-menu.open {
-  display: flex;           <-- shown when `.open` is toggled
-}
-
-.nav-menu li ul.dropdown.open {
-  display: block;           <-- sub-menu open state
-}
-
-#mobile-menu-icon {
-  display: block;          <-- show toggle on mobile
-}
-*/

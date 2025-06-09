@@ -5,15 +5,15 @@
 /* Overall section wrapper */
 .pricing-section {
   padding: 2rem 1rem;
-  background-color: #fff;           /* White background for clarity */
+  background-color: var(--background-card, #fff);
 }
 
 /* Section headings */
 .pricing-section h2 {
-  font-family: var(--font-sans);    /* Match your site’s main font */
+  font-family: var(--font-sans, Arial, sans-serif);
   font-size: 1.75rem;
   margin-bottom: 1rem;
-  color: var(--primary-color);      /* Adjust to your brand’s primary hue */
+  color: var(--primary-color);
   border-bottom: 2px solid var(--accent-color);
   display: inline-block;
   padding-bottom: 0.25rem;
@@ -28,46 +28,46 @@
 .pricing-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 0 auto;         /* Center in its container */
-  font-family: var(--font-sans);
-  background-color: #fafafa;
+  margin: 0 auto;
+  font-family: var(--font-sans, Arial, sans-serif);
+  background-color: var(--background-table, #fafafa);
 }
 
 /* Table header row */
 .pricing-table thead th {
   background-color: var(--accent-color);
-  color: #ffffff;
+  color: var(--text-light, #ffffff);
   text-transform: uppercase;
   font-size: 0.9rem;
   letter-spacing: 0.05em;
   padding: 0.75rem 1rem;
-  border-bottom: 2px solid darken(var(--accent-color), 10%);
+  border-bottom: 2px solid var(--accent-color-dark, #20865b);
   text-align: left;
 }
 
 /* Table body cells */
 .pricing-table tbody td {
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--table-border, rgba(0, 0, 0, 0.08));
   padding: 0.75rem 1rem;
   font-size: 0.95rem;
-  color: var(--text-color);
+  color: var(--text-main, #333);
 }
 
 /* Zebra‐striping: every even row */
 .pricing-table tbody tr:nth-child(even) {
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: var(--table-zebra, rgba(0, 0, 0, 0.02));
 }
 
 /* Hover highlight for rows */
 .pricing-table tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--table-hover, rgba(0, 0, 0, 0.05));
 }
 
 /* Center‐aligned “No data” message */
 .pricing-table tbody td[colspan] {
   text-align: center;
   font-style: italic;
-  color: rgba(0, 0, 0, 0.6);
+  color: var(--table-muted, rgba(0, 0, 0, 0.6));
 }
 
 /* Responsive behavior: allow horizontal scroll on narrow screens */

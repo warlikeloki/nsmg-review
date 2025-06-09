@@ -1,9 +1,9 @@
 /* Shared Section Styling */
 .testimonials-section {
     padding: 60px 20px;
-    background-color: #f9f9f9;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
+    background-color: var(--background-main, #f9f9f9);
+    border-top: 1px solid var(--border-color, #ddd);
+    border-bottom: 1px solid var(--border-color, #ddd);
     text-align: center;
 }
 
@@ -35,9 +35,9 @@
 
 #homepage-testimonials .testimonial-slide {
     display: none;
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    background-color: var(--background-card, #ffffff);
+    border-radius: var(--border-radius, 10px);
+    box-shadow: 0 4px 20px rgba(var(--shadow-color, 0,0,0), 0.05);
     padding: 25px;
     text-align: left;
     transition: all 0.3s ease;
@@ -50,12 +50,12 @@
 
 #homepage-testimonials .testimonial-slide.view-all {
     background-color: var(--primary-color);
-    color: #ffffff;
+    color: var(--text-light, #ffffff);
     text-align: center;
 }
 
 #homepage-testimonials .view-all-link {
-    color: #ffffff;
+    color: var(--text-light, #ffffff);
     text-decoration: none;
     font-size: 1.2rem;
     font-weight: bold;
@@ -63,22 +63,22 @@
 
 #homepage-testimonials .testimonial-nav {
     background-color: var(--primary-color);
-    color: #ffffff;
+    color: var(--text-light, #ffffff);
     border: none;
     padding: 10px 15px;
-    border-radius: 5px;
+    border-radius: var(--border-radius, 5px);
     font-size: 1.5rem;
     cursor: pointer;
     margin: 0 10px;
 }
 
 #homepage-testimonials .testimonial-nav:hover {
-    background-color: #005bb5;
+    background-color: var(--accent-hover-color, #005bb5);
 }
 
 #homepage-testimonials .testimonial-message {
     font-style: italic;
-    color: #555;
+    color: var(--text-secondary, #555);
     margin-bottom: 15px;
     line-height: 1.6;
 }
@@ -102,9 +102,9 @@
 }
 
 .testimonial-card {
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    background-color: var(--background-card, #ffffff);
+    border-radius: var(--border-radius, 10px);
+    box-shadow: 0 4px 20px rgba(var(--shadow-color, 0,0,0), 0.05);
     max-width: 300px;
     padding: 25px;
     text-align: left;
@@ -114,12 +114,12 @@
 
 .testimonial-card:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 30px rgba(var(--shadow-color, 0,0,0), 0.1);
 }
 
 .testimonial-message {
     font-style: italic;
-    color: #555;
+    color: var(--text-secondary, #555);
     margin-bottom: 20px;
     line-height: 1.6;
 }
@@ -133,10 +133,10 @@
 
 .read-more {
     background-color: var(--primary-color);
-    color: #ffffff;
+    color: var(--text-light, #ffffff);
     border: none;
     padding: 8px 16px;
-    border-radius: 5px;
+    border-radius: var(--border-radius, 5px);
     cursor: pointer;
     font-size: 0.9rem;
     transition: background-color 0.3s;
@@ -144,5 +144,5 @@
 }
 
 .read-more:hover {
-    background-color: #005bb5;
+    background-color: var(--accent-hover-color, #005bb5);
 }
