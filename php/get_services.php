@@ -8,8 +8,9 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/db_connect.php'; // Adjust path if needed
 
 // Limit parameter with safety check
-$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 6;
-if ($limit < 1 || $limit > 20) $limit = 6;
+$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+if ($limit < 1 || $limit > 20) $limit = 10;
+
 
 try {
     // Only select services where active = 1

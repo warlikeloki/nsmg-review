@@ -3,25 +3,26 @@
 // Only run on the homepage
 if (document.getElementById('homepage')) {
   // 1. Load Services Preview
-  fetch('/php/get_services.php?limit=4')
-    .then(r => r.json())
-    .then(({ success, data }) => {
-      if (success && Array.isArray(data)) {
-        const container = document.querySelector('.services-cards');
-        container.innerHTML = data.map(service => `
-          <div class="service-card">
-            <img src="${service.icon || '/images/default-service.png'}" alt="${service.name} Icon" class="service-icon">
-            <h3>${service.name}</h3>
-            <p>${service.description}</p>
-            <a href="/services.html#${service.name.toLowerCase().replace(/\s/g, '-')}" class="service-link">Learn More</a>
-          </div>
-        `).join('');
-      }
-    })
-    .catch(() => {
-      document.querySelector('.services-cards').innerHTML =
-        `<div>Service info unavailable right now.</div>`;
-    });
+fetch('/php/get_services.php?limit=10')
+  .then(r => r.json())
+  .then(({ success, data }) => {
+    if (success && Array.isArray(data)) {
+      const container = document.querySelector('.services-cards');
+      container.innerHTML = data.map(service => `
+        <div class="service-card">
+          <img src="${service.icon || '/images/default-service.png'}" alt="${service.name} Icon" class="service-icon">
+          <h3>${service.name}</h3>
+          <p>${service.description}</p>
+          <a href="/services.html#${service.name.toLowerCase().replace(/\s/g, '-')}" class="service-link">Learn More</a>
+        </div>
+      `).join('');
+    }
+  })
+  .catch(() => {
+    document.querySelector('.services-cards').innerHTML =
+      `<div>Service info unavailable right now.</div>`;
+  });
+
 
   // 2. Load Testimonials Carousel
   fetch('/php/get_testimonials.php?limit=5')
