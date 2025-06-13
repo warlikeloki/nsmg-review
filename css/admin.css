@@ -1,6 +1,6 @@
 /* Admin Page Styles */
 body {
-    background-color: #f9f9f9;
+    background-color: var(--background-main, #f9f9f9);
     font-family: Arial, sans-serif;
     margin: 0;
 }
@@ -16,19 +16,19 @@ body {
 
 /* Sidebar */
 .sidebar {
-    background-color: #333;
-    color: #ffffff;
+    background-color: var(--primary-color, #333);
+    color: var(--text-light, #ffffff);
     width: 250px;
     padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius, 8px);
+    box-shadow: 0 4px 20px rgba(var(--shadow-color, 0,0,0), 0.1);
 }
 
 .sidebar h2 {
-    color: #ffffff;
+    color: var(--text-light, #ffffff);
     font-size: 1.5rem;
     margin-bottom: 1rem;
-    border-bottom: 2px solid #0073e6;
+    border-bottom: 2px solid var(--accent-color, #0073e6);
     padding-bottom: 0.5rem;
 }
 
@@ -44,49 +44,49 @@ body {
 }
 
 #admin-nav ul li a {
-    color: #ffffff;
+    color: var(--text-light, #ffffff);
     text-decoration: none;
     font-size: 1rem;
     font-weight: bold;
     padding: 0.75rem 1rem;
     display: block;
-    border-radius: 5px;
+    border-radius: var(--border-radius, 5px);
     transition: background-color 0.3s, color 0.3s;
-    background-color: #444;
+    background-color: var(--secondary-color, #444);
 }
 
 #admin-nav ul li a.active,
 #admin-nav ul li a:hover {
-    background-color: #0073e6;
-    color: #ffffff;
+    background-color: var(--accent-color, #0073e6);
+    color: var(--text-light, #ffffff);
 }
 
 /* Main Content */
 .main-content {
     flex-grow: 1;
-    background-color: #ffffff;
+    background-color: var(--background-card, #ffffff);
     margin-left: 20px;
-    border-radius: 8px;
+    border-radius: var(--border-radius, 8px);
     padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(var(--shadow-color, 0,0,0), 0.05);
 }
 
 /* Page Titles */
 .main-content h1 {
-    color: #333333;
+    color: var(--text-main, #333333);
     font-size: 2rem;
     margin-bottom: 1.5rem;
-    border-bottom: 2px solid #0073e6;
+    border-bottom: 2px solid var(--accent-color, #0073e6);
     padding-bottom: 0.5rem;
 }
 
 /* List Containers */
 .list-item {
-    background-color: #f4f4f4;
+    background-color: var(--background-main, #f4f4f4);
     margin-bottom: 1rem;
     padding: 1rem;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: var(--border-radius, 4px);
+    box-shadow: 0 2px 8px rgba(var(--shadow-color, 0,0,0), 0.05);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -94,24 +94,24 @@ body {
 }
 
 .list-item:hover {
-    background-color: #e0e0e0;
+    background-color: var(--background-hover, #e0e0e0);
 }
 
 /* List Item Titles */
 .list-item h3 {
     margin: 0;
     font-size: 1.25rem;
-    color: #333333;
+    color: var(--text-main, #333333);
     flex-grow: 1;
 }
 
 /* List Item Buttons */
 .list-item button {
-    background-color: #cc0000;
-    color: #ffffff;
+    background-color: var(--danger-color, #cc0000);
+    color: var(--text-light, #ffffff);
     border: none;
     padding: 0.5rem 1rem;
-    border-radius: 4px;
+    border-radius: var(--border-radius, 4px);
     cursor: pointer;
     font-size: 0.9rem;
     margin-left: 0.5rem;
@@ -119,17 +119,17 @@ body {
 }
 
 .list-item button:hover {
-    background-color: #990000;
+    background-color: var(--danger-hover-color, #990000);
 }
 
 /* Add Button */
 button#add-post,
 button#add-testimonial {
-    background-color: #0073e6;
-    color: #ffffff;
+    background-color: var(--accent-color, #0073e6);
+    color: var(--text-light, #ffffff);
     border: none;
     padding: 0.75rem 1.5rem;
-    border-radius: 4px;
+    border-radius: var(--border-radius, 4px);
     cursor: pointer;
     font-size: 1rem;
     margin-bottom: 1.5rem;
@@ -138,7 +138,7 @@ button#add-testimonial {
 
 button#add-post:hover,
 button#add-testimonial:hover {
-    background-color: #005bb5;
+    background-color: var(--accent-hover-color, #005bb5);
 }
 
 /* Form Styles */
@@ -151,14 +151,14 @@ form {
 
 label {
     font-weight: bold;
-    color: #333333;
+    color: var(--text-main, #333333);
 }
 
 input[type="text"],
 textarea {
     padding: 0.75rem;
-    border: 1px solid #dddddd;
-    border-radius: 4px;
+    border: 1px solid var(--border-color, #dddddd);
+    border-radius: var(--border-radius, 4px);
     font-size: 1rem;
     width: 100%;
     max-width: 600px;
@@ -167,24 +167,24 @@ textarea {
 
 input[type="text"]:focus,
 textarea:focus {
-    border-color: #0073e6;
+    border-color: var(--accent-color, #0073e6);
     outline: none;
 }
 
 /* Form Button */
 button[type="submit"] {
-    background-color: #0073e6;
-    color: #ffffff;
+    background-color: var(--accent-color, #0073e6);
+    color: var(--text-light, #ffffff);
     border: none;
     padding: 0.75rem 1.5rem;
-    border-radius: 4px;
+    border-radius: var(--border-radius, 4px);
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.3s;
 }
 
 button[type="submit"]:hover {
-    background-color: #005bb5;
+    background-color: var(--accent-hover-color, #005bb5);
 }
 
 /* Responsive Styles */
@@ -198,12 +198,12 @@ button[type="submit"]:hover {
     .sidebar {
         width: 100%;
         margin-bottom: 1rem;
-        border-radius: 8px;
+        border-radius: var(--border-radius, 8px);
     }
 
     .main-content {
         margin-left: 0;
-        border-radius: 8px;
+        border-radius: var(--border-radius, 8px);
     }
 
     #admin-nav ul li a {
@@ -213,7 +213,7 @@ button[type="submit"]:hover {
 }
 
 .admin-button.active {
-  background-color: var(--accent-color, #39abfd);
-  color: #fff;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+    background-color: var(--accent-color, #39abfd);
+    color: var(--text-light, #fff);
+    box-shadow: 0 0 6px rgba(var(--shadow-color, 0,0,0), 0.2);
 }

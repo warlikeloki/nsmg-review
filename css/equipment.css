@@ -8,23 +8,23 @@
 }
 
 .equipment-ul li {
-  background-color: #f9f9f9;
+  background-color: var(--background-card, #f9f9f9);
   padding: 10px 15px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
+  border-radius: var(--border-radius, 6px);
+  border: 1px solid var(--border-color, #ddd);
   font-size: 1rem;
-  color: #333;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  color: var(--text-main, #333);
+  box-shadow: 0 1px 3px rgba(var(--shadow-color, 0,0,0), 0.05);
 }
 
 .equipment-item {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  background-color: var(--background-card, #f9f9f9);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: var(--border-radius, 6px);
   padding: 12px 15px;
   font-size: 1rem;
-  color: #333;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  color: var(--text-main, #333);
+  box-shadow: 0 1px 3px rgba(var(--shadow-color, 0,0,0), 0.05);
   cursor: pointer;
   transition: background-color 0.2s;
   display: flex;
@@ -33,13 +33,13 @@
 }
 
 .equipment-item:hover {
-  background-color: #f0f0f0;
+  background-color: var(--background-hover, #f0f0f0);
 }
 
 .item-description {
   display: none;
   font-size: 0.95rem;
-  color: #555;
+  color: var(--text-secondary, #555);
 }
 
 .equipment-item.expanded .item-description {
