@@ -351,3 +351,194 @@ Items marked **(??)** are uncertain—if not yet addressed, they remain; if alre
 - If you confirm that an item still needs work, replace “(??)” with its current status.  
 
 Use this as your single source of truth for all outstanding work on the NSMG website. Keep it updated as issues are closed or new tasks arise.
+
+# To Do List
+
+## ✔️ Completed
+- [x] Scaffold `cypress` folder structure (`cypress/e2e`, `cypress/fixtures`, `cypress/plugins`, `cypress/support`).  
+- [x] Create `cypress.json` with proper `baseUrl` and e2e config.  
+- [x] Create `cypress/support/index.js` and `cypress/plugins/index.js`.  
+- [x] Add a sample spec (`sample_spec.cy.js`) to verify Cypress installation.  
+- [x] Save all Cypress config and support files.
+
+## ⏳ Pending
+
+### Cypress Setup
+- [ ] Create real Cypress spec files under `cypress/e2e` (with `.cy.js` suffix):
+  - `header_navigation.cy.js`
+  - `mobile_nav.cy.js`
+  - `contact_form.cy.js`
+  - `services_dashboard.cy.js`
+  - `pricing_table.cy.js`
+  - `blog_page.cy.js`
+  - `testimonials.cy.js`
+  - `pricing_api.cy.js`
+  - `equipment_api.cy.js`
+  - `blog_api.cy.js`
+  - _(optional)_ `a11y_spec.cy.js`  
+- [ ] Update `cypress.json` or `cypress.config.js` specPattern to `"cypress/e2e/**/*.cy.js"`.  
+- [ ] Run and verify all real Cypress specs against the local server.
+
+### Local Server Setup (XAMPP)
+- [ ] Stop Apache in XAMPP Control Panel.  
+- [ ] Backup `httpd.conf` and `httpd-vhosts.conf`.  
+- [ ] Configure Apache to serve the project:
+  - **Option A:** Change `DocumentRoot` to `E:/Website`.  
+  - **Option B:** Set up a VirtualHost (`mysite.local`) pointing to `E:/Website`.  
+- [ ] _(If Option B)_ Map `mysite.local` → `127.0.0.1` in Windows `hosts` file.  
+- [ ] Restart Apache and verify site at `http://localhost/` or `http://mysite.local/`.
+
+### Database Sync
+- [ ] Export live MySQL database to `my_live_db.sql` (phpMyAdmin or `mysqldump`).  
+- [ ] Create local database `my_live_db` in XAMPP’s phpMyAdmin.  
+- [ ] Import the SQL dump into the local database (phpMyAdmin Import or CLI).  
+- [ ] Verify tables and data in the local database.  
+- [ ] Update `db_connect.php` to use:
+  ```php
+  $host     = 'localhost';
+  $db_name  = 'my_live_db';
+  $db_user  = 'root';
+  $db_pass  = '';
+
+# ✅ Chat-Based To-Do List — June 7, 2025
+
+---
+
+## ✅ Completed Items
+
+- [x] Installed GitHub CLI (`gh`) and authenticated access.
+- [x] Exported all GitHub Issues to CSV using PowerShell and `gh` CLI.
+- [x] Converted GitHub issues to Jira-importable CSV format.
+- [x] Imported issues into Jira via External System Import.
+- [x] Generated new Sprint 2 Testing Issue: NSM-72.
+- [x] Converted and matched old GitHub issue numbers with new Jira issue keys.
+- [x] Updated `ISSUES.md` to reflect Jira issue keys instead of old GitHub numbers.
+
+---
+
+## 📌 In Progress / Follow-up Items
+
+- [ ] Update `ISSUES.md` with new entries as future Jira issues are added.
+- [ ] Begin final QA review of all Sprint 2 issues under NSM-72.
+- [ ] Finalize `Sprint 2` Jira issues and update their status once verified.
+- [ ] (Optional) Export or sync updated Jira issue keys back into `TODO.md` for alignment with markdown-based tracking.
+
+---
+
+## 🗂 Related Files Created/Updated
+
+- `github_issues.csv` — Original GitHub export
+- `jira_issues_ready.csv` — Reformatted for Jira import
+- `ISSUES_updated.md` — Rewritten to use NSM Jira keys instead of GitHub numbers
+
+Let me know if you'd like me to:
+- Push the updated `ISSUES.md` back to your repository
+- Update the main `TODO.md` based on Jira statuses
+- Prepare a Sprint 3 Testing issue template
+
+# Homepage Redesign – Consolidated TO DO List
+
+## ✅ Completed
+
+- Decided on a modern homepage structure and user flow
+- Created new variable-based color palette for :root (pending full conversion in CSS)
+- Built HTML outline for all homepage sections (hero, services, testimonials, portfolio, blog, about, CTA)
+- Added homepage-specific section/class names for modular JS and CSS
+- Developed `/js/modules/homepage.js` with dynamic content loading for all key homepage sections
+- Provided full, modern, variable-based CSS for polished homepage cards (services, testimonials, portfolio, buttons, etc.)
+- Established clear plan for modular styling and theming going forward
+
+---
+
+## ⏳ In Progress
+
+- **NSM-75 – Homepage: Services Not Displaying**  
+  Debug why homepage services section is not showing content; check JS fetch, backend endpoint, and data mapping.
+
+- Migrate all existing hardcoded colors in CSS (homepage and sitewide) to use the new :root variables for brand, background, text, and button colors.
+- Continue testing homepage dynamic JS modules to ensure testimonials, portfolio, and blog posts appear as expected.
+- Adjust `/js/modules/homepage.js` and homepage HTML as needed for API/data structure changes.
+
+---
+
+## 🔜 To Do
+
+- Add or update CSS classes (e.g., `.service-card`, `.testimonial-card`, `.portfolio-thumb`) in `/css/homepage.css` to use only color variables.
+- Add (or enhance) basic animation/slider controls for the testimonials carousel (optional polish).
+- Create fallback/loading state UI for homepage sections while fetch requests are pending.
+- Review and update meta description and accessibility tags on homepage for SEO.
+- Fully test on mobile—adjust flex/grid settings if needed for services, testimonials, and portfolio sections.
+- Prepare for future theming or palette changes by centralizing all color and style variables.
+
+---
+
+## 🗂 Reference Jira/GitHub Issues
+
+- NSM-22: Homepage Content Structure and HTML Layout (Complete)
+- NSM-23: Homepage Dynamic Content Modules and Styling (In Progress)
+- NSM-75: Homepage: Services Not Displaying (In Progress)
+
+# Website PowerShell Utility Scripts – TO DO List (from Chat)
+
+## ✅ Completed
+
+- [x] Confirmed use of CSS color variables across all CSS files.
+- [x] Investigated why hero text color was dark (resolved CSS variable and selector conflict).
+- [x] Confirmed `images.css` is not used anywhere in current HTML.
+- [x] Created, discussed, and debugged various PowerShell utility scripts:
+    - [x] `find-unused-css.ps1`
+    - [x] Basic script for printing all HTML files from `/scripts/` folder
+    - [x] Confirmed correct way to run PowerShell scripts from project root or `/scripts/`
+- [x] Excluded specific folders (`node_modules`, `cypress`, `ranked-choice`, `scripts`) in `find-unused-js.ps1`
+- [x] Successfully ran PowerShell scripts with correct relative paths.
+
+---
+
+## 🔲 In Progress / To Do
+
+- [ ] Revisit and debug `count-classes-ids.ps1` script (table of classes/IDs used in HTML/CSS).
+- [ ] Add more recommended utility scripts for web project maintenance.
+- [ ] Document all custom scripts in a markdown reference for offline use.
+- [ ] (Optional) Expand scripts to handle:
+    - [ ] Excluding additional folders as needed
+    - [ ] Checking JS imports/require statements for extensions and relative paths
+    - [ ] Improved accuracy for “used” assets (e.g., referenced only in JS modules)
+- [ ] Add more scripts by request (e.g., batch kebab-case renamer, file type audit, modified-in-X-days, etc.).
+- [ ] Organize `/scripts/` folder and maintain script usage/readme documentation.
+
+# NSMG Website Troubleshooting & Improvements TO DO (from this Chat)
+
+---
+
+## ✅ Completed
+
+- [x] Verified and fixed Apache/XAMPP virtual host configuration to use `nsmg.local`
+- [x] Confirmed `hosts` file entry and tested custom local domain
+- [x] Identified missing `/php/get_services.php` file as cause of 404
+- [x] Created/updated `get_services.php` to fetch data from MySQL, using `db_connect.php`
+- [x] Modified SQL query in `get_services.php` to only show `active` services
+- [x] Set default `limit` in `get_services.php` to 10
+- [x] Confirmed PHP endpoint returns correct number of items in browser
+- [x] Located hardcoded limit in homepage JS fetch (`/js/modules/homepage.js`)
+- [x] Updated homepage JS fetch to request desired number of services (e.g. 10)
+- [x] Verified that increasing the limit in JS correctly displays more services on the homepage
+
+---
+
+## ⏳ In Progress / Outstanding
+
+- [ ] Check for and update similar hardcoded limits in other homepage modules (e.g., testimonials, portfolio, blog, etc.), if needed
+- [ ] Create or update `/php/get_testimonials.php` and other missing backend endpoints, as needed
+- [ ] Review and refactor JavaScript to avoid hardcoding limits in multiple places (consider using a variable or config)
+- [ ] Test all homepage dynamic sections (services, testimonials, portfolio, blog) to ensure they load correct data/amounts
+- [ ] Review all AJAX fetch calls and ensure error handling is user-friendly
+- [ ] Document database schema and API endpoints for future maintenance
+- [ ] Clean up temporary debugging/error reporting lines in production (e.g., `ini_set('display_errors', 1);`)
+
+---
+
+## 📝 Notes
+
+- Default limits can be controlled in both the frontend JS and backend PHP as needed for flexibility.
+- Any section still missing or showing incomplete data should be checked for matching endpoint, file path, and database/table data.
+- Continue using browser dev tools (Network & Console tabs) for fast troubleshooting.
