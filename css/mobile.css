@@ -1,6 +1,42 @@
 /* mobile.css */
 
+.services-toggle {
+  display: none;
+}
+
 @media (max-width: 768px) {
+  /* NSM-85: Mobile Services Dashboard Toggle */
+  .services-toggle {
+    display: block;
+    width: 90%;
+    margin: 1rem auto;
+    text-align: center;
+  }
+
+  /* Hide the sidebar nav by default on mobile */
+  #services-nav {
+    display: none;
+    position: absolute;
+    top: 3.5rem;         /* just below the toggle */
+    left: 0;
+    right: 0;
+    background: var(--primary-color);
+    padding: 1rem 0.5rem;
+    z-index: 1000;
+  }
+
+  /* Show when toggled */
+  #services-nav.active {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Ensure buttons fill width and stack */
+  #services-nav .admin-button {
+    width: 100%;
+    margin: 0.25rem 0;
+  }
+
   /* Ensure nav sits at top of viewport */
   .nav-container {
     position: relative;
@@ -97,7 +133,6 @@
   }
 
   /* --- Layout Adjustments --- */
-  .left-sidebar,
   .right-sidebar {
     display: none;
   }
@@ -150,3 +185,4 @@
     font-size: 1rem; /* restore link text size */
   }
 }
+

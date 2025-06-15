@@ -14,4 +14,4 @@ import './modules/other-services.js';   // <- NEW
 if (document.getElementById('homepage')) {
   import('./modules/homepage.js');   // <— added Issue NSM-23 NSM-22
 }
-    
+import './modules/services-nav.js';    
