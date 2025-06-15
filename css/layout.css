@@ -54,7 +54,7 @@ section a:hover {
 /* Media Queries */
 @media (max-width: 768px) {
   section {
-      padding: 1.5rem 0.75rem;
+    padding: 1.5rem 0.75rem;
   }
 }
 
@@ -78,6 +78,7 @@ section a:hover {
   max-width: 100%;
 }
 
+/* Services Dashboard nav (desktop & admin) */
 #services-nav {
   display: flex;
   flex-direction: column;
@@ -148,4 +149,78 @@ section a:hover {
 .other-service-item span {
   display: block;
   color: var(--secondary-color);
+}
+
+/* Inline accordion for Our Services */
+/* Ensure the service cards render in a 2×2 grid on desktop */
+.services-accordion {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+/* Fallback to single column on narrow screens */
+@media (max-width: 600px) {
+  .services-accordion {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Individual Service Card */
+.service-card {
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: var(--border-radius, 8px);
+  padding: 1rem;
+}
+
+/* Service Title Spacing */
+.service-card h3 {
+  margin-bottom: 0.5rem;
+}
+
+/* Learn More Button */
+.accordion-toggle {
+  display: inline-block;
+  margin-bottom: 1rem;
+  background-color: var(--accent-color);
+  color: var(--text-light, #fff);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius, 4px);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: transform 0.3s ease;
+}
+
+/* Arrow Indicator */
+.accordion-toggle::after {
+  content: " ▼";
+  display: inline-block;
+  margin-left: 0.25rem;
+  transition: transform 0.3s ease;
+}
+
+/* Expanded State */
+.accordion-toggle[aria-expanded="true"]::after {
+  transform: rotate(-180deg);
+}
+
+/* Subservices List */
+.subservices {
+  list-style: none;
+  margin: 0.75rem 0 0 1rem;
+  padding: 0;
+}
+
+.subservices li {
+  margin-bottom: 0.4rem;
+}
+
+.subservices a {
+  text-decoration: none;
+  color: var(--text-color, #333);
+}
+
+.subservices a:hover {
+  text-decoration: underline;
 }
