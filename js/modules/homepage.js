@@ -44,22 +44,22 @@ fetch('/php/get_services.php?limit=10')
     });
 
   // 3. Load Portfolio Preview
-  fetch('/php/get_portfolio.php?limit=3')
-    .then(r => r.json())
-    .then(({ success, data }) => {
-      if (success && Array.isArray(data)) {
-        const thumbs = document.querySelector('.portfolio-thumbnails');
-        thumbs.innerHTML = data.map(item => `
-          <a href="/portfolio.html#${item.id}" class="portfolio-thumb">
-            <img src="${item.image}" alt="${item.title || 'Portfolio item'}">
-          </a>
-        `).join('');
-      }
-    })
-    .catch(() => {
-      document.querySelector('.portfolio-thumbnails').innerHTML =
-        `<div>Portfolio preview unavailable.</div>`;
-    });
+  //fetch('/php/get_portfolio.php?limit=3')
+  //  .then(r => r.json())
+  //  .then(({ success, data }) => {
+  //    if (success && Array.isArray(data)) {
+  //      const thumbs = document.querySelector('.portfolio-thumbnails');
+  //      thumbs.innerHTML = data.map(item => `
+  //        <a href="/portfolio.html#${item.id}" class="portfolio-thumb">
+  //          <img src="${item.image}" alt="${item.title || 'Portfolio item'}">
+  //        </a>
+  //      `).join('');
+  //    }
+  //  })
+  //  .catch(() => {
+  //    document.querySelector('.portfolio-thumbnails').innerHTML =
+  //      `<div>Portfolio preview unavailable.</div>`;
+  //  });
 
   // 4. Load Latest Blog Post
   fetch('/php/get_posts.php?limit=1')
