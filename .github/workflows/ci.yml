@@ -19,20 +19,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-
       - name: Install JS dependencies
         run: npm ci
-
       - name: Run ESLint
         run: npm run lint
-
       - name: Run JS tests
         run: npm run test
-
       - name: Build assets
         run: npm run build
 
-      # Optional PHP steps: skip if composer.json missing
+      # Optional PHP steps: skip gracefully if composer.json is missing
       - name: Install PHP dependencies
         run: |
           if (Test-Path composer.json) {
@@ -40,7 +36,6 @@ jobs:
           } else {
             Write-Host "Skipping PHP dependencies"
           }
-
       - name: Run PHP lint
         run: |
           if (Test-Path composer.json) {
@@ -48,7 +43,6 @@ jobs:
           } else {
             Write-Host "Skipping PHP lint"
           }
-
       - name: Run PHP tests
         run: |
           if (Test-Path composer.json) {
@@ -56,5 +50,3 @@ jobs:
           } else {
             Write-Host "Skipping PHP tests"
           }
-
-
