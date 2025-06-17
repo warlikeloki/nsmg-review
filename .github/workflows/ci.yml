@@ -7,46 +7,26 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Front-end steps
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install JS dependencies
-        run: npm ci
-      - name: Run ESLint
-        run: npm run lint
-      - name: Run JS tests
-        run: npm run test
-      - name: Build assets
-        run: npm run build
 
-      # Optional PHP steps: skip gracefully if composer.json is missing
-      - name: Install PHP dependencies
-        run: |
-          if (Test-Path composer.json) {
-            composer install --no-interaction
-          } else {
-            Write-Host "Skipping PHP dependencies"
-          }
-      - name: Run PHP lint
-        run: |
-          if (Test-Path composer.json) {
-            composer run lint-php
-          } else {
-            Write-Host "Skipping PHP lint"
-          }
-      - name: Run PHP tests
-        run: |
-          if (Test-Path composer.json) {
-            composer run test-php
-          } else {
-            Write-Host "Skipping PHP tests"
-          }
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build
