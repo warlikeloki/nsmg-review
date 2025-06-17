@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+        ports:
+          - 3306:3306
+        options: >
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Front-end steps
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install JS dependencies
+        run: npm ci
+      - name: Run ESLint
+        run: npm run lint
+      - name: Run JS tests
+        run: npm run test
+      - name: Build assets
+        run: npm run build
+
+      # Optional PHP steps: skip if composer.json is missing
+      - name: Install PHP dependencies
+        run: |
+          if [ -f composer.json ]; then composer install --no-interaction; else echo "composer.json not found, skipping PHP dependencies"; fi
+      - name: Run PHP lint
+        run: |
+          if [ -f composer.json ]; then composer run lint-php; else echo "Skipping PHP lint"; fi
+      - name: Run PHP tests
+        run: |
+          if [ -f composer.json ]; then composer run test-php; else echo "Skipping PHP tests"; fi
