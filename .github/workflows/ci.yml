@@ -1,15 +1,13 @@
-name: CI
+name: CI & Deploy (Local)
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -30,3 +28,15 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  deploy-local:
+    needs: build
+    runs-on: [self-hosted, windows]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+
+      - name: Mirror to local site folder
+        run: |
+          robocopy "${{ github.workspace }}" "E:\Website" /MIR /XF .git* /XD .github
