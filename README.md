@@ -88,3 +88,5 @@ to update the ISSUES.md file, use the following in powershell:
 - **Find folders with more than 20 files**
     1. Save as `find-large-folders.ps1`
     2. Run: `.\scripts\find-large-folders.ps1`
+
+This is to test the CI/CD things. It will be deleted later.
