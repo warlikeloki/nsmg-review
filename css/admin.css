@@ -187,6 +187,18 @@ button[type="submit"]:hover {
     background-color: var(--accent-hover-color, #005bb5);
 }
 
+/* Admin Login */
+.login-wrapper {
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       min-height: 100vh;
+       padding: 1rem;
+}
+.admin-login {
+       width: 100%;
+       max-width: 400px;
+}
 /* Responsive Styles */
 @media (max-width: 1024px) {
     .page-container {
