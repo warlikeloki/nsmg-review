@@ -1,3 +1,4 @@
+Update issues.md:
 # Project Issues
 ---
 
@@ -12,13 +13,13 @@
 - **NSM-8**  Pricing page backend hookup  
 - **NSM-9**  Improve mobile dropdown behavior  
 - **NSM-10** Contact & Service-request form integration  
-- **NSM-11** Add `main.js` to all HTML templates  
+- **NSM-11** Add main.js to all HTML templates  
 - **NSM-12** Configure and Associate Elastic IP  
 - **NSM-13** Add sidebars to all pages  
 
 **Sprint 2**  
 - **NSM-22** Homepage content structure and HTML layout  
-- **NSM-23** Create `homepage.css` for layout and content modules  
+- **NSM-23** Create homepage.css for layout and content modules  
 - **NSM-26** Clean up unused CSS files  
 - **NSM-76** Correct issues found during CSS review  
 
