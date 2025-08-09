@@ -1,0 +1,69 @@
+name: Jira Mirror → Public Repo
+
+on:
+  schedule:
+    - cron: "20 11 * * *"   # daily at 11:20 UTC (adjust as needed)
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) Checkout PRIVATE repo (this one)
+      - name: Checkout private repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # 2) Timestamp for dated snapshot
+      - name: Timestamp
+        id: ts
+        run: echo "STAMP=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
+      # 3) Export snapshots from Jira using your PowerShell script
+      - name: Export from Jira
+        shell: pwsh
+        env:
+          JIRA_BASE: ${{ secrets.JIRA_BASE }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+          JIRA_USE_SCOPED: ${{ secrets.JIRA_USE_SCOPED }}
+        run: |
+          ./scripts/Export-Jira.ps1 `
+            -Jql 'statusCategory != Done ORDER BY priority DESC, updated DESC' `
+            -OutMd "out/backlog-${{ steps.ts.outputs.STAMP }}.md"
+          ./scripts/Export-Jira.ps1 `
+            -Jql 'ORDER BY updated DESC' `
+            -OutMd "out/issues-latest.md"
+
+      # 4) Checkout PUBLIC repo using a PAT with Contents: Read/Write
+      - name: Checkout public mirror
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.PUBLIC_REPO }}          # e.g., warlikeloki/nsmg-review
+          token: ${{ secrets.PUBLIC_PUSH_TOKEN }}         # fine-grained PAT scoped to the public repo
+          path: public
+          persist-credentials: false
+
+      # 5) Copy snapshots into the public repo
+      - name: Copy snapshots
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path public/docs/jira | Out-Null
+          Copy-Item out/issues-latest.md public/docs/jira/
+          Copy-Item "out/backlog-${{ steps.ts.outputs.STAMP }}.md" public/docs/jira/
+
+      # 6) Commit & push to the public repo
+      - name: Commit & push
+        run: |
+          cd public
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/jira/
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore(jira): mirror snapshot ${{ steps.ts.outputs.STAMP }}"
+            git push origin ${{ secrets.PUBLIC_REPO_BRANCH }}
+          fi

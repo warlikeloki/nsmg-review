@@ -1,0 +1,29 @@
+name: Jira Mirror Snapshot
+on:
+  schedule:
+    - cron: "20 11 * * *"   # daily at 11:20 UTC (adjust)
+  workflow_dispatch:
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set timestamp
+        id: ts
+        run: echo "STAMP=$(date +'%Y%mdd')" >> $GITHUB_OUTPUT
+      - name: Export Backlog
+        shell: pwsh
+        env:
+          JIRA_BASE: ${{ secrets.JIRA_BASE }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+          JIRA_USE_SCOPED: "1"
+        run: |
+          ./scripts/Export-Jira.ps1 `
+            -Jql 'statusCategory != Done ORDER BY priority DESC, updated DESC' `
+            -OutMd "docs/jira/backlog-${{ steps.ts.outputs.STAMP }}.md"
+      - name: Commit snapshot(s)
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(jira): backlog snapshot ${{ steps.ts.outputs.STAMP }}"
+          file_pattern: docs/jira/*.md
