@@ -29,12 +29,13 @@ jobs:
         shell: pwsh
         run: |
           $missing = @()
-          foreach ($n in 'JIRA_BASE','JIRA_EMAIL','JIRA_TOKEN','PUBLIC_REPO','PUBLIC_REPO_BRANCH','PUBLIC_PUSH_TOKEN') {
-            if (-not $env:$n) { $missing += $n }
-          }
-          if ($missing.Count) { throw "Missing secrets: $($missing -join ', ')" }
-          "All required secrets are present."
-
+          $names = @('JIRA_BASE','JIRA_EMAIL','JIRA_TOKEN','PUBLIC_REPO','PUBLIC_REPO_BRANCH','PUBLIC_PUSH_TOKEN')
+          foreach ($n in $names) {
+            $val = [System.Environment]::GetEnvironmentVariable($n)
+            if ([string]::IsNullOrWhiteSpace($val)) { $missing += $n }
+            }
+          if ($missing.Count -gt 0) { throw "Missing secrets: $($missing -join ', ')" }
+            "All required secrets are present."          
       - name: Verify exporter exists
         shell: pwsh
         run: |
