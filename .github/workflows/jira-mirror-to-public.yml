@@ -1,13 +1,22 @@
-name: Jira Mirror → Public Repo (Debug)
+name: Jira Mirror → Public Repo
 
 on:
   schedule:
-    - cron: "20 11 * * *"   # daily at 11:20 UTC
+    - cron: "20 11 * * *"
   workflow_dispatch:
 
 jobs:
   mirror:
     runs-on: ubuntu-latest
+    env:
+      # Make secrets available to ALL steps (PowerShell reads $env:...)
+      JIRA_BASE: ${{ secrets.JIRA_BASE }}
+      JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+      JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+      JIRA_USE_SCOPED: ${{ secrets.JIRA_USE_SCOPED }}
+      PUBLIC_REPO: ${{ secrets.PUBLIC_REPO }}
+      PUBLIC_REPO_BRANCH: ${{ secrets.PUBLIC_REPO_BRANCH }}
+      PUBLIC_PUSH_TOKEN: ${{ secrets.PUBLIC_PUSH_TOKEN }}
 
     steps:
       - name: Checkout PRIVATE repo
@@ -16,12 +25,20 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
+      - name: Validate required secrets
+        shell: pwsh
+        run: |
+          $missing = @()
+          foreach ($n in 'JIRA_BASE','JIRA_EMAIL','JIRA_TOKEN','PUBLIC_REPO','PUBLIC_REPO_BRANCH','PUBLIC_PUSH_TOKEN') {
+            if (-not $env:$n) { $missing += $n }
+          }
+          if ($missing.Count) { throw "Missing secrets: $($missing -join ', ')" }
+          "All required secrets are present."
+
       - name: Verify exporter exists
         shell: pwsh
         run: |
-          if (-not (Test-Path ./scripts/Export-Jira.ps1)) {
-            Write-Error "scripts/Export-Jira.ps1 not found. Commit it to the PRIVATE repo."
-          }
+          if (-not (Test-Path ./scripts/Export-Jira.ps1)) { throw "scripts/Export-Jira.ps1 not found." }
           Get-ChildItem -Recurse -File scripts | Format-Table -AutoSize
 
       - name: Timestamp
@@ -30,16 +47,8 @@ jobs:
 
       - name: Jira connectivity check
         shell: pwsh
-        env:
-          JIRA_BASE: ${{ secrets.JIRA_BASE }}
-          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
-          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
-          JIRA_USE_SCOPED: ${{ secrets.JIRA_USE_SCOPED }}
         run: |
           $ErrorActionPreference = 'Stop'
-          if (-not $env:JIRA_BASE -or -not $env:JIRA_EMAIL -or -not $env:JIRA_TOKEN) {
-            throw "Missing one or more secrets: JIRA_BASE/JIRA_EMAIL/JIRA_TOKEN"
-          }
           $b = $env:JIRA_BASE.TrimEnd('/')
           $auth = "Basic " + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("${env:JIRA_EMAIL}:${env:JIRA_TOKEN}"))
           $headers = @{ Authorization = $auth }
@@ -51,15 +60,10 @@ jobs:
             $api = "$b/rest/api/3"
           }
           $me = Invoke-RestMethod -Headers $headers -Uri "$api/myself" -Method Get
-          "OK: Connected to Jira as: $($me.displayName)"
+          "OK: Connected to Jira as $($me.displayName)"
 
       - name: Export from Jira (Backlog + Latest)
         shell: pwsh
-        env:
-          JIRA_BASE: ${{ secrets.JIRA_BASE }}
-          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
-          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
-          JIRA_USE_SCOPED: ${{ secrets.JIRA_USE_SCOPED }}
         run: |
           $ErrorActionPreference = 'Stop'
           ./scripts/Export-Jira.ps1 -Jql 'statusCategory != Done ORDER BY priority DESC, updated DESC' -OutMd "out/backlog-${{ steps.ts.outputs.STAMP }}.md"
@@ -70,9 +74,9 @@ jobs:
       - name: Checkout PUBLIC mirror
         uses: actions/checkout@v4
         with:
-          repository: ${{ secrets.PUBLIC_REPO }}     # e.g., warlikeloki/nsmg-review
-          token: ${{ secrets.PUBLIC_PUSH_TOKEN }}    # fine-grained PAT
-          ref: ${{ secrets.PUBLIC_REPO_BRANCH }}     # e.g., main
+          repository: ${{ env.PUBLIC_REPO }}
+          token: ${{ env.PUBLIC_PUSH_TOKEN }}
+          ref: ${{ env.PUBLIC_REPO_BRANCH }}
           path: public
           persist-credentials: false
           fetch-depth: 0
@@ -89,8 +93,6 @@ jobs:
 
       - name: Commit & push to PUBLIC
         shell: pwsh
-        env:
-          PUBLIC_REPO_BRANCH: ${{ secrets.PUBLIC_REPO_BRANCH }}
         run: |
           $ErrorActionPreference = 'Stop'
           cd public
