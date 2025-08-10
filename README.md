@@ -1,3 +1,4 @@
+
 # Neil Smith Media Group Website
 
 > Public review mirror of the website for **Neil Smith Media Group**. Intended prod domain: **https://neilsmith.org** (not live yet).

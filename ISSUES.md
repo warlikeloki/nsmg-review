@@ -96,4 +96,3 @@
    - Status Category = To Do/In Progress AND Sprint >= 3 → "Backlog" section
 2. Regenerate this file using those lists (or ask me to do it from your Jira export).
 3. Commit to the public mirror.
-
