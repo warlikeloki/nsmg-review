@@ -1,0 +1,33 @@
+/* /css/a11y.css */
+/* Visually hide the skip link until it receives focus, but keep it available to screen readers */
+.skip-link {
+  position: absolute !important;
+  left: -9999px !important;
+  top: auto !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(1px, 1px, 1px, 1px) !important; /* legacy */
+  clip-path: inset(50%) !important;           /* modern */
+  white-space: nowrap !important;
+}
+
+/* When users tab, reveal it clearly */
+.skip-link:focus,
+.skip-link:active {
+  position: fixed !important;
+  left: 1rem !important;
+  top: 1rem !important;
+  width: auto !important;
+  height: auto !important;
+  clip: auto !important;
+  clip-path: none !important;
+  padding: 0.75rem 1rem !important;
+  background: #000 !important;
+  color: #fff !important;
+  outline: 2px solid #fff !important;
+  border-radius: .375rem !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,.25) !important;
+  z-index: 10000 !important;
+  text-decoration: none !important;
+}
