@@ -1,109 +1,119 @@
-# Project Summary: Neil Smith Media Group Website
+# NSMG Project Summary
+_Last updated: 2025-08-09_
 
-## 1. Project Setup & Goals
-- **Architecture**: Multi-page PHP site, with static HTML, CSS, JS under `/`, modular scripts in `/js/modules/`, PHP JSON endpoints in `/php/`.
-- **Workflow**: Two-week sprints, tracked in Jira (keys NSM-XX), statuses: Backlog, Ready, In Progress, Testing, Done.
-- **Versioning**: GitHub for code, issues synchronized to Jira; deployments via CI/CD (NSM-30).
+Neil Smith Media Group (NSMG) is a content-focused site offering photography, videography, and editing services, with an **admin area** for internal management and a public marketing website. This document summarizes repos, architecture, workflows, and the current plan of record.
 
-## 2. Files & Layout Changes
+---
 
-### Header & Footer
-- Moved to **header.html** and **footer.html**, injected on every page via `fetch()` in a small inline `<script>`.
-- Navigation (`navigation.css`) and social icons (`footer.css`) standardized.
+## Repositories & Branches
+- **Private repo**: primary development (contains workflows and secrets).  
+  - Default branch: `main`
+  - Working branch: `review-shared` (feature/integration)
+- **Public mirror**: `warlikeloki/nsmg-review` (read-only mirror for external review).
+- **Branching model**: feature branches off `main` (e.g., `feat/...`, `fix/...`). Use PRs; protected branches block direct pushes (see `REPO_HARDENING.md`).
 
-### Global Shell & Sidebars
-- All top-level pages (`index.html`, `about.html`, `services.html`, `blog.html`, `portfolio.html`, `gallery.html`, `contact.html`, `request-form.html`, `testimonials.html`, `privacy.html`, `terms-conditions.html`):
-  - Load common CSS (`global.css`, `layout.css`, `navigation.css`, `mobile.css`, etc.)
-  - Wrap content in:
-    ```html
-    <div class="page-container">
-      <aside class="left-sidebar">…</aside>
-      <main>…</main>
-      <aside class="right-sidebar">…</aside>
-    </div>
+---
+
+## Tech Stack
+- **Frontend**: HTML5, CSS3, vanilla ES modules (with `/js/main.js` orchestrator), accessibility-first components (accordions, carousels).
+- **Backend**: PHP (admin dashboard, future JSON endpoints under `/php`), session-based auth.
+- **Tooling**:
+  - Node.js (local scripts) — **no external deps** for sitemap generator.
+  - PowerShell-first scripts (Windows friendly), e.g., Jira exporter.
+- **Data**: JSON files for content stubs; SQL scripts for table setup (no real data committed).
+
+---
+
+## Key Directories
+- `/admin` — Admin UI (HTML/PHP), e.g., `admin.php`, `equipment.html`, `accounting.html`.
+- `/about-us`, `/services`, `/portfolio`, `/blog` — Public pages.
+- `/css`, `/js`, `/media` — Static assets.
+- `/php` — (Planned/partial) JSON endpoints and session handling.
+- `/scripts` — Utility scripts (e.g., `generate-sitemap.js`, `Export-Jira.ps1`).
+- `/docs` — Project docs (`SUGGESTIONS.md`, SEO plan, Jira snapshots if mirrored).
+
+---
+
+## Environment Targets
+- **Dev**: localhost (PHP built-in server or host of choice), `robots` fully blocked, `sitemap.dev.xml`.
+- **Prod**: eventual domain **`neilsmith.org`**, `robots.txt` with exclusions, gzip’d `sitemap.xml`.
+
+---
+
+## Security & Governance
+- **Branch protection**: PR-only merges, Code Owners required, disallow force/deletions, include admins. (See `REPO_HARDENING.md`.)
+- **Secret hygiene**: No secrets in repo. Use GitHub Secrets (private repo) for tokens (e.g., Jira).
+- **Admin hardening (in progress)**: secure sessions, CSRF for POST, security headers (CSP, XFO, etc.).
+- **Scanning (recommended)**: enable Dependabot alerts/updates, secret scanning with push protection, CodeQL (JS/TS). Consider PHP static analysis later.
+
+---
+
+## SEO & Sitemap
+- **Script**: `scripts/generate-sitemap.js` (dependency-free).
+  - Dev:  
+    ```powershell
+    node .\scripts\generate-sitemap.js -base http://localhost:8080 -root . -out sitemap.dev.xml --dev --robots robots.dev.txt
     ```
-  - Include `<script type="module" src="/js/main.js" defer></script>`.
+  - Prod (when live):  
+    ```powershell
+    node .\scripts\generate-sitemap.js -base https://neilsmith.org -root . -out sitemap.xml --prod --gzip --robots robots.txt
+    ```
+- **Global meta**: unique titles/descriptions, OG/Twitter defaults, canonicals per page.
+- See `docs/SEO_SITEMAP_PLAN.md` for the full checklist.
 
-## 3. JavaScript Modules
-- **main.js** bootstraps:
-  - `navigation.js`, `blog.js`, `blog-post.js`, `testimonials.js`, `equipment.js`, `contact.js`, `service-request.js`, `portfolio.js`, `admin.js`, `pricing.js`, `settings.js`.
-- Recent module updates:
-  - **service-request.js**: AJAX form submission to `/php/service_request.php`.
-  - **homepage.js** & **layout.css**: Inline accordion for “Our Services” (2×2 grid, toggles).
+---
 
-## 4. Mobile Navigation
-- **mobile.css** simplified submenu show/hide.
-- **navigation.js**:
-  - Guards null, toggles one submenu at a time.
-  - Collapses on re-tap, closes on outside-click.
-- **NSM-91**: Backlog task to investigate intermittent hamburger failures.
+## Workflows (CI/CD)
+- **Jira → Markdown mirror (private repo)**: PowerShell exporter creates `/docs/jira/issues-latest.md` and optional dated snapshots.  
+  _Status_: configured locally; **GitHub Action temporarily paused** until token-endpoint choice is finalized.
+- **Planned CI**:
+  - HTML/CSS/JS linters and PHP syntax check on PRs.
+  - Mark lint/build checks as **required status checks** in branch protection.
 
-## 5. Services Dashboard
-- **services.html**:
-  - Sidebar buttons: Photography, Videography, Editing, Other Services, Pricing, Request a Service.
-  - AJAX loads `/services/<service>.html` into main pane and injects the right JS module.
-- Key updates:
-  - **NSM-87**: Fix “Other Services” AJAX injection.
-  - **NSM-77**: Backlog for embedding pricing widget.
-  - **NSM-84**: Refined “Learn More” accordion on homepage.
+---
 
-## 6. Backend Endpoints
-- **php/contact_form.php**  
-- **php/service_request.php**  
-- **php/get_service_requests.php**  
-- **php/get_pricing.php** (PDO, pricing×services join)  
-- **php/get_equipment.php**  
-- **php/get_posts.php**, **php/get_testimonials.php**, etc., with admin.js protections.
-- Error reporting (`ini_set('display_errors',1)`) during development; try/catch for JSON errors.
+## Current Status (High-level)
+- ✅ README refreshed and committed.
+- ✅ `SUGGESTIONS.md` published with file-by-file improvements.
+- ✅ Repo hardening guide created (`REPO_HARDENING.md`).
+- ✅ SEO/Sitemap script and checklist drafted.
+- 🚧 Admin hardening (sessions, CSRF, headers) — to implement.
+- ⏸️ Jira mirror workflow — awaiting token style decision (classic vs scoped).
 
-## 7. Issue Tracking & Sprint Status
+---
 
-### Sprint 1 (Done)
-- NSM-29: Sidebars on all pages  
-- NSM-47: Contact & Service-Request Integration  
-- NSM-71: Import main.js across templates  
-- Mobile nav & services dashboard fixes bundled under regression (NSM-42, NSM-46, NSM-49, NSM-51)
+## Roadmap (Next Steps)
+- [ ] **Admin security pass**: secure session settings, logout route, CSRF tokens, default security headers.
+- [ ] **Accessibility**: keyboard support for accordions and carousels; focus styles; skip links.
+- [ ] **Performance**: image formats (webp/avif), explicit width/height, lazy-loading, Lighthouse fixes.
+- [ ] **Sitemap/robots**: wire npm scripts; verify excludes; prepare for domain flip to `neilsmith.org`.
+- [ ] **CI linting**: add HTMLHint/ESLint/Stylelint and PHP syntax checks; mark as required in branch protection.
+- [ ] **Jira mirror**: re-enable workflow (choose classic vs scoped token; set secrets; run daily).
 
-### Sprint 2 (Done)
-- NSM-19: Add “Blog” link to header  
-- NSM-22, NSM-23, NSM-26: Homepage layout & dynamic modules  
-- NSM-27, NSM-51: Mobile styling & submenu behavior  
-- NSM-29: Form “Thank You” response fix  
-- NSM-42: Custom 404 & 500 pages  
-- NSM-72: Regression testing  
-- NSM-78: Update footer links
+---
 
-### Sprint 3 (In Progress)
-- NSM-30: CI/CD pipeline setup  
-- NSM-31: Performance & caching optimizations  
-- NSM-34: Admin dashboard UI access  
-- NSM-35: Mobile submenu collapse fix  
-- NSM-82: Admin authentication & session management
+## Handy Commands (PowerShell)
+- Run dev PHP server:
+  ```powershell
+  php -S localhost:8080 -t .
+  ```
+- Generate dev sitemap + robots:
+  ```powershell
+  node .\scripts\generate-sitemap.js -base http://localhost:8080 -root . -out sitemap.dev.xml --dev --robots robots.dev.txt
+  ```
+- Generate prod sitemap + robots (when live):
+  ```powershell
+  node .\scripts\generate-sitemap.js -base https://neilsmith.org -root . -out sitemap.xml --prod --gzip --robots robots.txt
+  ```
 
-## 8. Test Plan Highlights
-- **NSM-72** regression suite for Sprint 2.
-- Sidebar injection, hamburger open/close, outside-click closure.
-- Services dashboard AJAX loads and form validation/messages.
-- Pricing endpoint error handling tested via a 500-trigger script.
-- Mobile submenu: single open, collapse on re-tap, no clipping.
+---
 
-## 9. Outstanding Tasks & Backlog
-- **NSM-16**: Dynamic Testimonials page  
-- **NSM-17**: Portfolio/Gallery dynamic loading  
-- **NSM-32**: Gallery keyboard & arrow navigation  
-- **NSM-45**: PWA offline support  
-- **NSM-77**: Embed pricing widget in services dashboard  
-- **NSM-84**: Refine homepage accordion/“Learn More”  
-- **NSM-86**: Flickr integration for gallery  
-- **NSM-87**: “Other Services” AJAX injection  
-- **NSM-88**: Fix testimonials carousel on homepage  
-- **NSM-89**: Add dynamic sidebar widget (“Book a Call”, recent posts)  
-- **NSM-90**: Dev cache-control configuration  
-- **NSM-91**: Investigate hamburger menu issue  
-- **NSM-92**: Improve 404 page layout & styling
+## Reference Docs
+- `README.md` — project setup and usage
+- `SUGGESTIONS.md` — file-by-file improvement checklist
+- `REPO_HARDENING.md` — public repo security
+- `docs/SEO_SITEMAP_PLAN.md` — SEO + sitemap strategy
+- `docs/jira/issues-latest.md` — latest Jira snapshot (if mirrored)
+- `TODO.md` / `ISSUES.md` — project tasks (high-level; Jira is source of truth)
 
-## 10. Next Steps
-1. Finish Sprint 3 items and move to Testing.  
-2. Plan Sprint 4 from Backlog, balancing story points.  
-3. Consolidate duplicates and archive legacy tasks.  
-4. Begin acceptance testing for newly completed features (admin portal, performance, PWA).  
+If anything in here drifts, ping me and I’ll refresh this summary again.
