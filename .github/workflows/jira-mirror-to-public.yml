@@ -46,6 +46,18 @@ jobs:
         id: ts
         run: echo "STAMP=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
 
+      - name: Debug API base choice
+        shell: pwsh
+        run: |
+          $b = $env:JIRA_BASE.TrimEnd('/')
+          if ($env:JIRA_USE_SCOPED -in @("1","true","TRUE")) {
+            $cloudId = (Invoke-RestMethod "$b/_edge/tenant_info").cloudId
+            $api = "https://api.atlassian.com/ex/jira/$cloudId/rest/api/3"
+          } else {
+            $api = "$b/rest/api/3"
+          }
+          "Using API base: $api"
+
       - name: Jira connectivity check
         shell: pwsh
         run: |
