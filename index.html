@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta
-    name="description"
-    content="Neil Smith Media Group offers professional photography, videography, and editing services for events, brands, and businesses. View our portfolio."
-  />
-  <title>Neil Smith Media Group</title>
-  <!-- Favicon and App Icons -->
+
+  <title>Your Story, Captured | Neil Smith Media Group</title>
+  <meta name="description" content="Photography, videography, and editing services for brands, events, and businesses. Explore our portfolio and request a quote." />
+  <link rel="canonical" href="https://neilsmith.org/" />
+
+  <!-- Icons / Manifest -->
   <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml" />
   <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
   <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
@@ -17,6 +17,15 @@
   <link rel="manifest" href="/media/icons/site.webmanifest" />
   <meta name="apple-mobile-web-app-title" content="NSMG" />
   <meta name="application-name" content="Neil Smith Media Group" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:site_name" content="Neil Smith Media Group" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Your Story, Captured | Neil Smith Media Group" />
+  <meta property="og:description" content="Photography, videography, and editing services for brands, events, and businesses." />
+  <meta property="og:image" content="https://neilsmith.org/media/og/default.jpg" />
+  <meta property="og:url" content="https://neilsmith.org/" />
+  <meta name="twitter:card" content="summary_large_image" />
 
   <!-- CSS -->
   <link rel="stylesheet" href="/css/global.css" />
@@ -27,24 +36,21 @@
   <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/footer.css" />
   <link rel="stylesheet" href="/css/homepage.css" />
+  <link rel="stylesheet" href="/css/a11y.css" />
+
 
   <!-- JS -->
   <script type="module" src="/js/main.js" defer></script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
   <!-- Header -->
   <div id="header-container"></div>
-  <script>
-    fetch('/header.html')
-      .then(r => r.text())
-      .then(html => document.getElementById('header-container').innerHTML = html);
-  </script>
 
   <div class="page-container">
     <!-- Left Sidebar -->
-    <aside class="sidebar left-sidebar">
-      <!-- Optional sidebar content -->
-    </aside>
+    <aside class="sidebar left-sidebar" aria-label="Left sidebar"></aside>
 
     <!-- Main Content -->
     <main id="homepage">
@@ -58,9 +64,9 @@
       </section>
 
       <!-- SERVICES PREVIEW -->
-      <section id="our-services" class="services-section">
+      <section id="our-services" class="services-section" aria-label="Our Services">
         <h2>Our Services</h2>
-        <div class="services-accordion">
+        <div class="services-accordion" role="region" aria-label="Services list">
           <!-- Photography -->
           <div class="service-card">
             <h3>Photography</h3>
@@ -134,27 +140,21 @@
       <!-- TESTIMONIALS CAROUSEL -->
       <section id="testimonials-carousel" class="homepage-section">
         <h2>Testimonials</h2>
-        <div class="testimonials-slider">
-          <!-- Carousel populated by JS -->
-        </div>
+        <div class="testimonials-slider"><!-- populated by JS --></div>
         <a href="/testimonials.html" class="testimonials-link">View All Testimonials</a>
       </section>
 
       <!-- PORTFOLIO PREVIEW -->
       <section id="portfolio-preview" class="homepage-section">
         <h2>Featured Work</h2>
-        <div id="portfolio-grid" class="portfolio-thumbnails">
-          <!-- Thumbnails injected by JS -->
-        </div>
+        <div id="portfolio-grid" class="portfolio-thumbnails"><!-- injected by JS --></div>
         <a href="/portfolio.html" class="portfolio-link">See More Work</a>
       </section>
 
       <!-- BLOG TEASER -->
       <section id="blog-teaser" class="homepage-section">
         <h2>Latest From Our Blog</h2>
-        <div class="blog-post-preview">
-          <!-- Latest post populated by JS -->
-        </div>
+        <div class="blog-post-preview"><!-- latest post populated by JS --></div>
         <a href="/blog.html" class="blog-link">Read More Posts</a>
       </section>
 
@@ -162,7 +162,7 @@
       <section id="about-preview" class="homepage-section">
         <h2>About Neil Smith Media Group</h2>
         <div class="about-content">
-          <img src="/media/logos/nsmg-logo.png" alt="Neil Smith Media Group Logo" class="about-logo" />
+          <img src="/media/logos/nsmg-logo.png" alt="Neil Smith Media Group Logo" class="about-logo" decoding="async" loading="lazy" />
           <div>
             <p>We’re passionate about telling authentic stories through images and video. Our mission is to make every client look and feel their best on camera.</p>
             <a href="/about-us/about.html" class="about-link">Learn More</a>
@@ -179,17 +179,10 @@
     </main>
 
     <!-- Right Sidebar -->
-    <aside class="sidebar right-sidebar">
-      <!-- Optional sidebar content -->
-    </aside>
+    <aside class="sidebar right-sidebar" aria-label="Right sidebar"></aside>
   </div>
 
   <!-- Footer -->
   <div id="footer-container"></div>
-  <script>
-    fetch('/footer.html')
-      .then(r => r.text())
-      .then(html => document.getElementById('footer-container').innerHTML = html);
-  </script>
 </body>
 </html>
