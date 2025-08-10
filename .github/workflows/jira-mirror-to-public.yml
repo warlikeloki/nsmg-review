@@ -1,0 +1,109 @@
+name: Jira Mirror → Public Repo
+
+on:
+  schedule:
+    - cron: "20 11 * * *"
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    env:
+      # Make secrets available to ALL steps (PowerShell reads $env:...)
+      JIRA_BASE: ${{ secrets.JIRA_BASE }}
+      JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+      JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+      JIRA_USE_SCOPED: ${{ secrets.JIRA_USE_SCOPED }}
+      PUBLIC_REPO: ${{ secrets.PUBLIC_REPO }}
+      PUBLIC_REPO_BRANCH: ${{ secrets.PUBLIC_REPO_BRANCH }}
+      PUBLIC_PUSH_TOKEN: ${{ secrets.PUBLIC_PUSH_TOKEN }}
+
+    steps:
+      - name: Checkout PRIVATE repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Validate required secrets
+        shell: pwsh
+        run: |
+          $missing = @()
+          $names = @('JIRA_BASE','JIRA_EMAIL','JIRA_TOKEN','PUBLIC_REPO','PUBLIC_REPO_BRANCH','PUBLIC_PUSH_TOKEN')
+          foreach ($n in $names) {
+            $val = [System.Environment]::GetEnvironmentVariable($n)
+            if ([string]::IsNullOrWhiteSpace($val)) { $missing += $n }
+            }
+          if ($missing.Count -gt 0) { throw "Missing secrets: $($missing -join ', ')" }
+            "All required secrets are present."          
+      - name: Verify exporter exists
+        shell: pwsh
+        run: |
+          if (-not (Test-Path ./scripts/Export-Jira.ps1)) { throw "scripts/Export-Jira.ps1 not found." }
+          Get-ChildItem -Recurse -File scripts | Format-Table -AutoSize
+
+      - name: Timestamp
+        id: ts
+        run: echo "STAMP=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Jira connectivity check
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $b = $env:JIRA_BASE.TrimEnd('/')
+          $auth = "Basic " + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("${env:JIRA_EMAIL}:${env:JIRA_TOKEN}"))
+          $headers = @{ Authorization = $auth }
+          if ($env:JIRA_USE_SCOPED -in @("1","true","TRUE")) {
+            $cloudId = (Invoke-RestMethod "$b/_edge/tenant_info").cloudId
+            if (-not $cloudId) { throw "Could not determine cloudId from $b/_edge/tenant_info" }
+            $api = "https://api.atlassian.com/ex/jira/$cloudId/rest/api/3"
+          } else {
+            $api = "$b/rest/api/3"
+          }
+          $me = Invoke-RestMethod -Headers $headers -Uri "$api/myself" -Method Get
+          "OK: Connected to Jira as $($me.displayName)"
+
+      - name: Export from Jira (Backlog + Latest)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          ./scripts/Export-Jira.ps1 -Jql 'statusCategory != Done ORDER BY priority DESC, updated DESC' -OutMd "out/backlog-${{ steps.ts.outputs.STAMP }}.md"
+          ./scripts/Export-Jira.ps1 -Jql 'ORDER BY updated DESC' -OutMd "out/issues-latest.md"
+          "Created files:"
+          Get-ChildItem -Recurse -File out | Format-Table -AutoSize
+
+      - name: Checkout PUBLIC mirror
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PUBLIC_REPO }}
+          token: ${{ env.PUBLIC_PUSH_TOKEN }}
+          ref: ${{ env.PUBLIC_REPO_BRANCH }}
+          path: public
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Copy snapshots into PUBLIC
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path public/docs/jira | Out-Null
+          Copy-Item out/issues-latest.md public/docs/jira/
+          Copy-Item "out/backlog-${{ steps.ts.outputs.STAMP }}.md" public/docs/jira/
+          "Public repo jira folder after copy:"
+          Get-ChildItem -Recurse -File public/docs/jira | Format-Table -AutoSize
+
+      - name: Commit & push to PUBLIC
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          cd public
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/jira/
+          if (git diff --cached --quiet) {
+            Write-Host "No changes to commit."
+          } else {
+            git commit -m "chore(jira): mirror snapshot ${{ steps.ts.outputs.STAMP }}"
+            git push origin $env:PUBLIC_REPO_BRANCH
+            Write-Host "Pushed to $env:PUBLIC_REPO_BRANCH"
+          }

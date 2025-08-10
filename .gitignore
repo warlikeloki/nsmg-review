@@ -9,3 +9,16 @@ issues.tsv
 nsmg_db.sql
 github_issues.csv
 jira_issues_ready.csv
+
+.env
+.env.*
+**/*.key
+**/*.pem
+**/*id_rsa*
+**/secrets/**
+**/private/**
+node_modules/
+vendor/
+dist/
+build/
+*.log
