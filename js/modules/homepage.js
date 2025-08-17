@@ -1,86 +1,36 @@
 // /js/modules/homepage.js
-
-// Only run on the homepage
-if (document.getElementById('homepage')) {
-  // 1. Load Services Preview
-fetch('/php/get_services.php?limit=10')
-  .then(r => r.json())
-  .then(({ success, data }) => {
-    if (success && Array.isArray(data)) {
-      const container = document.querySelector('.services-cards');
-      container.innerHTML = data.map(service => `
+if(document.getElementById('homepage')){
+  (async()=>{
+    const c=document.querySelector('.services-cards');if(!c)return;
+    try{
+      let data=null;
+      try{const r=await fetch('/php/get_services.php?limit=10');if(r.ok){const j=await r.json();if(j?.success&&Array.isArray(j.data))data=j.data}}catch{}
+      if(!data){try{const r=await fetch('/json/services.json');if(r.ok){const arr=await r.json();if(Array.isArray(arr))data=arr}}catch{}}
+      if(!data?.length){c.innerHTML='<p>Services coming soon.</p>';return;}
+      c.innerHTML=data.map(s=>`
         <div class="service-card">
-          <img src="${service.icon || '/images/default-service.png'}" alt="${service.name} Icon" class="service-icon">
-          <h3>${service.name}</h3>
-          <p>${service.description}</p>
-          <a href="/services.html#${service.name.toLowerCase().replace(/\s/g, '-')}" class="service-link">Learn More</a>
-        </div>
-      `).join('');
-    }
-  })
-  .catch(() => {
-    document.querySelector('.services-cards').innerHTML =
-      `<div>Service info unavailable right now.</div>`;
-  });
-
-
-  // 2. Load Testimonials Carousel
-  fetch('/php/get_testimonials.php?limit=5')
-    .then(r => r.json())
-    .then(({ success, data }) => {
-      if (success && Array.isArray(data)) {
-        const slider = document.querySelector('.testimonials-slider');
-        slider.innerHTML = data.map(t => `
-          <div class="testimonial-card">
-            <blockquote>${t.text.length > 120 ? t.text.slice(0, 120) + '…' : t.text}</blockquote>
-            <cite>– ${t.author}</cite>
-          </div>
-        `).join('');
-      }
-    })
-    .catch(() => {
-      document.querySelector('.testimonials-slider').innerHTML =
-        `<div>No testimonials found.</div>`;
-    });
-
-  // 3. Load Portfolio Preview
-  //fetch('/php/get_portfolio.php?limit=3')
-  //  .then(r => r.json())
-  //  .then(({ success, data }) => {
-  //    if (success && Array.isArray(data)) {
-  //      const thumbs = document.querySelector('.portfolio-thumbnails');
-  //      thumbs.innerHTML = data.map(item => `
-  //        <a href="/portfolio.html#${item.id}" class="portfolio-thumb">
-  //          <img src="${item.image}" alt="${item.title || 'Portfolio item'}">
-  //        </a>
-  //      `).join('');
-  //    }
-  //  })
-  //  .catch(() => {
-  //    document.querySelector('.portfolio-thumbnails').innerHTML =
-  //      `<div>Portfolio preview unavailable.</div>`;
-  //  });
-
-  // 4. Load Latest Blog Post
-  fetch('/php/get_posts.php?limit=1')
-    .then(r => r.json())
-    .then(({ success, data }) => {
-      if (success && Array.isArray(data) && data.length) {
-        const post = data[0];
-        document.querySelector('.blog-post-preview').innerHTML = `
-          <article>
-            <h3>${post.title}</h3>
-            <p>${post.teaser || (post.content ? post.content.slice(0, 160) + '…' : '')}</p>
-            <a href="/blog-post.html?id=${post.id}" class="blog-link">Read More</a>
-          </article>
-        `;
-      }
-    })
-    .catch(() => {
-      document.querySelector('.blog-post-preview').innerHTML =
-        `<div>No blog posts found.</div>`;
-    });
+          <img src="${s.icon||'/images/default-service.png'}" alt="${s.name} Icon" class="service-icon">
+          <h3>${s.name}</h3>
+          <p>${s.description||''}</p>
+          <a href="/services.html#${(s.name||'').toLowerCase().replace(/\s/g,'-')}" class="service-link">Learn More</a>
+        </div>`).join('');
+    }catch(e){console.error('Services preview error:',e);c.innerHTML='<p>Unable to load services.</p>';}
+  })();
+  (async()=>{
+    const c=document.querySelector('.blog-post-preview');if(!c)return;
+    try{
+      let posts=null;
+      try{const r=await fetch('/php/get_posts.php');if(r.ok){const j=await r.json();if(j?.success&&Array.isArray(j.data))posts=j.data}}catch{}
+      if(!posts){const r=await fetch('/json/posts.json');if(r.ok)posts=await r.json();}
+      if(!posts?.length){c.innerHTML='<div>No blog posts found.</div>';return;}
+      const firstTwo=posts.slice(0,2);
+      c.innerHTML=firstTwo.map((p,i)=>`
+        <article class="blog-card">
+          <h3>${p.title||"Untitled Post"}</h3>
+          <p>${p.teaser||(p.content?p.content.slice(0,160)+'…':'')}</p>
+          <a href="/blog-post.html?id=${i}" class="blog-link">Read More</a>
+        </article>`).join('');
+    }catch(e){console.error('Blog preview error:',e);c.innerHTML='<div>No blog posts found.</div>';}
+  })();
 }
-
-// Optionally: Export functions for testing or further development
 export {};

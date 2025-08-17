@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Photography",
+    "description": "Portraits, events, and products.",
+    "icon": "/media/icons/camera.png"
+  },
+  {
+    "name": "Videography",
+    "description": "Promos, interviews, and events.",
+    "icon": "/media/icons/video.png"
+  },
+  {
+    "name": "Editing",
+    "description": "Photo retouching and video post.",
+    "icon": "/media/icons/edit.png"
+  },
+  {
+    "name": "Other Services",
+    "description": "Notary, officiant, production assistance.",
+    "icon": "/media/icons/more.png"
+  }
+]
