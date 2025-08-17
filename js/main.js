@@ -103,6 +103,22 @@
     $$('.homepage-section img:not([loading])').forEach(img => img.setAttribute("loading", "lazy"));
   }
 
+
+  async function autoInitModules() {
+    const has = sel => !!document.querySelector(sel);
+    if (has('.nav-menu')) { try { await import('/js/modules/navigation.js'); } catch {} }
+    if (document.getElementById('homepage')) { try { await import('/js/modules/homepage.js'); } catch {} }
+    if (document.getElementById('blog-posts-container')) { try { await import('/js/modules/blog.js'); } catch {} }
+    if (document.getElementById('blog-post-content')) { try { await import('/js/modules/blog-post.js'); } catch {} }
+    if (document.getElementById('testimonials-container') || document.getElementById('homepage-testimonials-container') || has('.testimonials-slider')) { try { await import('/js/modules/testimonials.js'); } catch {} }
+    if (document.getElementById('equipment-list')) { try { await import('/js/modules/equipment.js'); if (typeof window.loadEquipment === 'function') window.loadEquipment(); } catch {} }
+    if (document.getElementById('packages-body') || document.getElementById('ala-carte-body')) { try { const mod = await import('/js/modules/pricing.js'); if (mod && typeof mod.loadPricing === 'function') mod.loadPricing(); } catch {} }
+    if (document.getElementById('contact-form')) { try { await import('/js/modules/contact.js'); } catch {} }
+    if (document.getElementById('other-services-container')) { try { await import('/js/modules/other-services.js'); } catch {} }
+    if (document.getElementById('services-toggle') && document.getElementById('services-nav')) { try { await import('/js/modules/services-nav.js'); } catch {} }
+    if (has('.filter-buttons')) { try { await import('/js/modules/portfolio.js'); } catch {} }
+  }
+
   function initSkipLink() {
     // If there’s no #main, but #homepage exists, alias it
     if (!$("#main") && $("#homepage")) {
@@ -118,6 +134,7 @@
     ]);
     enhanceServicesAccordion();
     enhanceLazyMedia();
+    await autoInitModules();
   }
 
   // Run on DOM ready (defer is set in HTML)

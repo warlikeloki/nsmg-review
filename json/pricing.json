@@ -1,0 +1,17 @@
+{
+  "packages": [
+    {
+      "service": "Portrait Mini Session",
+      "description": "30 min session; 5 edited images",
+      "price": 125
+    }
+  ],
+  "ala_carte": [
+    {
+      "service": "Advanced Photo Editing",
+      "description": "Per photo advanced retouch",
+      "price": 20,
+      "unit": "per photo"
+    }
+  ]
+}
