@@ -1,0 +1,38 @@
+---
+deployment:
+  tasks:
+    # Auto-detect the repo path under ~/repositories that contains index.html/php
+    - export SRCPATH="$(dirname "$(find "$HOME/repositories" -maxdepth 2 -type f \( -name index.html -o -name index.php \) | head -n 1)")"
+    - export DEPLOYPATH="${HOME}/public_html/neilsmith.org"
+    - export STAGE="${HOME}/.deploy_stage_neilsmith"
+    - export TARBALL="${HOME}/.deploy_stage_neilsmith.tar"
+
+    # Hard stops if detection failed
+    - '[ -n "$SRCPATH" ]'
+    - '[ -d "$SRCPATH" ]'
+    - '[ -f "$SRCPATH/index.html" ] || [ -f "$SRCPATH/index.php" ]'
+
+    # Build tarball from SRCPATH
+    - rm -f "$TARBALL"
+    - tar -C "$SRCPATH" -cf "$TARBALL" .
+
+    # Stage the content
+    - rm -rf "$STAGE" && mkdir -p "$STAGE"
+    - tar -C "$STAGE" -xf "$TARBALL"
+    - rm -f "$TARBALL"
+
+    # Ensure staged copy has an index before touching live
+    - '[ -f "$STAGE/index.html" ] || [ -f "$STAGE/index.php" ]'
+
+    # Swap into webroot
+    - find "$DEPLOYPATH" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+    - cp -a "$STAGE"/. "$DEPLOYPATH"/ || cp -R "$STAGE"/. "$DEPLOYPATH"/
+
+    # Clean dev files and set perms
+    - rm -rf "$DEPLOYPATH/.git" "$DEPLOYPATH/.github" "$DEPLOYPATH/.cpanel" || true
+    - rm -f  "$DEPLOYPATH/.cpanel.yml" || true
+    - find "$DEPLOYPATH" -type d -exec chmod 755 {} +
+    - find "$DEPLOYPATH" -type f -exec chmod 644 {} +
+
+    # Cleanup
+    - rm -rf "$STAGE"
