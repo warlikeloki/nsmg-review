@@ -14,20 +14,24 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Pick source and pack safely (write tar to RUNNER_TEMP)
+      # Build a package outside the source tree, then move it into the workspace
+      - name: Pick source and pack safely
         run: |
           set -e
+          # If a Website/ folder exists at repo root, deploy that; else deploy repo root
           if [ -d "Website" ]; then SRC="Website"; else SRC="."; fi
           echo "Packaging from: $SRC"
+
           PKG="$RUNNER_TEMP/package.tgz"
-          # Create tar outside the source tree to avoid 'file changed as we read it'
           tar -C "$SRC" -czf "$PKG" \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='node_modules' \
             --exclude='.cpanel.yml' \
             .
-          echo "PKG=$PKG" >> "$GITHUB_ENV"
+
+          # Move into workspace so scp-action container can see it
+          mv "$PKG" "$GITHUB_WORKSPACE/package.tgz"
 
       - name: Upload package to server (SCP)
         uses: appleboy/scp-action@v0.1.7
@@ -36,7 +40,8 @@ jobs:
           username: ${{ secrets.HG_USER }}
           port: ${{ secrets.HG_PORT }}
           key: ${{ secrets.HG_KEY }}
-          source: ${{ env.PKG }}
+          source: package.tgz
+          # Upload into a known inbox directory on the server
           target: /home/${{ secrets.HG_USER }}/deploy_inbox
 
       - name: Publish on server (SSH)
@@ -56,19 +61,25 @@ jobs:
             mkdir -p "$INBOX" "$DOCROOT"
             rm -rf "$STAGE" && mkdir -p "$STAGE"
 
-            # Extract uploaded package to stage
-            tar -xzf "$INBOX/package.tgz" -C "$STAGE"
+            # Some scp-action versions upload the tar as a file; others may have already unpacked.
+            if [ -f "$INBOX/package.tgz" ]; then
+              # We have a tar file: extract it into STAGE
+              tar -xzf "$INBOX/package.tgz" -C "$STAGE"
+            else
+              # No tar found: assume files already exist in INBOX
+              STAGE="$INBOX"
+            fi
 
-            # Require index in stage before touching live
+            # Require an index in STAGE before touching live
             if [ ! -f "$STAGE/index.html" ] && [ ! -f "$STAGE/index.php" ]; then
-              echo "ERROR: No index.html or index.php found in staged package"; exit 1
+              echo "ERROR: No index.html or index.php found in staged content"; exit 1
             fi
 
             # Swap contents: clear docroot, then copy staged files
             find "$DOCROOT" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
             cp -a "$STAGE"/. "$DOCROOT"/
 
-            # Cleanup inbox
+            # Cleanup the inbox completely
             rm -rf "$INBOX"
 
             # Permissions
