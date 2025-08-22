@@ -1,9 +1,9 @@
 name: Deploy site to HostGator
 
-on:
+'on':
   push:
-    branches: [ "main" ]  # change if your default branch is different
-  workflow_dispatch:
+    branches: ['main']   # change if your default branch is different
+  workflow_dispatch: {}
 
 jobs:
   deploy:
@@ -15,30 +15,36 @@ jobs:
         with:
           fetch-depth: 1
 
-      # Build a package outside the source tree, then move it into the workspace
       - name: Pick source and pack safely
+        shell: bash
         run: |
           set -e
+          # If a Website/ folder exists at repo root, deploy that; else deploy repo root
           if [ -d "Website" ]; then SRC="Website"; else SRC="."; fi
           echo "Packaging from: $SRC"
+
           PKG="$RUNNER_TEMP/package.tgz"
+          # Create tar outside the source tree to avoid 'file changed as we read it'
           tar -C "$SRC" -czf "$PKG" \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='node_modules' \
             --exclude='.cpanel.yml' \
             .
+          # Move into workspace so subsequent steps can read it
           mv "$PKG" "$GITHUB_WORKSPACE/package.tgz"
 
-      - name: Write private key & basic SSH config
+      - name: Prepare SSH key & config
+        shell: bash
         run: |
           set -e
           mkdir -p "$HOME/.ssh"
-          echo "${{ secrets.HG_KEY }}" > "$HOME/.ssh/id_hg"
+          printf '%s\n' "${{ secrets.HG_KEY }}" > "$HOME/.ssh/id_hg"
           chmod 600 "$HOME/.ssh/id_hg"
-          printf "Host *\n  StrictHostKeyChecking no\n" > "$HOME/.ssh/config"
+          printf 'Host *\n  StrictHostKeyChecking no\n' > "$HOME/.ssh/config"
 
-      - name: Upload package via scp (legacy KEX/RSA compatibility)
+      - name: Upload package via scp (HostGator-compatible KEX/ciphers)
+        shell: bash
         env:
           HG_HOST: ${{ secrets.HG_HOST }}
           HG_PORT: ${{ secrets.HG_PORT }}
@@ -46,6 +52,7 @@ jobs:
         run: |
           set -e
           INBOX="/home/${HG_USER}/deploy_inbox"
+
           # Ensure inbox exists
           ssh -i "$HOME/.ssh/id_hg" -p "${HG_PORT:-22}" \
             -o KexAlgorithms=diffie-hellman-group-exchange-sha256 \
@@ -53,6 +60,7 @@ jobs:
             -o PubkeyAcceptedAlgorithms=+ssh-rsa \
             -o Ciphers=aes256-ctr,aes192-ctr,aes128-ctr \
             "${HG_USER}@${HG_HOST}" "mkdir -p \"$INBOX\""
+
           # Copy the package
           scp -i "$HOME/.ssh/id_hg" -P "${HG_PORT:-22}" \
             -o KexAlgorithms=diffie-hellman-group-exchange-sha256 \
@@ -61,53 +69,59 @@ jobs:
             -o Ciphers=aes256-ctr,aes192-ctr,aes128-ctr \
             package.tgz "${HG_USER}@${HG_HOST}:${INBOX}/package.tgz"
 
-      - name: Publish on server (SSH; pass vars explicitly)
+      - name: Publish on server (SSH)
+        shell: bash
         env:
           HG_HOST: ${{ secrets.HG_HOST }}
           HG_PORT: ${{ secrets.HG_PORT }}
           HG_USER: ${{ secrets.HG_USER }}
           HG_DOCROOT: ${{ secrets.HG_DOCROOT }}
+          GIT_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
+
           INBOX="/home/${HG_USER}/deploy_inbox"
           STAGE="${INBOX}/unpacked"
+          DOCROOT="${HG_DOCROOT}"
 
+          # Run everything on the server in a single, quoted command
           ssh -i "$HOME/.ssh/id_hg" -p "${HG_PORT:-22}" \
             -o KexAlgorithms=diffie-hellman-group-exchange-sha256 \
             -o HostKeyAlgorithms=+ssh-rsa \
             -o PubkeyAcceptedAlgorithms=+ssh-rsa \
             -o Ciphers=aes256-ctr,aes192-ctr,aes128-ctr \
-            "${HG_USER}@${HG_HOST}" "bash -lc '
+            "${HG_USER}@${HG_HOST}" bash -lc "
               set -euo pipefail
-              DOCROOT=\"${HG_DOCROOT}\"
-              INBOX=\"$INBOX\"
-              STAGE=\"$STAGE\"
+              DOCROOT=\"${DOCROOT}\"
+              INBOX=\"${INBOX}\"
+              STAGE=\"${STAGE}\"
 
-              mkdir -p \"$DOCROOT\" \"$STAGE\"
-              rm -rf \"$STAGE\" && mkdir -p \"$STAGE\"
+              mkdir -p \"\$DOCROOT\" \"\$STAGE\"
+              rm -rf \"\$STAGE\" && mkdir -p \"\$STAGE\"
 
               # Extract uploaded package to stage
-              tar -xzf \"$INBOX/package.tgz\" -C \"$STAGE\"
+              tar -xzf \"\$INBOX/package.tgz\" -C \"\$STAGE\"
 
               # Require index in stage before touching live
-              if [ ! -f \"$STAGE/index.html\" ] && [ ! -f \"$STAGE/index.php\" ]; then
-                echo \"ERROR: No index.html or index.php found in staged content\" >&2; exit 1
+              if [ ! -f \"\$STAGE/index.html\" ] && [ ! -f \"\$STAGE/index.php\" ]; then
+                echo 'ERROR: No index.html or index.php in staged content' >&2
+                exit 1
               fi
 
               # Swap contents: clear docroot, then copy staged files
-              find \"$DOCROOT\" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-              cp -a \"$STAGE\"/. \"$DOCROOT\"/
+              find \"\$DOCROOT\" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+              cp -a \"\$STAGE\"/. \"\$DOCROOT\"/
 
-              # Cleanup the inbox completely
-              rm -rf \"$INBOX\"
+              # Cleanup inbox completely
+              rm -rf \"\$INBOX\"
 
               # Permissions
-              find \"$DOCROOT\" -type d -exec chmod 755 {} +
-              find \"$DOCROOT\" -type f -exec chmod 644 {} +
+              find \"\$DOCROOT\" -type d -exec chmod 755 {} +
+              find \"\$DOCROOT\" -type f -exec chmod 644 {} +
 
               # Record deployed commit for quick verification
-              echo \"${GITHUB_SHA}\" > \"$DOCROOT/_deployed.txt\"
+              echo \"${GIT_SHA}\" > \"\$DOCROOT/_deployed.txt\"
 
               # Final check
-              test -f \"$DOCROOT/index.html\" -o -f \"$DOCROOT/index.php\"
-            '"
+              test -f \"\$DOCROOT/index.html\" -o -f \"\$DOCROOT/index.php\"
+            "
