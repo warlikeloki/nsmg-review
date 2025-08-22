@@ -2,7 +2,7 @@
 Explain what this PR changes and why.
 
 ## Related
-- Jira: NSMG-
+- Jira: NSM-
 - Closes #<issue>
 
 ## Screenshots / Demos

@@ -8,19 +8,21 @@ require_method('GET');
 try {
     $pdo = db();
 
-    $q = "SELECT s.id, s.name, s.description, p.price
+    $q = "SELECT s.id, s.name, s.description, s.unit, s.is_package, p.price
           FROM services s
-          LEFT JOIN pricing p ON p.service_id = s.id
-          WHERE s.is_package = :flag
-          ORDER BY s.name ASC";
+          INNER JOIN pricing p ON p.service_id = s.id
+          ORDER BY s.is_package DESC, s.name ASC";
 
-    $pkg = $pdo->prepare($q);
-    $pkg->execute([':flag' => 1]);
-    $packages = $pkg->fetchAll();
+    $stmt = $pdo->query($q);
+    $rows = $stmt->fetchAll();
 
-    $ala = $pdo->prepare($q);
-    $ala->execute([':flag' => 0]);
-    $alacarte = $ala->fetchAll();
+    // Split into packages vs à la carte on the server
+    $packages = [];
+    $alacarte = [];
+    foreach ($rows as $r) {
+        if ((int)$r['is_package'] === 1) { $packages[] = $r; }
+        else { $alacarte[] = $r; }
+    }
 
     json_response(true, ['packages' => $packages, 'alacarte' => $alacarte]);
 } catch (Throwable $e) {
