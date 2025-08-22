@@ -1,0 +1,73 @@
+name: Deploy Website to HostGator
+
+on:
+  push:
+    branches: [ "main" ]  # change if your default branch is different
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Pack Website folder
+        run: |
+          set -e
+          test -d Website || { echo "Website/ not found at repo root"; exit 1; }
+          tar -C Website -czf package.tgz .
+
+      - name: Upload package to server (SCP)
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HG_HOST }}
+          username: ${{ secrets.HG_USER }}
+          port: ${{ secrets.HG_PORT }}
+          key: ${{ secrets.HG_KEY }}
+          source: package.tgz
+          target: /home/${{ secrets.HG_USER }}/deploy_inbox
+
+      - name: Publish on server (SSH)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HG_HOST }}
+          username: ${{ secrets.HG_USER }}
+          port: ${{ secrets.HG_PORT }}
+          key: ${{ secrets.HG_KEY }}
+          script: |
+            set -euo pipefail
+
+            DOCROOT="${{ secrets.HG_DOCROOT }}"
+            INBOX="/home/${{ secrets.HG_USER }}/deploy_inbox"
+            STAGE="$INBOX/unpacked"
+
+            mkdir -p "$INBOX" "$DOCROOT"
+            rm -rf "$STAGE" && mkdir -p "$STAGE"
+
+            # Extract uploaded package to stage
+            tar -xzf "$INBOX/package.tgz" -C "$STAGE"
+
+            # Require index in stage before touching live
+            if [ ! -f "$STAGE/index.html" ] && [ ! -f "$STAGE/index.php" ]; then
+              echo "ERROR: No index.html or index.php found in staged package"; exit 1
+            fi
+
+            # Swap contents: clear docroot, then copy staged files
+            find "$DOCROOT" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+            cp -a "$STAGE"/. "$DOCROOT"/
+
+            # Cleanup inbox
+            rm -rf "$INBOX"
+
+            # Permissions
+            find "$DOCROOT" -type d -exec chmod 755 {} +
+            find "$DOCROOT" -type f -exec chmod 644 {} +
+
+            # Write deployed commit for quick verification
+            echo "${{ github.sha }}" > "$DOCROOT/_deployed.txt"
+
+            # Final check
+            test -f "$DOCROOT/index.html" -o -f "$DOCROOT/index.php"
