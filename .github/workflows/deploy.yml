@@ -1,4 +1,4 @@
-name: Deploy Website to HostGator
+name: Deploy site to HostGator
 
 on:
   push:
@@ -14,11 +14,17 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Pack Website folder
+      - name: Pick source folder and pack (includes dotfiles)
         run: |
           set -e
-          test -d Website || { echo "Website/ not found at repo root"; exit 1; }
-          tar -C Website -czf package.tgz .
+          if [ -d "Website" ]; then SRC="Website"; else SRC="."; fi
+          echo "Packaging from: $SRC"
+          tar -C "$SRC" -czf package.tgz \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='.cpanel.yml' \
+            .
 
       - name: Upload package to server (SCP)
         uses: appleboy/scp-action@v0.1.7
