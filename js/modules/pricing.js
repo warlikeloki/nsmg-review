@@ -1,16 +1,83 @@
 // /js/modules/pricing.js
-export async function loadPricing(){
-  const pkg=document.getElementById('packages-body');const ala=document.getElementById('ala-carte-body');if(!pkg||!ala)return;
-  function fmt(a,u){const n=Number(a);const f=isFinite(n)?n.toLocaleString(undefined,{style:'currency',currency:'USD'}):a;return u?`${f} ${u}`:f}
-  async function getData(){
-    try{const r=await fetch('/php/get_pricing.php');if(r.ok){const j=await r.json();if(j?.success&&Array.isArray(j.data))return j.data}}catch{}
-    try{const r=await fetch('/json/pricing.json');if(r.ok)return await r.json()}catch{};return null;
+// Works with normalized schema (services + pricing) where /php/get_pricing.php
+// returns: { success: true, data: { packages: [...], alacarte: [...] } }.
+//
+// Exports a named function `loadPricing()` so /js/main.js can import and invoke it.
+// Also auto-runs safely if imported/loaded without main.js calling it.
+// Idempotent: multiple calls won't double-render.
+
+let __ran = false;
+
+const usd = (n) => {
+  if (n == null || n === '') return '';
+  const num = Number(n);
+  return Number.isFinite(num)
+    ? num.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+    : String(n);
+};
+
+const setLoading = (pkgBody, alaBody) => {
+  const r = '<tr><td colspan="3">Loading prices...</td></tr>';
+  pkgBody.innerHTML = r;
+  alaBody.innerHTML = r;
+};
+
+const setError = (pkgBody, alaBody, msg) => {
+  const r = `<tr><td colspan="3" class="error">${msg}</td></tr>`;
+  pkgBody.innerHTML = r;
+  alaBody.innerHTML = r;
+};
+
+const renderRows = (tbody, items) => {
+  if (!Array.isArray(items) || items.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3">No items</td></tr>';
+    return;
   }
-  try{
-    const d=await getData();let pk=[],al=[];
-    if(Array.isArray(d)){pk=d.filter(x=>Number(x.is_package)===1);al=d.filter(x=>Number(x.is_package)!==1);}
-    else if(d&&(Array.isArray(d.packages)||Array.isArray(d.ala_carte))){pk=d.packages||[];al=d.ala_carte||[];}
-    pkg.innerHTML=pk.length?pk.map(x=>`<tr><td>${x.service}</td><td>${x.description||''}</td><td>${fmt(x.price,x.unit)}</td></tr>`).join(''):'<tr><td colspan="3">No packages available.</td></tr>';
-    ala.innerHTML=al.length?al.map(x=>`<tr><td>${x.service}</td><td>${x.description||''}</td><td>${fmt(x.price,x.unit)}</td></tr>`).join(''):'<tr><td colspan="3">No à la carte services available.</td></tr>';
-  }catch(e){console.error('Pricing load error:',e);pkg.innerHTML='<tr><td colspan="3">Error loading pricing.</td></tr>';ala.innerHTML='<tr><td colspan="3">Error loading pricing.</td></tr>';}
+  tbody.innerHTML = items.map(r => `
+    <tr>
+      <td>${r.name ?? ''}</td>
+      <td>${r.description ?? ''}</td>
+      <td>${usd(r.price)}</td>
+    </tr>
+  `).join('');
+};
+
+export async function loadPricing() {
+  if (__ran) return; // idempotent
+  const pkgBody = document.getElementById('packages-body');
+  const alaBody = document.getElementById('ala-carte-body');
+  if (!pkgBody || !alaBody) return; // not on pricing page
+
+  __ran = true;
+  try {
+    setLoading(pkgBody, alaBody);
+    const res = await fetch('/php/get_pricing.php', { cache: 'no-store' });
+    const json = await res.json();
+    if (!json?.success || !json?.data) {
+      setError(pkgBody, alaBody, json?.error || 'Failed to load pricing.');
+      return;
+    }
+    const { packages = [], alacarte = [] } = json.data;
+    renderRows(pkgBody, packages);
+    renderRows(alaBody, alacarte);
+  } catch (err) {
+    console.error(err);
+    setError(pkgBody, alaBody, 'Unable to fetch pricing at this time.');
+  }
+}
+
+// Auto-run if the elements are already on the page and main.js doesn't call us.
+// (Safe due to idempotent guard.)
+const autoRunIfReady = () => {
+  const pkgBody = document.getElementById('packages-body');
+  const alaBody = document.getElementById('ala-carte-body');
+  if (pkgBody && alaBody) {
+    loadPricing();
+  }
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', autoRunIfReady, { once: true });
+} else {
+  autoRunIfReady();
 }

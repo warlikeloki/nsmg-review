@@ -1,17 +1,19 @@
--- DROP both tables if they already exist
+-- DROP both tables if they already exist (optional)
 DROP TABLE IF EXISTS pricing;
 DROP TABLE IF EXISTS services;
 
 -- CREATE services table
 CREATE TABLE services (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(150) NOT NULL,       -- e.g. "Event Photography - Basic Package"
-  description TEXT,                 -- human-readable details
-  unit VARCHAR(50),                 -- e.g. "per hour", "per image", NULL for packages
+  name VARCHAR(150) NOT NULL,
+  description TEXT,
+  unit VARCHAR(50),
   is_package BOOLEAN NOT NULL DEFAULT FALSE,
-  created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
-                          ON UPDATE CURRENT_TIMESTAMP
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  INDEX idx_services_name (name),
+  INDEX idx_services_is_package (is_package)
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
