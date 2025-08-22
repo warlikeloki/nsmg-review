@@ -1,10 +1,6 @@
 // /js/modules/pricing.js
-// Works with normalized schema (services + pricing) where /php/get_pricing.php
-// returns: { success: true, data: { packages: [...], alacarte: [...] } }.
-//
-// Exports a named function `loadPricing()` so /js/main.js can import and invoke it.
-// Also auto-runs safely if imported/loaded without main.js calling it.
-// Idempotent: multiple calls won't double-render.
+// Exports loadPricing(). main.js imports and calls it if the page has the pricing tables.
+// Idempotent + auto-run fallback.
 
 let __ran = false;
 
@@ -46,7 +42,7 @@ export async function loadPricing() {
   if (__ran) return; // idempotent
   const pkgBody = document.getElementById('packages-body');
   const alaBody = document.getElementById('ala-carte-body');
-  if (!pkgBody || !alaBody) return; // not on pricing page
+  if (!pkgBody || !alaBody) return; // not pricing page
 
   __ran = true;
   try {
@@ -66,16 +62,12 @@ export async function loadPricing() {
   }
 }
 
-// Auto-run if the elements are already on the page and main.js doesn't call us.
-// (Safe due to idempotent guard.)
+// Auto-run in case main.js doesn't call us (safe because __ran guard)
 const autoRunIfReady = () => {
   const pkgBody = document.getElementById('packages-body');
   const alaBody = document.getElementById('ala-carte-body');
-  if (pkgBody && alaBody) {
-    loadPricing();
-  }
+  if (pkgBody && alaBody) loadPricing();
 };
-
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', autoRunIfReady, { once: true });
 } else {
