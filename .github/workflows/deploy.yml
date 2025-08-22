@@ -14,17 +14,20 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Pick source folder and pack (includes dotfiles)
+      - name: Pick source and pack safely (write tar to RUNNER_TEMP)
         run: |
           set -e
           if [ -d "Website" ]; then SRC="Website"; else SRC="."; fi
           echo "Packaging from: $SRC"
-          tar -C "$SRC" -czf package.tgz \
+          PKG="$RUNNER_TEMP/package.tgz"
+          # Create tar outside the source tree to avoid 'file changed as we read it'
+          tar -C "$SRC" -czf "$PKG" \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='node_modules' \
             --exclude='.cpanel.yml' \
             .
+          echo "PKG=$PKG" >> "$GITHUB_ENV"
 
       - name: Upload package to server (SCP)
         uses: appleboy/scp-action@v0.1.7
@@ -33,7 +36,7 @@ jobs:
           username: ${{ secrets.HG_USER }}
           port: ${{ secrets.HG_PORT }}
           key: ${{ secrets.HG_KEY }}
-          source: package.tgz
+          source: ${{ env.PKG }}
           target: /home/${{ secrets.HG_USER }}/deploy_inbox
 
       - name: Publish on server (SSH)
@@ -72,7 +75,7 @@ jobs:
             find "$DOCROOT" -type d -exec chmod 755 {} +
             find "$DOCROOT" -type f -exec chmod 644 {} +
 
-            # Write deployed commit for quick verification
+            # Record deployed commit for quick verification
             echo "${{ github.sha }}" > "$DOCROOT/_deployed.txt"
 
             # Final check
