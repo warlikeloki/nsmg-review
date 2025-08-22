@@ -1,41 +1,25 @@
 <?php
-header("Content-Type: application/json; charset=utf-8");
-require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/util.php';
 
-try {
-    // Ensure we have a category (type) filter
-    $category = $_GET['category'] ?? '';
-    if (empty($category)) {
-        http_response_code(400);
-        echo json_encode(["success" => false, "message" => "Missing category parameter."]);
-        exit;
-    }
+require_method('GET');
 
-    // Prepare and execute SQL: join equipment with types, filter by slug
-    $sql = <<<SQL
-SELECT
-  e.id,
-  e.name,
-  e.description,
-  e.category,
-  et.slug AS type
-FROM equipment e
-JOIN equipment_to_types ett ON e.id = ett.equipment_id
-JOIN equipment_types et ON ett.type_id = et.id
-WHERE et.slug = :category
-ORDER BY e.category, e.name
-SQL;
+$category = get_str($_GET, 'category', '');
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':category', $category);
-    $stmt->execute();
-    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Return the filtered list
-    echo json_encode($rows, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(["success" => false, "message" => "Server error: " . $e->getMessage()]);
+if ($category === '') {
+    json_response(false, null, 'Missing category parameter.', 400);
 }
 
-//--- /php/get_equipment.php (Issue #46) ---
+$sql = "SELECT id, name, description, category
+        FROM equipment
+        WHERE category = :category
+        ORDER BY name ASC";
+
+try {
+    $pdo = db();
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':category' => $category]);
+    json_response(true, $stmt->fetchAll());
+} catch (Throwable $e) {
+    json_response(false, null, APP_DEBUG ? $e->getMessage() : 'Failed to load equipment', 500);
+}

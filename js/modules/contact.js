@@ -1,22 +1,17 @@
 // /js/modules/contact.js
-// Handles Issue #47: Contact Form Integration
-
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("contact-form");
   const status = document.getElementById("form-status");
-
-  // Only proceed if form and status elements are present
   if (!form || !status) return;
 
-  form.addEventListener("submit", async e => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    status.textContent = "Sending...";
+    status.textContent = "Sending…";
 
-    const data = new FormData(form);
     try {
-      const res = await fetch("/php/contact_form.php", {
+      const res = await fetch("/php/submit_contact.php", {
         method: "POST",
-        body: data
+        body: new FormData(form)
       });
       const result = await res.json();
 
@@ -24,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
         status.textContent = "Thank you! Your message has been sent.";
         form.reset();
       } else {
-        status.textContent = result.message || "Oops! Something went wrong.";
+        status.textContent = result.error || result.message || "Oops! Something went wrong.";
       }
     } catch (err) {
       console.error("Contact form error:", err);

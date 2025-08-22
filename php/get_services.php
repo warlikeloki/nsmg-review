@@ -1,33 +1,53 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/util.php';
 
-header('Content-Type: application/json');
+require_method('GET');
 
-// Include DB connection
-require_once __DIR__ . '/db_connect.php'; // Adjust path if needed
+$limit     = max(0, get_int($_GET, 'limit', 0)); // 0 = no limit
+$category  = get_str($_GET, 'category', '');
+$isPackage = get_str($_GET, 'is_package', '');   // '', '0', or '1'
+$search    = get_str($_GET, 'q', '');
 
-// Limit parameter with safety check
-$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
-if ($limit < 1 || $limit > 20) $limit = 10;
+$sql = "SELECT s.id, s.name, s.description, s.category, s.unit, s.is_package,
+               p.price
+        FROM services s
+        LEFT JOIN pricing p ON p.service_id = s.id
+        WHERE 1=1";
+$params = [];
 
+if ($category !== '') {
+    $sql .= " AND s.category = :category";
+    $params[':category'] = $category;
+}
+
+if ($isPackage === '0' || $isPackage === '1') {
+    $sql .= " AND s.is_package = :is_package";
+    $params[':is_package'] = (int)$isPackage;
+}
+
+if ($search !== '') {
+    $sql .= " AND (s.name LIKE :q OR s.description LIKE :q)";
+    $params[':q'] = "%{$search}%";
+}
+
+$sql .= " ORDER BY s.name ASC";
+if ($limit > 0) {
+    $sql .= " LIMIT :limit";
+}
 
 try {
-    // Only select services where active = 1
-    $stmt = $pdo->prepare("SELECT id, name, description FROM services WHERE active = 1 LIMIT ?");
-    $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+    $pdo = db();
+    $stmt = $pdo->prepare($sql);
+    foreach ($params as $k => $v) {
+        $stmt->bindValue($k, $v);
+    }
+    if ($limit > 0) {
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    }
     $stmt->execute();
-    $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    echo json_encode([
-        'success' => true,
-        'data' => $services
-    ]);
-} catch (PDOException $e) {
-    echo json_encode([
-        'success' => false,
-        'error' => $e->getMessage()
-    ]);
-    exit;
+    $rows = $stmt->fetchAll();
+    json_response(true, $rows);
+} catch (Throwable $e) {
+    json_response(false, null, APP_DEBUG ? $e->getMessage() : 'Failed to load services', 500);
 }
-?>
