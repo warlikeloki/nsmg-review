@@ -1,6 +1,7 @@
 <?php
 header("Content-Type: application/json");
-require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/util.php';
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     http_response_code(405);

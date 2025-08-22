@@ -1,6 +1,7 @@
 <?php
 header("Content-Type: application/json");
-require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/util.php';
 
 try {
     $file = __DIR__ . '/../json/posts.json';

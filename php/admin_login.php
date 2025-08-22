@@ -2,7 +2,8 @@
 session_start();
 
 // 1. Load your DB connection (adjust path if needed)
-require_once __DIR__ . '/db_connect.php';  
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/util.php'; 
 // db_connect.php should set up a PDO instance in $pdo, e.g.
 //   $pdo = new PDO('mysql:host=localhost;dbname=your_db;charset=utf8', 'user', 'pass', [...]);
 
