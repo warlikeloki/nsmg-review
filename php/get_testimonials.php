@@ -1,6 +1,7 @@
 <?php
 header("Content-Type: application/json");
-require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/util.php';
 
 try {
     // For now we load from the JSON file; later you can switch to a DB query

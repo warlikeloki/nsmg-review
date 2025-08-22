@@ -9,7 +9,8 @@ issues.tsv
 nsmg_db.sql
 github_issues.csv
 jira_issues_ready.csv
-
+config/config.php
+/sql/*.sql
 .env
 .env.*
 **/*.key
