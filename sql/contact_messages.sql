@@ -5,7 +5,10 @@ CREATE TABLE contact_messages (
   phone VARCHAR(50),
   subject VARCHAR(255),
   message TEXT NOT NULL,
-  submitted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  submitted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  INDEX idx_contact_email (email),
+  INDEX idx_contact_submitted (submitted_at)
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;

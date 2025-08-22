@@ -4,10 +4,12 @@ CREATE TABLE pricing (
   id INT AUTO_INCREMENT PRIMARY KEY,
   service_id INT NOT NULL,
   price DECIMAL(10,2) NOT NULL,
-  created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
-                          ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_pricing_service
+    FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE,
+  UNIQUE KEY uq_pricing_service (service_id)
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
@@ -60,4 +62,3 @@ INSERT INTO pricing (service_id, price) VALUES
 ((SELECT id FROM services WHERE name='Officiant Rehearsal'), 100.00),
 ((SELECT id FROM services WHERE name='Notary Act'), 5.00),
 ((SELECT id FROM services WHERE name='Notary Travel Fee'), 30.00);
-

@@ -1,4 +1,5 @@
 <?php
+// /php/get_pricing.php  — normalized: services + pricing
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/util.php';
 
@@ -7,7 +8,7 @@ require_method('GET');
 try {
     $pdo = db();
 
-    $q = "SELECT s.id, s.name, s.description, s.unit, p.price
+    $q = "SELECT s.id, s.name, s.description, p.price
           FROM services s
           LEFT JOIN pricing p ON p.service_id = s.id
           WHERE s.is_package = :flag
