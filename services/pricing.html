@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pricing · Neil Smith Media Group</title>
 
-  <!-- Favicon and App Icons -->
+  <!-- Icons -->
   <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml">
   <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
   <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
@@ -15,45 +15,30 @@
   <meta name="apple-mobile-web-app-title" content="NSMG" />
   <meta name="application-name" content="Neil Smith Media Group" />
 
-  <!-- Global Styles -->
+  <!-- Styles -->
   <link rel="stylesheet" href="/css/global.css" />
-
-  <!-- Navigation, Header, Footer Styles (included on all pages by default) -->
   <link rel="stylesheet" href="/css/navigation.css" />
   <link rel="stylesheet" href="/css/header.css" />
   <link rel="stylesheet" href="/css/footer.css" />
   <link rel="stylesheet" href="/css/layout.css" />
-
-  <!-- Page-Specific Styles -->
   <link rel="stylesheet" href="/css/pricing.css" />
-
-  <!-- Mobile Stylesheet (for responsive adjustments) -->
   <link rel="stylesheet" href="/css/mobile.css" />
 </head>
 <body>
-  <!-- HEADER INJECTION -->
+  <!-- HEADER INJECTION (by /js/main.js) -->
   <div id="header-container"></div>
 
   <div class="page-container">
-    <!-- Left Sidebar -->
-    <aside class="sidebar left-sidebar">
-      <!-- Optional content like social links, quick menu, or brand highlights -->
-    </aside>
+    <aside class="sidebar left-sidebar"></aside>
 
-    <!-- MAIN CONTENT -->
     <main class="pricing-section main-content">
       <section id="packages-section">
         <h2>Packages</h2>
         <table class="pricing-table" id="packages-table">
           <thead>
-            <tr>
-              <th>Service</th>
-              <th>Description</th>
-              <th>Price</th>
-            </tr>
+            <tr><th>Service</th><th>Description</th><th>Price</th></tr>
           </thead>
           <tbody id="packages-body">
-            <!-- JS will inject <tr><td>…</td></tr> rows here -->
             <tr><td colspan="3">Loading prices...</td></tr>
           </tbody>
         </table>
@@ -63,18 +48,14 @@
         <h2>À La Carte</h2>
         <table class="pricing-table" id="ala-carte-table">
           <thead>
-            <tr>
-              <th>Service</th>
-              <th>Description</th>
-              <th>Price</th>
-            </tr>
+            <tr><th>Service</th><th>Description</th><th>Price</th></tr>
           </thead>
           <tbody id="ala-carte-body">
-            <!-- JS will inject rows here -->
             <tr><td colspan="3">Loading prices...</td></tr>
           </tbody>
         </table>
       </section>
+
       <div>
         <p>
           All prices are in USD and subject to change. For custom quotes or additional services, please contact us directly.<br>
@@ -83,46 +64,13 @@
       </div>
     </main>
 
-    <!-- Right Sidebar -->
-    <aside class="sidebar right-sidebar">
-      <!-- Optional content like booking button, recent blog posts, or featured equipment -->
-    </aside>
+    <aside class="sidebar right-sidebar"></aside>
   </div>
 
-  <!-- FOOTER INJECTION -->
+  <!-- FOOTER INJECTION (by /js/main.js) -->
   <div id="footer-container"></div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Load header.html into #header-container
-      fetch('/header.html')
-        .then((res) => {
-          if (!res.ok) throw new Error(`Failed to load header: ${res.status}`);
-          return res.text();
-        })
-        .then((html) => {
-          document.getElementById('header-container').innerHTML = html;
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-
-      // Load footer.html into #footer-container
-      fetch('/footer.html')
-        .then((res) => {
-          if (!res.ok) throw new Error(`Failed to load footer: ${res.status}`);
-          return res.text();
-        })
-        .then((html) => {
-          document.getElementById('footer-container').innerHTML = html;
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    });
-  </script>
-
-  <!-- MAIN.JS ENTRY POINT -->
-  <script type="module" src="/js/main.js"></script>
+  <!-- MAIN.JS ONLY -->
+  <script type="module" src="/js/main.js?v=2025-08-22" defer></script>
 </body>
 </html>

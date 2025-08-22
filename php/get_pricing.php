@@ -1,5 +1,5 @@
 <?php
-// /php/get_pricing.php  — normalized: services + pricing
+// /php/get_pricing.php — normalized: services + pricing
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/util.php';
 
@@ -8,6 +8,7 @@ require_method('GET');
 try {
     $pdo = db();
 
+    // All priced services in one query
     $q = "SELECT s.id, s.name, s.description, s.unit, s.is_package, p.price
           FROM services s
           INNER JOIN pricing p ON p.service_id = s.id
@@ -16,7 +17,7 @@ try {
     $stmt = $pdo->query($q);
     $rows = $stmt->fetchAll();
 
-    // Split into packages vs à la carte on the server
+    // Split server-side for simple client rendering
     $packages = [];
     $alacarte = [];
     foreach ($rows as $r) {
