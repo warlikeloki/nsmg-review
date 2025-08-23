@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/util.php';
 
+nsmg_nocache();
 require_method('GET');
 
 $limit     = max(0, get_int($_GET, 'limit', 0)); // 0 = no limit
@@ -16,7 +17,7 @@ $sql = "SELECT s.id, s.name, s.description, s.unit, s.is_package,
         WHERE 1=1";
 $params = [];
 
-if ($isPackage === '0' || $isPackage === '1') {
+if ($isPackage !== '' && ($isPackage === '0' || $isPackage === '1')) {
     $sql .= " AND s.is_package = :is_package";
     $params[':is_package'] = (int)$isPackage;
 }

@@ -1,41 +1,48 @@
 <?php
 // /php/get_equipment.php
+// Returns equipment rows with optional filters. 
+// Filters 'category' by membership within a CSV string (e.g., 'photography, videography').
+
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/util.php';
 
 nsmg_nocache();
 require_method('GET');
 
-$category = get_str($_GET,'category','');
+$category = get_str($_GET,'category','');  // multi-use tags (photography, videography, editing, ...)
 $q        = get_str($_GET,'q','');
 $limit    = max(0, get_int($_GET,'limit',0));
 
 $sql = "SELECT
           id,
           name,
-          category,
+          category,          -- CSV of use-tags
+          types,             -- gear class (camera, lens, lighting, ...)
           description,
           thumbnail_url,
           manufacturer,
           model_number,
           `condition`,
-          is_retired,
-          types
+          is_retired
         FROM equipment
         WHERE 1=1";
 $params = [];
 
 if ($category !== '') {
-  $sql .= " AND category = :category";
+  // Normalize spaces so FIND_IN_SET works even if stored as 'a, b'
+  $sql .= " AND FIND_IN_SET(:category, REPLACE(category, ', ', ','))";
   $params[':category'] = $category;
 }
+
 if ($q !== '') {
   $sql .= " AND (name LIKE :q OR description LIKE :q OR manufacturer LIKE :q OR model_number LIKE :q)";
   $params[':q'] = "%{$q}%";
 }
 
-$sql .= " ORDER BY category ASC, name ASC";
-if ($limit > 0) $sql .= " LIMIT :limit";
+$sql .= " ORDER BY name ASC";
+if ($limit > 0) {
+  $sql .= " LIMIT :limit";
+}
 
 try {
   $pdo = db();
@@ -44,17 +51,6 @@ try {
   if ($limit>0) $stmt->bindValue(':limit',$limit,PDO::PARAM_INT);
   $stmt->execute();
   $rows = $stmt->fetchAll();
-
-  // Normalize types: ensure JS gets an array (not a JSON string)
-  foreach ($rows as &$r) {
-    if (array_key_exists('types',$r) && $r['types'] !== null) {
-      // $r['types'] is JSON text in MySQL; decode to PHP array
-      $decoded = json_decode($r['types'], true);
-      $r['types'] = is_array($decoded) ? $decoded : null;
-    } else {
-      $r['types'] = null;
-    }
-  }
 
   json_response(true, $rows);
 } catch (Throwable $e) {

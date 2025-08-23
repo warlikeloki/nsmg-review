@@ -7,7 +7,7 @@
   <!-- SEO Meta Description -->
   <meta
     name="description"
-    content="Explore Neil Smith Media Group’s services: event photography, brand videography, and creative post-production editing tailored to your project needs."
+    content="Explore Neil Smith Media Group’s services: event photography, videography, editing, and other creative services tailored to your project needs."
   />
   <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/global.css" />
@@ -74,20 +74,38 @@
       const navButtons = document.querySelectorAll("#services-nav .admin-button");
       const content = document.getElementById("services-content");
 
+      function ensureModule(src) {
+        if ([...document.scripts].some(s => s.getAttribute('src') === src)) return;
+        const s = document.createElement('script');
+        s.src = src;
+        s.defer = true;
+        document.body.appendChild(s);
+      }
+
+      function hydrateInjectedContent(service) {
+        if (content.querySelector('#equipment-list')) {
+          ensureModule('/js/modules/equipment.js?v=2025-08-23.1');
+          if (typeof window.loadEquipment === 'function') window.loadEquipment();
+        }
+        if (content.querySelector('#other-services-container')) {
+          ensureModule('/js/modules/other-services.js?v=2025-08-23.1');
+        }
+        if (service === 'request-form') {
+          ensureModule('/js/modules/service-request.js?v=2025-08-23.1');
+        }
+      }
+
       navButtons.forEach(button => {
         button.addEventListener("click", () => {
-          // Update active state
           navButtons.forEach(btn => btn.classList.remove("active"));
           button.classList.add("active");
 
           const service = button.getAttribute("data-service");
-
-          // Build URL for all services, including request-form
           const url = service === 'request-form'
             ? '/services/request-form.html'
             : `/services/${service}.html`;
 
-          fetch(url)
+          fetch(url, { cache: 'no-store' })
             .then(res => {
               if (!res.ok) throw new Error(`Content not found: ${url}`);
               return res.text();
@@ -97,16 +115,7 @@
               const doc = parser.parseFromString(html, 'text/html');
               const main = doc.querySelector('main');
               content.innerHTML = main ? main.innerHTML : '<p>Unable to load content.</p>';
-
-              // Reload equipment if needed
-              if (typeof loadEquipment === 'function') loadEquipment();
-              // For request form, ensure handler attaches
-              if (service === 'request-form') {
-                const s = document.createElement('script');
-                s.src = '/js/modules/service-request.js';
-                s.defer = true;
-                document.body.appendChild(s);
-              }
+              hydrateInjectedContent(service);
             })
             .catch(err => {
               console.error(err);
