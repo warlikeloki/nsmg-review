@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/util.php';
 
+nsmg_nocache();
 require_method('GET');
 
 try {
