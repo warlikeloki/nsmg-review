@@ -1,34 +1,48 @@
 // /js/modules/equipment.js
-// Accordion list of equipment filtered by membership in the CSV `category` column.
-// Shows NAME ONLY in each row (no condition/category lines).
-// Grouped by gear type stored in `types` (camera, lens, lighting, etc.).
+// Flat, per-item accordion of equipment.
+// - Filters by membership in CSV `category` (e.g., "photography, videography").
+// - Each item header shows NAME only.
+// - Expanded panel shows DESCRIPTION (and an image if thumbnail_url exists).
 //
-// How it decides which tag to filter by (in priority order):
-//   1) URL ...?category=photography
+// How the page tells us which tag to filter by (priority):
+//   1) URL: ?category=photography
 //   2) <body data-category-filter="photography">
 //   3) <section id="equipment-list" data-category="photography">
 //
-// Exposes window.loadEquipment() so /js/main.js can call it. Also auto-runs once.
+// Exposes window.loadEquipment() for /js/main.js. Also auto-runs.
 
 (function () {
   if (window.loadEquipment) return; // idempotent
 
-  // --- utils ---
-  const toTitle = (s) => (s || 'Other')
-    .toString()
-    .trim()
-    .replace(/\s+/g, ' ')
-    .replace(/\b\w/g, c => c.toUpperCase());
+  // Build one accordion row (collapsed by default)
+  function itemRow(e, idx) {
+    const panelId = `eq-item-panel-${idx}`;
+    const btnId   = `eq-item-toggle-${idx}`;
 
-  const groupBy = (arr, keyFn) => {
-    const map = new Map();
-    for (const item of arr) {
-      const k = keyFn(item);
-      if (!map.has(k)) map.set(k, []);
-      map.get(k).push(item);
-    }
-    return map;
-  };
+    // Only description + (future) small image; no category/condition/etc.
+    const img = e.thumbnail_url
+      ? `<img class="eq-thumb" src="${e.thumbnail_url}" alt="${e.name}" loading="lazy" decoding="async">`
+      : '';
+
+    const desc = e.description ? `<p class="eq-desc">${e.description}</p>` : '<p class="eq-desc">No description provided.</p>';
+
+    return `
+      <section class="equip-item">
+        <h3 class="equip-item-header">
+          <button id="${btnId}" class="equip-toggle" aria-expanded="false" aria-controls="${panelId}">
+            <span class="equip-title">${e.name}</span>
+            <span class="equip-caret" aria-hidden="true">▸</span>
+          </button>
+        </h3>
+        <div id="${panelId}" class="equip-panel" role="region" aria-labelledby="${btnId}" hidden>
+          <div class="equip-panel-inner">
+            ${img}
+            ${desc}
+          </div>
+        </div>
+      </section>
+    `;
+  }
 
   async function fetchEquipment(paramsObj = {}) {
     const params = new URLSearchParams();
@@ -39,75 +53,60 @@
     return res.json();
   }
 
-  function renderAccordion(listEl, items, expandFirst = true) {
-    // Group by gear class from `types`
-    const groups = groupBy(items, (e) => (e.types && e.types.trim()) ? e.types.trim() : 'Other');
-    // Sort groups by label
-    const labels = [...groups.keys()].sort((a, b) => toTitle(a).localeCompare(toTitle(b)));
-
-    const parts = [];
-    labels.forEach((label, idx) => {
-      const panelId = `eq-panel-${idx}`;
-      const btnId   = `eq-toggle-${idx}`;
-      const rows = groups.get(label)
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map(e => `<li class="eq-item">${e.name}</li>`)
-        .join('');
-
-      parts.push(`
-        <section class="equip-accordion-section">
-          <h3 class="equip-accordion-header">
-            <button id="${btnId}" class="accordion-toggle" aria-expanded="${expandFirst && idx === 0 ? 'true' : 'false'}" aria-controls="${panelId}">
-              ${toTitle(label)} <span class="count">(${groups.get(label).length})</span>
-            </button>
-          </h3>
-          <div id="${panelId}" class="equip-accordion-panel" role="region" aria-labelledby="${btnId}" ${expandFirst && idx === 0 ? '' : 'hidden'}>
-            <ul class="equip-list">
-              ${rows}
-            </ul>
-          </div>
-        </section>
-      `);
-    });
-
-    listEl.innerHTML = `<div class="equip-accordion">${parts.join('')}</div>`;
-
-    // Wire up toggles (accessible)
-    listEl.querySelectorAll('.accordion-toggle').forEach(btn => {
+  function wireToggles(container) {
+    const toggles = Array.from(container.querySelectorAll('.equip-toggle'));
+    toggles.forEach(btn => {
       const panel = document.getElementById(btn.getAttribute('aria-controls'));
       btn.addEventListener('click', () => {
         const expanded = btn.getAttribute('aria-expanded') === 'true';
         btn.setAttribute('aria-expanded', String(!expanded));
-        if (panel) panel.hidden = expanded;
+        panel.hidden = expanded;
+        // rotate caret
+        const caret = btn.querySelector('.equip-caret');
+        if (caret) caret.textContent = expanded ? '▸' : '▾';
       });
-      // Optional keyboard helpers
+      // keyboard nav between items
       btn.addEventListener('keydown', (e) => {
         if (!['ArrowUp','ArrowDown','Home','End'].includes(e.key)) return;
-        const all = Array.from(listEl.querySelectorAll('.accordion-toggle'));
-        const i = all.indexOf(btn);
+        const i = toggles.indexOf(btn);
         let next = i;
-        if (e.key === 'ArrowUp') next = (i - 1 + all.length) % all.length;
-        if (e.key === 'ArrowDown') next = (i + 1) % all.length;
+        if (e.key === 'ArrowUp') next = (i - 1 + toggles.length) % toggles.length;
+        if (e.key === 'ArrowDown') next = (i + 1) % toggles.length;
         if (e.key === 'Home') next = 0;
-        if (e.key === 'End') next = all.length - 1;
-        all[next]?.focus();
+        if (e.key === 'End') next = toggles.length - 1;
+        toggles[next]?.focus();
         e.preventDefault();
       });
     });
+  }
+
+  function render(listEl, items) {
+    if (!Array.isArray(items) || items.length === 0) {
+      listEl.innerHTML = '<p>No equipment found.</p>';
+      return;
+    }
+    // Sort by name, produce flat list
+    const html = items
+      .slice()
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((e, i) => itemRow(e, i))
+      .join('');
+    listEl.innerHTML = `<div class="equip-list-flat">${html}</div>`;
+    wireToggles(listEl);
   }
 
   window.loadEquipment = async function loadEquipment() {
     const listEl = document.getElementById('equipment-list');
     if (!listEl) return;
 
-    // Determine which tag to filter by (e.g., 'photography')
+    // Determine which category tag to filter by (e.g., "photography")
     const url = new URL(location.href);
     const urlCat  = url.searchParams.get('category') || '';
     const bodyCat = (document.body && document.body.dataset && document.body.dataset.categoryFilter) || '';
     const listCat = (listEl.dataset && listEl.dataset.category) || '';
     const tag = urlCat || bodyCat || listCat || '';
 
-    // Optional search input (if present)
+    // Optional search box (if you add one later)
     const qEl = document.getElementById('equipment-search');
 
     const readState = () => ({
@@ -121,8 +120,7 @@
         const { category, q } = readState();
         const { success, data, error } = await fetchEquipment({ category, q });
         if (!success) throw new Error(error || 'Failed to load equipment');
-        // FLAT accordion grouped by gear type; NAME ONLY in rows
-        renderAccordion(listEl, Array.isArray(data) ? data : []);
+        render(listEl, data);
       } catch (e) {
         console.error(e);
         listEl.innerHTML = '<p class="error">Unable to load equipment.</p>';
@@ -137,7 +135,7 @@
     }
   };
 
-  // Auto-run when the hook exists
+  // Auto-run when hook exists
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       if (document.getElementById('equipment-list')) window.loadEquipment();
