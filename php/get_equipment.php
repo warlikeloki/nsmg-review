@@ -1,20 +1,22 @@
 <?php
 // /php/get_equipment.php
+// Membership filter on CSV `category` (e.g., 'photography, videography').
+
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/util.php';
 
 nsmg_nocache();
 require_method('GET');
 
-$category = get_str($_GET,'category','');  // CSV membership tag: photography | videography | editing ...
+$category = get_str($_GET,'category','');  // photography | videography | editing
 $q        = get_str($_GET,'q','');
 $limit    = max(0, get_int($_GET,'limit',0));
 
 $sql = "SELECT
           id,
           name,
-          category,          -- CSV of use-tags (e.g., 'photography, videography')
-          types,             -- gear class (camera, lens, lighting, etc.)
+          category,          -- CSV tags
+          types,             -- gear class (camera, lens, lighting, ...)
           description,
           thumbnail_url,
           manufacturer,
