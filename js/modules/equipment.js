@@ -1,28 +1,108 @@
 // /js/modules/equipment.js
-document.addEventListener('DOMContentLoaded', initEquipmentFilter);
-window.loadEquipment = initEquipmentFilter;
-function groupByCategory(items){const out={};items.forEach(i=>{const c=(i.category||'other').toLowerCase();(out[c]=out[c]||[]).push(i)});return out}
-async function fetchEquipment(category){
-  try{const r=await fetch(`/php/get_equipment.php?category=${encodeURIComponent(category)}`);if(r.ok){const j=await r.json();if(j?.success&&Array.isArray(j.data))return j.data}}catch{}
-  try{const r=await fetch('/json/equipment.json');if(r.ok){const arr=await r.json();if(Array.isArray(arr))return arr.filter(x=>Array.isArray(x.type)&&x.type.map(s=>s.toLowerCase()).includes(category.toLowerCase()))}}catch{}
-  return [];
-}
-function initEquipmentFilter(){
-  const c=document.getElementById('equipment-list');if(!c)return;
-  const cat=c.getAttribute('data-category');if(!cat)return;
-  fetchEquipment(cat).then(items=>{
-    if(!items.length){c.innerHTML='<p>No equipment to display yet.</p>';return;}
-    const grouped=groupByCategory(items);c.innerHTML='';
-    Object.keys(grouped).sort().forEach(k=>{
-      const sec=document.createElement('section');sec.className='equipment-category';
-      sec.innerHTML=`<h3 class="equipment-category-title">${k.replace(/\b\w/g,m=>m.toUpperCase())}</h3>`;
-      const ul=document.createElement('ul');ul.className='equipment-ul';
-      grouped[k].forEach(it=>{const li=document.createElement('li');li.className='equipment-item';
-        li.innerHTML=`<div class="item-header"><span class="toggle-icon">+</span> ${it.name}</div><div class="item-description">${it.description||'No description available.'}</div>`;
-        li.addEventListener('click',()=>{li.classList.toggle('expanded');const ic=li.querySelector('.toggle-icon');if(ic)ic.textContent=li.classList.contains('expanded')?'−':'+';});
-        ul.appendChild(li);
-      });
-      sec.appendChild(ul);c.appendChild(sec);
+// Flat rendering (no grouping). On filtered pages (e.g., Photography),
+// show only that single tag, even if the row has multiple tags in the CSV.
+//
+// How it finds the filter:
+//   - URL query: ?category=photography   OR
+//   - <body data-category-filter="photography"> OR
+//   - <section id="equipment-list" data-category="photography">
+//
+// Exposes window.loadEquipment() so /js/main.js can call it. Also auto-runs.
+
+(function () {
+  if (window.loadEquipment) return; // idempotent
+
+  const toArrayFromCsv = (csv) =>
+    (csv || '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+
+  const badge = (t) => `<span class="type-badge">${t}</span>`;
+  const fmtCond = (s) => s ? String(s).replace(/\b\w/g, c => c.toUpperCase()) : '';
+
+  function card(e, pageTag) {
+    // If pageTag (e.g., 'photography') is present, only show that single tag.
+    // Otherwise, show all tags from the CSV.
+    const tags = pageTag ? [pageTag] : toArrayFromCsv(e.category);
+    const tagsHtml = tags.length ? `<div class="eq-types">${tags.map(badge).join(' ')}</div>` : '';
+
+    return `
+    <article class="equipment-card">
+      ${e.thumbnail_url ? `<img src="${e.thumbnail_url}" alt="${e.name}" loading="lazy" decoding="async">` : ''}
+      <div class="equipment-meta">
+        <h3>${e.name}</h3>
+        ${tagsHtml}
+        ${e.manufacturer || e.model_number ? `<p class="eq-line"><strong>Model:</strong> ${[e.manufacturer,e.model_number].filter(Boolean).join(' ')}</p>` : ''}
+        ${e.condition ? `<p class="eq-line"><strong>Condition:</strong> ${fmtCond(e.condition)}</p>` : ''}
+        ${e.description ? `<p class="eq-desc">${e.description}</p>` : ''}
+      </div>
+    </article>
+    `.trim();
+  }
+
+  async function fetchEquipment(paramsObj = {}) {
+    const params = new URLSearchParams();
+    if (paramsObj.category) params.set('category', paramsObj.category);
+    if (paramsObj.q)        params.set('q', paramsObj.q);
+    const url = '/php/get_equipment.php' + (params.toString() ? `?${params}` : '');
+    const res = await fetch(url, { cache: 'no-store' });
+    return res.json();
+  }
+
+  function render(listEl, items, pageTag) {
+    if (!Array.isArray(items) || items.length === 0) {
+      listEl.innerHTML = '<p>No equipment found.</p>';
+      return;
+    }
+    // FLAT LIST, NO HEADINGS
+    listEl.innerHTML = items.map(e => card(e, pageTag)).join('');
+  }
+
+  window.loadEquipment = async function loadEquipment() {
+    const listEl = document.getElementById('equipment-list');
+    if (!listEl) return;
+
+    // Read the page's category tag
+    const url = new URL(location.href);
+    const urlCat = url.searchParams.get('category') || '';
+    const bodyCat = document.body?.dataset?.categoryFilter || '';
+    const listCat = listEl?.dataset?.category || '';
+    const pageTag = urlCat || bodyCat || listCat || '';
+
+    // Optional future controls
+    const qEl = document.getElementById('equipment-search');
+    const readState = () => ({
+      category: pageTag || undefined,
+      q: qEl && qEl.value ? qEl.value.trim() : undefined
     });
-  }).catch(e=>{console.error('Equipment load error:',e);c.innerHTML='<p>Unable to load equipment at this time.</p>'});
-}
+
+    const apply = async () => {
+      listEl.innerHTML = '<p>Loading equipment…</p>';
+      try {
+        const { category, q } = readState();
+        const { success, data, error } = await fetchEquipment({ category, q });
+        if (!success) throw new Error(error || 'Failed to load equipment');
+        render(listEl, data, pageTag);
+      } catch (err) {
+        console.error(err);
+        listEl.innerHTML = '<p class="error">Unable to load equipment.</p>';
+      }
+    };
+
+    await apply();
+
+    if (qEl) {
+      let t;
+      qEl.addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 300); });
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.getElementById('equipment-list')) window.loadEquipment();
+    }, { once: true });
+  } else if (document.getElementById('equipment-list')) {
+    window.loadEquipment();
+  }
+})();
