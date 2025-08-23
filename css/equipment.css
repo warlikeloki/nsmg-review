@@ -96,3 +96,80 @@
 .equip-panel-inner { display: grid; grid-template-columns: auto 1fr; gap: .75rem; align-items: start; }
 .eq-thumb { width: 96px; height: 96px; object-fit: cover; border-radius: .4rem; border: 1px solid #eee; }
 .eq-desc { margin: 0; line-height: 1.45; }
+
+/* Responsive grid of cards */
+.equip-grid {
+  display: grid;
+  gap: .8rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* Card shell */
+.equip-card {
+  border: 1px solid #e6e6e6;
+  border-radius: .6rem;
+  background: #fff;
+  box-shadow: 0 .5px 1px rgba(0,0,0,.04);
+}
+
+/* Header with + button on upper-left */
+.equip-card-hd {
+  position: relative;
+  padding: .6rem .8rem .6rem 2.4rem; /* left space for the + button */
+  min-height: 2.2rem;
+}
+
+.equip-title {
+  font-weight: 600;
+  line-height: 1.2;
+  display: inline-block;
+}
+
+/* Small neutral + / – button */
+.equip-toggle-mini {
+  position: absolute;
+  left: .6rem;
+  top: .6rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: .3rem;
+  border: 1px solid #cfcfcf;
+  background: #f8f8f8;
+  color: #333;
+  font-weight: 700;
+  font-size: .95rem;
+  line-height: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+.equip-toggle-mini:focus {
+  outline: 2px solid #2684ff;
+  outline-offset: 2px;
+}
+
+/* Collapsed/expanded panel */
+.equip-panel {
+  padding: 0 .8rem .8rem 2.4rem;
+}
+
+.equip-panel-inner {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .75rem;
+  align-items: start;
+}
+
+/* Optional image when provided */
+.eq-thumb {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: .4rem;
+  border: 1px solid #eee;
+}
+
+.eq-desc { margin: 0; line-height: 1.45; }
