@@ -1,4 +1,7 @@
 <?php
+// /php/get_other_services.php
+// Returns: [{ id, title, description }, ...] wrapped in { success, data }
+
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/util.php';
 
