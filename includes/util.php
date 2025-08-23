@@ -3,6 +3,12 @@
  * /includes/util.php
  * Common helpers for JSON endpoints.
  */
+// /includes/util.php  (add near the top, once)
+function nsmg_nocache(): void {
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+}
 
 function json_response(bool $success, $data = null, $error = null, int $code = 200): void {
     http_response_code($code);
