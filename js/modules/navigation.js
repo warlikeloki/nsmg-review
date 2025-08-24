@@ -1,186 +1,184 @@
-/*! NSM-91: /js/modules/navigation.js (compat module)
- * Use from main.js:  window.NSM.navigation.init();
- * Optional config:   window.NSM.navigation.init({ toggleSelector: "...", navSelector: "...", openClassOnNav: "..." });
- * This does NOT replace your header or CSS. It binds safely to what you already have.
+/*! NSM-91: /js/modules/navigation.js (delegated + safe link navigation)
+ * Initialize from main.js *after* header/footer injection:
+ *   await import('/js/modules/navigation.js');
+ *   window.NSM.navigation.init({
+ *     navSelector: '.nav-menu',   // set this to your menu container
+ *     openClassOnNav: 'open'      // set to the class your CSS uses to reveal it
+ *     // injectBackdrop: true      // default true; set false if you don’t want an overlay
+ *   });
  */
 (function (root) {
   "use strict";
 
   var DEFAULT_CONFIG = {
-    headerSelector: "#site-header, header[role='banner'], header.site-header, header",
+    headerSelector: "#header-container header, #site-header, header.site-header, header[role='banner'], header",
     toggleSelector: "[data-nav-toggle], button[aria-controls], .nav-toggle, .hamburger, .menu-toggle",
-    // If a toggle has [aria-controls], that element wins for navEl
-    navSelector: "#primary-nav, nav[aria-label='Primary'], nav.primary-nav, header nav, nav",
+    navSelector: "#primary-nav, .nav-menu, nav[aria-label='Primary'], nav.primary-nav, header nav, nav",
+    openClassOnHtml: "nav-open",   // added to BOTH <html> and <body>
+    openClassOnNav: "open",        // change to match your CSS if different
     desktopWidth: 1024,
-    openClassOnHtml: "nav-open",
-    openClassOnNav: "is-open",
     injectBackdrop: true,
     backdropId: "nsm-nav-backdrop",
-    bindOnceAttr: "data-nav-bound"
+    debug: false
   };
 
-  function mergeConfig(base, extra) {
-    var out = {}, k;
-    for (k in base) out[k] = base[k];
-    if (extra && typeof extra === "object") for (k in extra) out[k] = extra[k];
-    return out;
-  }
+  function merge(a, b) { var o={},k; for (k in a) o[k]=a[k]; if (b) for (k in b) o[k]=b[k]; return o; }
+  function onReady(fn){ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",fn,{once:true});}else{fn();}}
+  function log(){ if(!state.CFG.debug) return; try{console.log.apply(console,arguments);}catch(e){} }
 
-  function onReady(fn) {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", fn, { once: true });
-    } else {
-      fn();
-    }
-  }
+  var state = { CFG: DEFAULT_CONFIG, bound:false, backdrop:null };
 
-  function debounce(fn, wait) {
-    var t;
-    return function () {
-      var ctx = this, args = arguments;
-      clearTimeout(t);
-      t = setTimeout(function () { fn.apply(ctx, args); }, wait);
-    };
-  }
-
-  function ensureBackdrop(CFG) {
-    if (!CFG.injectBackdrop) return null;
-    var el = document.getElementById(CFG.backdropId);
+  function ensureBackdrop() {
+    if (!state.CFG.injectBackdrop) return null;
+    var el = document.getElementById(state.CFG.backdropId);
     if (el) return el;
     el = document.createElement("div");
-    el.id = CFG.backdropId;
+    el.id = state.CFG.backdropId;
     el.setAttribute("hidden", "");
     el.style.position = "fixed";
     el.style.inset = "0";
     el.style.background = "rgba(0,0,0,0.35)";
-    el.style.zIndex = "1000";
+    el.style.zIndex = "1000";              // keep below most navs; bump your nav z-index if needed
     el.style.pointerEvents = "auto";
     document.body.appendChild(el);
     return el;
   }
 
-  function isOpen(CFG) {
-    return document.documentElement.classList.contains(CFG.openClassOnHtml);
-  }
-  function openNav(CFG, toggle, nav, backdrop) {
-    document.documentElement.classList.add(CFG.openClassOnHtml);
-    if (nav) nav.classList.add(CFG.openClassOnNav);
-    if (toggle) toggle.setAttribute("aria-expanded", "true");
-    if (backdrop) backdrop.hidden = false;
-  }
-  function closeNav(CFG, toggle, nav, backdrop) {
-    document.documentElement.classList.remove(CFG.openClassOnHtml);
-    if (nav) nav.classList.remove(CFG.openClassOnNav);
-    if (toggle) toggle.setAttribute("aria-expanded", "false");
-    if (backdrop) backdrop.hidden = true;
+  function isOpen() {
+    return document.documentElement.classList.contains(state.CFG.openClassOnHtml) ||
+           document.body.classList.contains(state.CFG.openClassOnHtml);
   }
 
-  function bindInHeader(CFG, headerEl) {
-    if (!headerEl || headerEl.nodeType !== 1) return;
+  var NAV_OPEN_CLASSES = null;
+  function computeNavOpenClasses(){
+    if (NAV_OPEN_CLASSES) return NAV_OPEN_CLASSES;
+    NAV_OPEN_CLASSES = [state.CFG.openClassOnNav, "is-open", "active", "expanded"]
+      .filter(Boolean).filter(function(v,i,a){return a.indexOf(v)===i;});
+    return NAV_OPEN_CLASSES;
+  }
+  function addNavOpenClasses(nav){
+    var cls = computeNavOpenClasses();
+    for (var i=0;i<cls.length;i++) nav.classList.add(cls[i]);
+    if (nav.hasAttribute("hidden")) nav.removeAttribute("hidden");
+    if (nav.style && nav.style.display === "none") nav.style.display = "";
+  }
+  function removeNavOpenClasses(nav){
+    var cls = computeNavOpenClasses();
+    for (var i=0;i<cls.length;i++) nav.classList.remove(cls[i]);
+  }
 
-    var toggles = headerEl.querySelectorAll(CFG.toggleSelector);
-    if (!toggles.length) return;
+  function openNav(toggle, nav){
+    document.documentElement.classList.add(state.CFG.openClassOnHtml);
+    document.body.classList.add(state.CFG.openClassOnHtml);
+    addNavOpenClasses(nav);
+    if (toggle) toggle.setAttribute("aria-expanded","true");
+    if (state.backdrop) state.backdrop.hidden = false;
+    log("[NSM-91] openNav");
+  }
+  function closeNav(toggle, nav){
+    document.documentElement.classList.remove(state.CFG.openClassOnHtml);
+    document.body.classList.remove(state.CFG.openClassOnHtml);
+    removeNavOpenClasses(nav);
+    if (toggle) toggle.setAttribute("aria-expanded","false");
+    if (state.backdrop) state.backdrop.hidden = true;
+    log("[NSM-91] closeNav");
+  }
 
-    // Find nav element: prefer aria-controls
-    var navEl = null;
-    for (var i = 0; i < toggles.length; i++) {
-      var t = toggles[i];
-      if (t.getAttribute(CFG.bindOnceAttr) === "true") continue;
-      var targetId = t.getAttribute("aria-controls");
-      if (targetId) {
-        var maybe = document.getElementById(targetId);
-        if (maybe) { navEl = maybe; break; }
-      }
+  function closestInHeader(el, sel){
+    var header = el.closest(state.CFG.headerSelector);
+    return header ? header.querySelector(sel) : null;
+  }
+  function findNavForToggle(toggle){
+    if (!toggle) return null;
+    var id = toggle.getAttribute("aria-controls");
+    if (id) {
+      var t = document.getElementById(id);
+      if (t) return t;
     }
-    if (!navEl) {
-      navEl = headerEl.querySelector(CFG.navSelector) || document.querySelector(CFG.navSelector);
+    return closestInHeader(toggle, state.CFG.navSelector) || document.querySelector(state.CFG.navSelector);
+  }
+
+  function toggleHandler(e){
+    if (e.type === "click" && e.button !== 0) return;
+    var toggle = e.target.closest(state.CFG.toggleSelector);
+    if (!toggle) return;
+    var header = toggle.closest(state.CFG.headerSelector);
+    if (!header) return;
+
+    var nav = findNavForToggle(toggle);
+    if (!nav) { log("[NSM-91] no nav for toggle"); return; }
+
+    e.preventDefault();
+    if (isOpen()) closeNav(toggle, nav); else openNav(toggle, nav);
+  }
+
+  // Only close on **backdrop click** (no global pointerdown)
+  function bindBackdropClose(){
+    state.backdrop = ensureBackdrop();
+    if (!state.backdrop) return;
+    state.backdrop.addEventListener("click", function(){
+      var nav = document.querySelector(state.CFG.navSelector);
+      if (isOpen() && nav) closeNav(null, nav);
+    });
+  }
+
+  // Allow link clicks inside the menu to navigate, then close
+  function bindNavLinkAutoClose(){
+    document.addEventListener("click", function(e){
+      var navEl = e.target.closest(state.CFG.navSelector);
+      if (!navEl) return;
+      var link = e.target.closest("a[href]");
+      if (!link) return;
+      // Let navigation proceed; close drawer after the click is processed
+      setTimeout(function(){ if (isOpen()) closeNav(null, navEl); }, 0);
+    }, true); // capture so we schedule close early, but do not prevent default
+  }
+
+  function escHandler(e){
+    if (!isOpen()) return;
+    if (e.key === "Escape") {
+      e.preventDefault();
+      var nav = document.querySelector(state.CFG.navSelector);
+      if (nav) closeNav(null, nav);
     }
-    if (!navEl) return;
+  }
 
-    // If first toggle already bound, bail (we assume module-level single binding)
-    var first = toggles[0];
-    if (first.getAttribute(CFG.bindOnceAttr) === "true") return;
-
-    var backdrop = ensureBackdrop(CFG);
-
-    function toggleHandler(ev) {
-      if (ev) ev.preventDefault();
-      if (isOpen(CFG)) {
-        closeNav(CFG, first, navEl, backdrop);
-      } else {
-        openNav(CFG, first, navEl, backdrop);
-      }
+  function resizeHandler(){
+    if (window.innerWidth >= state.CFG.desktopWidth && isOpen()) {
+      var nav = document.querySelector(state.CFG.navSelector);
+      if (nav) closeNav(null, nav);
     }
+  }
 
-    // Attach to all toggles (click/keyboard)
-    var each = toggles.forEach ? toggles.forEach.bind(toggles) : function (fn) { Array.prototype.forEach.call(toggles, fn); };
-    each(function (btn) {
-      if (btn.getAttribute(CFG.bindOnceAttr) === "true") return;
-      btn.addEventListener("click", toggleHandler);
-      btn.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleHandler(e); }
+  function bind(){
+    if (state.bound) return;
+    state.bound = true;
+
+    bindBackdropClose();
+    bindNavLinkAutoClose();
+
+    // Delegated toggle handler
+    document.addEventListener("click", toggleHandler);
+    document.addEventListener("keydown", escHandler);
+    window.addEventListener("resize", resizeHandler);
+
+    log("[NSM-91] navigation bound", state.CFG);
+  }
+
+  function init(userConfig){
+    state.CFG = merge(DEFAULT_CONFIG, userConfig || {});
+    onReady(function () {
+      bind();
+      // Initial debug info
+      log("[NSM-91] ready", {
+        header: !!document.querySelector(state.CFG.headerSelector),
+        toggle: !!document.querySelector(state.CFG.headerSelector + " " + state.CFG.toggleSelector + ", " + state.CFG.toggleSelector),
+        nav: !!document.querySelector(state.CFG.navSelector)
       });
-      btn.setAttribute(CFG.bindOnceAttr, "true");
-      if (!btn.hasAttribute("aria-expanded")) btn.setAttribute("aria-expanded", "false");
     });
-
-    // Close on outside click
-    document.addEventListener("pointerdown", function (e) {
-      if (!isOpen(CFG)) return;
-      var t = e.target;
-      if (t.closest(CFG.navSelector) || t.closest(CFG.toggleSelector)) return;
-      closeNav(CFG, first, navEl, backdrop);
-    });
-
-    // Backdrop click to close
-    if (backdrop) {
-      backdrop.addEventListener("click", function () { if (isOpen(CFG)) closeNav(CFG, first, navEl, backdrop); });
-    }
-
-    // ESC to close
-    document.addEventListener("keydown", function (e) {
-      if (!isOpen(CFG)) return;
-      if (e.key === "Escape") {
-        e.preventDefault();
-        closeNav(CFG, first, navEl, backdrop);
-      }
-    });
-
-    // Reset on desktop
-    window.addEventListener("resize", debounce(function () {
-      if (window.innerWidth >= CFG.desktopWidth && isOpen(CFG)) {
-        closeNav(CFG, first, navEl, backdrop);
-      }
-    }, 150));
   }
 
-  var _observerAttached = false;
-
-  function init(userConfig) {
-    var CFG = mergeConfig(DEFAULT_CONFIG, userConfig);
-
-    // Bind on any present headers immediately
-    var headers = document.querySelectorAll(CFG.headerSelector);
-    if (headers.length) {
-      for (var i = 0; i < headers.length; i++) bindInHeader(CFG, headers[i]);
-    }
-
-    // Also observe for injected/changed headers (bind once per module lifetime)
-    if (!_observerAttached) {
-      var obs = new MutationObserver(function () {
-        var hs = document.querySelectorAll(CFG.headerSelector);
-        for (var j = 0; j < hs.length; j++) bindInHeader(CFG, hs[j]);
-      });
-      obs.observe(document.documentElement, { childList: true, subtree: true });
-      _observerAttached = true;
-    }
-  }
-
-  // Public API (global namespace, no ESM required)
   root.NSM = root.NSM || {};
-  root.NSM.navigation = {
-    init: function (cfg) { onReady(function () { init(cfg); }); },
-    configure: function (cfg) { init(cfg); } // alias
-  };
+  root.NSM.navigation = { init: init };
 
 })(window);
