@@ -53,7 +53,9 @@
         } else {
           a.removeAttribute("aria-current");
         }
-      } catch (e) { /* ignore */ }
+      } catch (e) {
+        // ignore URL parsing errors
+      }
     });
   }
 
@@ -105,22 +107,22 @@
 
   async function autoInitModules() {
     const has = sel => !!document.querySelector(sel);
-    // navigation.js is now initialized right after header/footer load
+    // navigation.js is initialized right after header/footer load
     if (document.getElementById('homepage')) { try { await import('/js/modules/homepage.js'); } catch (e) {} }
     if (document.getElementById('blog-posts-container')) { try { await import('/js/modules/blog.js'); } catch (e) {} }
     if (document.getElementById('blog-post-content')) { try { await import('/js/modules/blog-post.js'); } catch (e) {} }
     if (document.getElementById('testimonials-container') || document.getElementById('homepage-testimonials-container') || has('.testimonials-slider')) { try { await import('/js/modules/testimonials.js'); } catch (e) {} }
-    if (document.getElementById('equipment-list')) { 
-      try { 
-        await import('/js/modules/equipment.js'); 
-        if (typeof window.loadEquipment === 'function') window.loadEquipment(); 
-      } catch (e) {} 
+    if (document.getElementById('equipment-list')) {
+      try {
+        await import('/js/modules/equipment.js');
+        if (typeof window.loadEquipment === 'function') window.loadEquipment();
+      } catch (e) {}
     }
-    if (document.getElementById('packages-body') || document.getElementById('ala-carte-body')) { 
-      try { 
-        const mod = await import('/js/modules/pricing.js'); 
-        if (mod && typeof mod.loadPricing === 'function') mod.loadPricing(); 
-      } catch (e) {} 
+    if (document.getElementById('packages-body') || document.getElementById('ala-carte-body')) {
+      try {
+        const mod = await import('/js/modules/pricing.js');
+        if (mod && typeof mod.loadPricing === 'function') mod.loadPricing();
+      } catch (e) {}
     }
     if (document.getElementById('contact-form')) { try { await import('/js/modules/contact.js'); } catch (e) {} }
     if (document.getElementById('other-services-container')) { try { await import('/js/modules/other-services.js'); } catch (e) {} }
@@ -146,9 +148,13 @@
     try {
       await import('/js/modules/navigation.js');
       if (window.NSM && window.NSM.navigation && typeof window.NSM.navigation.init === 'function') {
-        // Optional overrides if your selectors are custom
-        // window.NSM.navigation.init({ toggleSelector: '.your-toggle', navSelector: '#your-nav' });
-        window.NSM.navigation.init();
+        // IMPORTANT: turn off backdrop so it can't block link taps.
+        // Also cover both possible menu containers across pages.
+        window.NSM.navigation.init({
+          navSelector: '.nav-menu, #primary-nav',
+          openClassOnNav: 'open',
+          injectBackdrop: false
+        });
       }
     } catch (e) {
       console.error('Failed to init navigation module:', e);
