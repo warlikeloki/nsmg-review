@@ -53,7 +53,7 @@
         } else {
           a.removeAttribute("aria-current");
         }
-      } catch { /* ignore */ }
+      } catch (e) { /* ignore */ }
     });
   }
 
@@ -89,7 +89,7 @@
         if (e.key === "Home") nextIdx = 0;
         if (e.key === "End") nextIdx = all.length - 1;
 
-        all[nextIdx]?.focus();
+        if (all[nextIdx]) all[nextIdx].focus();
         e.preventDefault();
       });
     });
@@ -103,20 +103,29 @@
     $$('.homepage-section img:not([loading])').forEach(img => img.setAttribute("loading", "lazy"));
   }
 
-
   async function autoInitModules() {
     const has = sel => !!document.querySelector(sel);
-    if (has('.nav-menu')) { try { await import('/js/modules/navigation.js'); } catch {} }
-    if (document.getElementById('homepage')) { try { await import('/js/modules/homepage.js'); } catch {} }
-    if (document.getElementById('blog-posts-container')) { try { await import('/js/modules/blog.js'); } catch {} }
-    if (document.getElementById('blog-post-content')) { try { await import('/js/modules/blog-post.js'); } catch {} }
-    if (document.getElementById('testimonials-container') || document.getElementById('homepage-testimonials-container') || has('.testimonials-slider')) { try { await import('/js/modules/testimonials.js'); } catch {} }
-    if (document.getElementById('equipment-list')) { try { await import('/js/modules/equipment.js'); if (typeof window.loadEquipment === 'function') window.loadEquipment(); } catch {} }
-    if (document.getElementById('packages-body') || document.getElementById('ala-carte-body')) { try { const mod = await import('/js/modules/pricing.js'); if (mod && typeof mod.loadPricing === 'function') mod.loadPricing(); } catch {} }
-    if (document.getElementById('contact-form')) { try { await import('/js/modules/contact.js'); } catch {} }
-    if (document.getElementById('other-services-container')) { try { await import('/js/modules/other-services.js'); } catch {} }
-    if (document.getElementById('services-toggle') && document.getElementById('services-nav')) { try { await import('/js/modules/services-nav.js'); } catch {} }
-    if (has('.filter-buttons')) { try { await import('/js/modules/portfolio.js'); } catch {} }
+    // navigation.js is now initialized right after header/footer load
+    if (document.getElementById('homepage')) { try { await import('/js/modules/homepage.js'); } catch (e) {} }
+    if (document.getElementById('blog-posts-container')) { try { await import('/js/modules/blog.js'); } catch (e) {} }
+    if (document.getElementById('blog-post-content')) { try { await import('/js/modules/blog-post.js'); } catch (e) {} }
+    if (document.getElementById('testimonials-container') || document.getElementById('homepage-testimonials-container') || has('.testimonials-slider')) { try { await import('/js/modules/testimonials.js'); } catch (e) {} }
+    if (document.getElementById('equipment-list')) { 
+      try { 
+        await import('/js/modules/equipment.js'); 
+        if (typeof window.loadEquipment === 'function') window.loadEquipment(); 
+      } catch (e) {} 
+    }
+    if (document.getElementById('packages-body') || document.getElementById('ala-carte-body')) { 
+      try { 
+        const mod = await import('/js/modules/pricing.js'); 
+        if (mod && typeof mod.loadPricing === 'function') mod.loadPricing(); 
+      } catch (e) {} 
+    }
+    if (document.getElementById('contact-form')) { try { await import('/js/modules/contact.js'); } catch (e) {} }
+    if (document.getElementById('other-services-container')) { try { await import('/js/modules/other-services.js'); } catch (e) {} }
+    if (document.getElementById('services-toggle') && document.getElementById('services-nav')) { try { await import('/js/modules/services-nav.js'); } catch (e) {} }
+    if (has('.filter-buttons')) { try { await import('/js/modules/portfolio.js'); } catch (e) {} }
   }
 
   function initSkipLink() {
@@ -132,6 +141,19 @@
       loadPartial("/header.html", "#header-container"),
       loadPartial("/footer.html", "#footer-container")
     ]);
+
+    // Initialize mobile navigation right after header/footer injection
+    try {
+      await import('/js/modules/navigation.js');
+      if (window.NSM && window.NSM.navigation && typeof window.NSM.navigation.init === 'function') {
+        // Optional overrides if your selectors are custom
+        // window.NSM.navigation.init({ toggleSelector: '.your-toggle', navSelector: '#your-nav' });
+        window.NSM.navigation.init();
+      }
+    } catch (e) {
+      console.error('Failed to init navigation module:', e);
+    }
+
     enhanceServicesAccordion();
     enhanceLazyMedia();
     await autoInitModules();
