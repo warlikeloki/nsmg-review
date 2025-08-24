@@ -261,11 +261,6 @@ _(No sprints; sorted by issue number.)_
   - [ ] Mixed-content audit passes; all resources load over HTTPS.
   - [ ] External scanners (SSL Labs) report grade A or better.
 
-- **NSM-102** — NSGM Logo shows broken link on index.html
-  - [ ] Fix path to logo asset on `index.html`; verify correct filename and case.
-  - [ ] Add fallback text/alt; ensure 200 OK in dev and prod.
-  - [ ] Include regression test: running link check finds no broken images on home page.
-
 ## Completed / Closed Issues
 - **NSM-42**
 - **NSM-48**
@@ -275,3 +270,4 @@ _(No sprints; sorted by issue number.)_
 - **NSM-55**
 - **NSM-68**
 - **NSM-72**
+- **NSM-102** — NSGM Logo shows broken link on index.html
