@@ -1,5 +1,12 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Create a Bug in Jira
+    url: https://neil-smith.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=10035&issuetype=10019
+    about: Use Jira for all bug reports.
+  - name: Create a Feature in Jira
+    url: https://neil-smith.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=10035&issuetype=10021
+    about: Use Jira for feature/enhancement requests.
   - name: Security disclosure
-    url: ../../security/policy
+    url: https://github.com/warlikeloki/Website/security/policy
     about: Please report security issues privately via the Security Policy.
+
