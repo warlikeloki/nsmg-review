@@ -1,22 +1,32 @@
-[
-  {
-    "name": "Photography",
-    "description": "Portraits, events, and products.",
-    "icon": "/media/icons/camera.png"
-  },
-  {
-    "name": "Videography",
-    "description": "Promos, interviews, and events.",
-    "icon": "/media/icons/video.png"
-  },
-  {
-    "name": "Editing",
-    "description": "Photo retouching and video post.",
-    "icon": "/media/icons/edit.png"
-  },
-  {
-    "name": "Other Services",
-    "description": "Notary, officiant, production assistance.",
-    "icon": "/media/icons/more.png"
-  }
-]
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Photography",
+      "description": "Portraits, events, headshots, and products.",
+      "icon": "/media/icons/camera.svg",
+      "link": "/services/photography.html"
+    },
+    {
+      "id": 2,
+      "name": "Videography",
+      "description": "Promos, interviews, and event coverage.",
+      "icon": "/media/icons/video.svg",
+      "link": "/services/videography.html"
+    },
+    {
+      "id": 3,
+      "name": "Editing",
+      "description": "Photo retouching and video post-production.",
+      "icon": "/media/icons/edit.svg",
+      "link": "/services/editing.html"
+    },
+    {
+      "id": 4,
+      "name": "Other Services",
+      "description": "Notary, officiant, production assistance, and more.",
+      "icon": "/media/icons/more.svg",
+      "link": "/services/other-services.html"
+    }
+  ]
+}
