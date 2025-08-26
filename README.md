@@ -1,249 +1,251 @@
+# Neil Smith Media Group — Website
 
-# Neil Smith Media Group Website
+_Updated: 2025-08-26
 
-> Public review mirror of the website for **Neil Smith Media Group**. Intended prod domain: **https://neilsmith.org** (not live yet).
-
-Author: Neil Smith • Year: 2025
+Public marketing site with dynamic sections (Services, Blog, Portfolio) and an Admin area. Front end is **static HTML/CSS/JS** with modular ES modules; backend uses **light PHP** endpoints for data and form handling. **GitHub Actions** handles deploys. **Jira** is the system of record for issues/sprints/epics.
 
 ---
 
-## Table of Contents
-- [Overview](#overview)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
+## Contents
 - [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
 - [Local Development](#local-development)
-- [Quality Tooling](#quality-tooling)
-- [Sitemap & SEO](#sitemap--seo)
-- [Security & Privacy](#security--privacy)
-- [Deployment Notes](#deployment-notes)
-- [Scripts (PowerShell)](#scripts-powershell)
-- [Testing](#testing)
-- [Contributing / Branching](#contributing--branching)
+- [Environment & Secrets](#environment--secrets)
+- [Admin Auth (NSM-82)](#admin-auth-nsm-82)
+- [Testing & QA](#testing--qa)
+- [Issues & Workflow](#issues--workflow)
+- [Deployment](#deployment)
+- [Maintenance & Ops](#maintenance--ops)
+- [Roadmap & Sprints](#roadmap--sprints)
+- [Release Checklist](#release-checklist)
+- [Contributing](#contributing)
 - [License](#license)
-
----
-
-## Overview
-This repo contains the source for the Neil Smith Media Group website (HTML/CSS/JS with a PHP backend for admin/data endpoints). This is a **public mirror for code review** — no secrets or private data should be committed here.
-
-**Status:** In active development. Site not live yet.
-
----
-
-## Tech Stack
-- **Frontend:** HTML5, CSS3, vanilla JS modules
-- **Backend:** PHP (session-protected admin), simple JSON data
-- **Data:** SQL table setup scripts (schema only)
-- **Build/Automation:** Node.js scripts; PowerShell utilities
-- **CI:** GitHub Actions (lint/check workflows as needed)
-
----
-
-## Project Structure
-
-```
-/about-us/          Static pages (About, Privacy, Terms)
-/admin/             Admin UI (session protected; should be noindex)
-/css/               Stylesheets (global/layout/header/nav/page-specific)
-/gallery/           Gallery page & assets
-/js/                JS modules (navigation, homepage, forms, etc.)
-/json/              JSON data (posts, testimonials, equipment, etc.)
-/media/             Images/icons/logos (public-safe assets)
-/php/               PHP endpoints & admin handlers
-/ranked-choice/     Ranked-choice demo (create, vote, results)
-/scripts/           Utility scripts (incl. sitemap generator)
-/services/          Services pages (photography, videography, editing)
-/sql/               Schema/migration snippets (no real data)
-/tests/             Test scaffolding (remove if unused)
-
-Root HTML pages: `index.html`, `blog.html`, `portfolio.html`, `services.html`, `contact.html`, etc.
-Shared partials: `header.html`, `footer.html`
-Config: `.gitignore`, `.htaccess`, `package.json`, `composer.json`, `phpunit.xml`, `sitemap.xml`
-```
-
-> Keep `/admin`, `/sql`, `/tests` public-safe (no secrets or real data).
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
-- [ ] **Node.js** ≥ 18 (`node -v`)
-- [ ] **PHP** ≥ 8.1 (`php -v`)
-- [ ] **Git** & **PowerShell** (Windows)
+- [ ] **Git**
+- [ ] **PHP 8+** (for `/php/*.php` endpoints and local server)
+- [ ] **NodeJS (optional)** — only if you use extra tooling; not required for basic dev
+- [ ] **VS Code** (recommended) with HTML, PHP, and Markdown extensions
 
-### Clone
+### Quick start (serve locally)
 ```powershell
-git clone https://github.com/warlikeloki/nsmg-review.git
-cd nsmg-review
+# From repo root
+php -S 127.0.0.1:8000 -t .
+# Visit http://127.0.0.1:8000
 ```
+> VS Code “Live Server” is fine for static pages, but PHP endpoints still require the PHP built‑in server above.
 
-### Install optional tooling (linters/scripts)
-```powershell
-npm ci  # or: npm install
+---
+
+## Project Structure
+```
+/
+├─ index.html
+├─ header.html
+├─ footer.html
+├─ about-us/                 # About, Contact, Privacy, Terms, etc.
+├─ admin/                    # Admin UI pages (authentication required)
+├─ css/
+│  ├─ navigation.css
+│  ├─ homepage.css
+│  └─ ... (component/page styles)
+├─ js/
+│  ├─ main.js                # Bootstraps header/footer, module auto-init
+│  └─ modules/
+│     ├─ navigation.js
+│     ├─ homepage.js
+│     ├─ blog.js
+│     ├─ blog-post.js
+│     ├─ testimonials.js
+│     ├─ equipment.js
+│     ├─ pricing.js
+│     ├─ contact.js
+│     ├─ other-services.js
+│     ├─ services-nav.js
+│     └─ portfolio.js
+├─ media/
+│  ├─ icons/                 # svg/png icons
+│  └─ logos/                 # brand assets (use lowercase filenames/paths)
+├─ php/
+│  ├─ auth/                  # login/logout handlers (NSM-82)
+│  ├─ get_services.php
+│  ├─ ... other endpoints ...
+│  └─ config.local.php       # NOT IN GIT; local secrets (see below)
+├─ scripts/
+│  └─ Build-IssuesFromApi.ps1# Sync ISSUES.md from Jira
+└─ .github/
+   └─ ISSUE_TEMPLATE/
+      ├─ bug.md
+      ├─ feature.md
+      └─ config.yml          # “Create in Jira” buttons
 ```
 
 ---
 
 ## Local Development
 
-### Option A — PHP built-in server (recommended)
-```powershell
-# from repo root
-php -S localhost:8080 -t .
-# Open http://localhost:8080
+### 1) Create local PHP config (DB, options)
+Create **`php/config.local.php`** (do **not** commit):
+
+```php
+<?php
+// php/config.local.php (example)
+define('DB_HOST', '127.0.0.1');
+define('DB_NAME', 'nsmg');
+define('DB_USER', 'nsmg_local');
+define('DB_PASS', 'CHANGE_ME');
+
+// Optional session config (overrides)
+define('SESSION_NAME', 'nsmg_admin');
+define('SESSION_SECURE', true); // HTTPS only
 ```
 
-### Option B — Static preview (HTML only)
-Use VS Code “Live Server” (note: PHP endpoints won’t execute).
-
----
-
-## Quality Tooling
-
-### Lint HTML/CSS/JS (optional)
-```powershell
-npx htmlhint "**/*.html"
-npx stylelint "**/*.css"
-npx eslint "**/*.js"
+Your PHP endpoints should include it if present:
+```php
+$local = __DIR__ . '/config.local.php';
+if (file_exists($local)) { require_once $local; }
 ```
 
-### PHP standards/tests (optional)
+### 2) Run a local server
 ```powershell
-composer install        # if composer.json configured
-vendor/bin/phpcs -q     # coding standards
-vendor/bin/phpunit      # tests, if configured
+php -S 127.0.0.1:8000 -t .
 ```
 
+### 3) Verify modules
+- [ ] Header/footer load (via `main.js` partials)
+- [ ] Homepage services render
+- [ ] Testimonials carousel shows items
+- [ ] Blog list/post pages fetch (if enabled)
+- [ ] Contact form posts to `/php/...` (use a local stub if needed)
+
 ---
 
-## Sitemap & SEO
+## Environment & Secrets
+- **Never commit secrets.** Keep DB creds and admin password in `php/config.local.php` (local) and secure env on prod.
+- **Case-sensitive assets:** Use **lowercase** filenames/paths for everything under `/media`, `/css`, `/js`. (See **NSM-116**.)
+- **Security headers & CSP:** Baseline headers (NSM-123) and a CSP moving from Report‑Only to Enforced (NSM-117) are tracked issues.
 
-**Dev vs Prod**
+---
 
-- **Dev**: generate `sitemap.dev.xml` with localhost base; set global `<meta name="robots" content="noindex, nofollow">`; `robots.txt` should disallow all.
-- **Prod**: generate `sitemap.xml` with the real domain; remove/override `noindex`; `robots.txt` should allow crawling and reference the sitemap.
+## Admin Auth (NSM-82)
+Sprint 6 introduces:
+- **Login** `/admin/login.html` → `/php/auth/login.php`
+- **Session management**: cookie flags (**HttpOnly**, **Secure**, **SameSite=Lax**), idle timeout, absolute lifetime; rotate session ID on login
+- **CSRF**: per‑session token; verified on all state‑changing POSTs
+- **Guard**: reusable `auth_guard.php` included at the top of every protected admin page and `/php/*` endpoint
+- **Logout**: invalidates session and clears cookie
 
-**Generate sitemap**
+> Until NSM‑82 is finished, restrict admin/phpMyAdmin at the host/network level (allowlists).
+
+---
+
+## Testing & QA
+
+### Manual checks (high value)
+- [ ] **Mobile nav**: drawer open/close, submenus, services dashboard menu (NSM-103/104)
+- [ ] **Forms**: success/error flows; user‑friendly messages; no console errors (NSM-21)
+- [ ] **A11y**: keyboard focus; skip link to `#main`; headings/labels (NSM-14)
+- [ ] **Perf**: hero images optimized; caching behaving (NSM-31, NSM-120)
+
+### Automated (planned/adding)
+- **CI gates**: axe-core + Lighthouse CI (NSM-119)
+- **Broken links**: CI + weekly crawl (NSM-125)
+- **Error tracking**: Sentry (or similar) FE + PHP (NSM-118)
+
+---
+
+## Issues & Workflow
+
+### Jira is the source of truth
+- **New issues**: Use Jira. GitHub **New issue** shows **“Create a Bug/Feature in Jira”** (configured in `/.github/ISSUE_TEMPLATE/config.yml`).
+- **Footer links**: The site footer contains **Report a bug** / **Request a feature** links that deep‑link to Jira create pages (NSM‑105).
+
+### Keep `ISSUES.md` in sync from Jira
 ```powershell
-# Dev (local)
-node .\generate-sitemap.js -base http://localhost:8080 -root . -out sitemap.dev.xml
-
-# Prod (when live)
-node .\generate-sitemap.js -base https://neilsmith.org -root . -out sitemap.xml
+# From repo root
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+.\scripts\Build-IssuesFromApi.ps1 -ProjectKey "NSM" -OutPath ".\ISSUES.md"
+```
+_Add a timestamp line in the script if desired:_
+```powershell
+$lines.Insert(1, "_Generated from Jira on $(Get-Date -Format 'yyyy-MM-dd')_")
 ```
 
-**Sitemap rules**
-- Include only indexable `.html`
-- Exclude: `/admin/`, `/tests/`, `/cypress/`, `/sql/`, `/scripts/`, `/js/`, `/css/`, `/json/`, `/media/`, `.github/`
-- Skip: `header.html`, `footer.html`, `404.html`, `500.html`, `sitemap.html`, `sitemap.xml`
-- Treat `index.html` as clean folder URLs (e.g., `/about-us/`)
-
-**Robots**
-- Dev `robots.txt`:
-  ```
-  User-agent: *
-  Disallow: /
-  ```
-- Prod `robots.txt`:
-  ```
-  User-agent: *
-  Disallow: /admin/
-  Sitemap: https://neilsmith.org/sitemap.xml
-  ```
+### Branch & PR guidelines
+- Branch names: `feat/...`, `fix/...`, `chore/...`; include Jira key, e.g., `feat/footer-jira-links-NSM-105`
+- Commit messages: reference Jira key in the subject, e.g.  
+  `feat(footer): add Jira bug/feature links (NSM-105)`
+- Link PRs to Jira tickets (Development panel).
 
 ---
 
-## Security & Privacy
+## Deployment
+- Deployed via **GitHub Actions** (`.github/workflows/deploy.yml`).
+- Prefer **OIDC** for short‑lived deploy credentials over static keys (tracked under security epics).
+- Ensure assets keep **lowercase** names to avoid case‑sensitive 404s (NSM‑116).
 
-- [ ] No `.env`, API keys, or credentials in repo (use `.gitignore`)
-- [ ] Admin pages behind **session auth** and include:
-  ```html
-  <meta name="robots" content="noindex, nofollow">
-  ```
-- [ ] `/sql` contains **schema only** (no real data)
-- [ ] If a secret is ever committed, rotate it immediately and scrub history before pushing
-
----
-
-## Deployment Notes
-
-- EC2/Deploy workflow removed — this repo is a **review mirror** only.
-- When you choose a host, document the steps here (build, upload, cache rules, PHP runtime, etc.).
+**Typical flow**
+1. Open PR → checks pass
+2. Merge to `main`
+3. GitHub Action deploys to host (cPanel/FTP/rsync, per workflow)
 
 ---
 
-## Scripts (PowerShell)
-
-> Place scripts in `./scripts/` and run from repo root.
-
-- **Find Unused CSS**
-  ```powershell
-  .\scripts\find-unused-css.ps1
-  ```
-- **Check Broken Internal Links**
-  ```powershell
-  .\scripts\check-broken-links.ps1
-  ```
-- **List CSS Variables**
-  ```powershell
-  .\scripts\list-css-variables.ps1
-  ```
-- **Find Unused Images**
-  ```powershell
-  .\scripts\find-unused-images.ps1
-  ```
-- **Lowercase Image Filenames**
-  ```powershell
-  .\scripts\lowercase-image-filenames.ps1
-  ```
-- **List All TODO/FIXME/BUG**
-  ```powershell
-  .\scripts\list-todos.ps1
-  ```
-- **Find Unused JS**
-  ```powershell
-  .\scripts\find-unused-js.ps1
-  ```
-- **Count Classes and IDs**
-  ```powershell
-  .\scripts\count-classes-ids.ps1
-  ```
-- **Find HTML missing `<title>`**
-  ```powershell
-  .\scripts\find-missing-title.ps1
-  ```
-- **Find Missing Images referenced in HTML**
-  ```powershell
-  .\scripts\find-missing-images.ps1
-  ```
-- **List external JS/CSS assets**
-  ```powershell
-  .\scripts\list-external-assets.ps1
-  ```
-- **Find folders with > 20 files**
-  ```powershell
-  .\scripts\find-large-folders.ps1
-  ```
+## Maintenance & Ops
+- **Backups**: Nightly DB + `/media` with retention; perform restore drill (NSM‑122)
+- **Security headers**: HSTS, X‑CTO, XFO/FO, Referrer‑Policy, Permissions‑Policy (NSM‑123)
+- **CSP**: Start **Report‑Only**, fix violations, then **Enforce** (NSM‑117)
+- **Consent**: GA4 Consent Mode or cookie gating as appropriate (NSM‑124)
+- **Monitoring**: Error tracking for FE + PHP (NSM‑118); broken‑link monitoring (NSM‑125)
 
 ---
 
-## Testing
+## Roadmap & Sprints
+- Cadence: **3‑week sprints**; Sprint 6 begins Sep 1, 2025.
+- Epics (created as NSM‑106 → NSM‑115):
+  - Security & Access Hardening (NSM‑106)
+  - Application Security & Authentication (NSM‑107)
+  - Mobile Navigation & UX (NSM‑108)
+  - Forms & Conversion Flows (NSM‑109)
+  - Performance & Caching (NSM‑110)
+  - SEO & Metadata (NSM‑111)
+  - Content & Publishing (NSM‑112)
+  - Admin Console & Settings (NSM‑113)
+  - Accessibility & Quality (NSM‑114)
+  - Analytics & Feedback (NSM‑115)
 
-- If keeping tests, document how to run them here (e.g., `phpunit`, browser tests, etc.).
-- If not using Cypress anymore, remove `/cypress` & related config/scripts to keep the mirror tidy.
+See **`ISSUES.md`** for current Open/Closed lists (synced from Jira).
 
 ---
 
-## Contributing / Branching
+## Release Checklist
+- [ ] **CI passes** for build/lint/tests (where applicable)
+- [ ] **CSP** is in **Report‑Only** or **Enforced** as planned (NSM‑117); no broken pages
+- [ ] **Security headers** present (HSTS, X‑CTO, XFO/FO, Referrer‑Policy, Permissions‑Policy) (NSM‑123)
+- [ ] **Admin auth** enforced for admin pages and `/php/*` endpoints (NSM‑82)
+- [ ] **Forms**: success/error flows verified; anti‑spam enabled (NSM‑21, NSM‑44)
+- [ ] **Mobile nav**: drawer/submenus/services dashboard behave on iOS Safari & Android Chrome (NSM‑103/104)
+- [ ] **Performance**: LCP/TBT within targets on mobile profile; responsive images in place (NSM‑31, NSM‑120)
+- [ ] **SEO**: meta + JSON‑LD present; `sitemap.xml`/`robots.txt` current (NSM‑15, NSM‑121)
+- [ ] **Analytics**: base tagging + consent behavior verified (NSM‑43, NSM‑124)
+- [ ] **Error tracking**: frontend + PHP events received (NSM‑118)
+- [ ] **Links**: no internal 404s; weekly link check green (NSM‑125)
+- [ ] **Backups**: nightly job healthy; last restore drill documented (NSM‑122)
+- [ ] **Footer Jira links**: render & open correctly (NSM‑105)
 
-- **Private working repo:** continue normal development (`main` or feature branches).
-- **Public mirror:** push curated branch (`review-shared`) → `public/main`.
-- Use PRs for major changes (README, sitemap rules, admin policies) to keep a clean review trail.
+---
+
+## Contributing
+- Add/adjust **ARIA and focus states** for interactive elements.
+- Keep filenames/paths **lowercase**.
+- Avoid inline scripts/styles that CSP will block once enforced.
+- Update docs if you add a new admin page or `/php/*` endpoint (auth guard + CSRF).
 
 ---
 
 ## License
-
-© Neil Smith / Neil Smith Media Group. All rights reserved unless otherwise noted.
+Copyright © Neil Smith
