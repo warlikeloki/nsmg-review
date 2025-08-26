@@ -1,10 +1,10 @@
 blank_issues_enabled: false
 contact_links:
   - name: Create a Bug in Jira
-    url: https://neil-smith.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=10035&issuetype=10019
+    url: https://neil-smith.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=35308&issuetype=10019&summary=Bug%3A%20&labels=from_github%2Cfrom_footer&description=**Environment**%3A%20(page%2FURL%2C%20device%2C%20browser%2C%20viewport)%0A%0A**Steps%20to%20reproduce%3A**%0A1.%20...%0A2.%20...%0A%0A**Expected%3A**%20...%0A**Actual%3A**%20...%0A%0A**Attachments%3A**%20(screenshots%2Flogs)%0A%0A**Priority%20(1%E2%80%937)%3A**%20%0A%0A**Acceptance%20criteria%3A**%0A-%20%5B%20%5D%20Fix%20verified%20on%20iOS%20Safari%20%26%20Android%20Chrome%0A-%20%5B%20%5D%20No%20console%20errors
     about: Use Jira for all bug reports.
   - name: Create a Feature in Jira
-    url: https://neil-smith.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=10035&issuetype=10021
+    url: https://neil-smith.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=35308&issuetype=10021&summary=Feature%3A%20&labels=from_github%2Cfrom_footer&description=**Problem%20%2F%20Goal%3A**%20...%0A%0A**Users%20%2F%20Audience%3A**%20...%0A%0A**Proposed%20solution%20(brief)%3A**%20...%0A%0A**Success%20criteria%3A**%20...%0A-%20...%0A%0A**Acceptance%20criteria%3A**%0A-%20%5B%20%5D%20...%0A-%20%5B%20%5D%20...%0A%0A**Priority%20(1%E2%80%937)%3A**%20
     about: Use Jira for feature/enhancement requests.
   - name: Security disclosure
     url: https://github.com/warlikeloki/Website/security/policy
