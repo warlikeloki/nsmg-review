@@ -23,3 +23,4 @@ vendor/
 dist/
 build/
 *.log
+scripts/Build-IssuesFromApi.ps1
