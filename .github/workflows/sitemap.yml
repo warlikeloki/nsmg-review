@@ -1,5 +1,8 @@
-
 name: sitemap
+
+# 👇 Give the GITHUB_TOKEN write access so commits/pushes work
+permissions:
+  contents: write
 
 on:
   push:
@@ -17,6 +20,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # 👇 keep credentials so git push uses GITHUB_TOKEN
+          persist-credentials: true
 
       - name: Generate sitemap.xml and update robots.txt (NSM-121)
         shell: pwsh
@@ -33,7 +38,7 @@ jobs:
             echo "No changes to commit."
           } else {
             git commit -m "chore(ci): regenerate sitemap.xml and robots.txt (NSM-121)"
-            git push
+            git push origin HEAD:main
           }
 
       - name: Ping Google/Bing (optional)
