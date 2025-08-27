@@ -1,41 +1,132 @@
-<header class="nav-container">
-  <div class="container">
-    <!-- Logo and Navigation -->
-    <div class="nav-logo">
-      <a href="/index.html">
-        <img src="/media/logos/Logo-wordmarkv2.png" alt="Neil Smith Media Group Logo" class="site-logo">
-      </a>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>500 — Internal Server Error | Neil Smith Media Group</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+
+  <!-- Use your site CSS; page remains readable even if some assets fail -->
+  <link rel="stylesheet" href="/css/global.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/css/navigation.css" />
+  <link rel="stylesheet" href="/css/footer.css" />
+
+  <!-- Safety net styles so the page stays usable even if external CSS fails -->
+  <style>
+    :root { --gap: clamp(16px, 2vw, 24px); --btnpad: 12px 16px; }
+    .container, .footer-container { width: min(960px, 92vw); margin-inline: auto; }
+    main.error-page { display: flex; align-items: center; justify-content: center; min-height: 60svh; padding: var(--gap); text-align: center; }
+    .error-card { width: 100%; max-width: 720px; margin-inline: auto; }
+    .error-card h1 { margin: 0 0 .5em; font-size: clamp(28px, 5vw, 40px); line-height: 1.2; }
+    .error-card p { margin: 0 0 1.25em; line-height: 1.6; }
+    .error-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .error-actions .btn { display: inline-block; padding: var(--btnpad); border: 2px solid currentColor; border-radius: 10px; text-decoration: none; line-height: 1; }
+    .error-actions .btn.primary { background: #111; color: #fff; border-color: transparent; }
+    .error-actions .btn:focus { outline: 3px solid currentColor; outline-offset: 3px; }
+  </style>
+</head>
+<body>
+
+  <!-- EXACT header.html markup (static, no JS injection) -->
+  <header class="nav-container">
+    <div class="container">
+      <!-- Logo and Navigation -->
+      <div class="nav-logo">
+        <a href="/index.html">
+          <img src="/media/logos/Logo-wordmarkv2.png" alt="Neil Smith Media Group Logo" class="site-logo">
+        </a>
+      </div>
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="/index.html">Home</a></li>
+          <li><a href="/about-us/about.html">About</a></li>
+          <li>
+            <a href="/services.html">Services</a>
+            <ul class="dropdown">
+              <li><a href="/services.html">Services</a></li>
+              <li><a href="/services/photography.html">Photography</a></li>
+              <li><a href="/services/videography.html">Videography</a></li>
+              <li><a href="/services/editing.html">Editing</a></li>
+              <li><a href="/services/other-services.html">Other Available Services</a></li>
+              <li><a href="/services/pricing.html">Pricing</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="/portfolio.html">Portfolio</a>
+            <ul class="dropdown">
+              <li><a href="/portfolio.html">Portfolio</a></li>
+              <li><a href="/gallery/gallery.html">Gallery</a></li>
+            </ul>
+          </li>
+          <li><a href="/blog.html">Blog</a></li>
+          <li><a href="/contact.html">Contact</a></li>
+        </ul>
+        <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </nav>
     </div>
-    <nav>
-      <ul class="nav-menu">
-        <li><a href="/index.html">Home</a></li>
-        <li><a href="/about-us/about.html">About</a></li>
-        <li>
+  </header>
+
+  <main id="main" class="error-page" role="main" aria-labelledby="e-title" aria-describedby="e-desc">
+    <section class="error-card">
+      <h1 id="e-title">Something went wrong (500)</h1>
+      <p id="e-desc">
+        Please try again in a moment. If this continues, <a href="/about-us/contact-us.html">let us know</a>.
+      </p>
+      <div class="error-actions">
+        <a href="/" class="btn primary">Go Home</a>
+        <a href="/services.html" class="btn">View Services</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- EXACT current footer content (static) -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-info">
+        <p>&copy; <span id="year">2025</span> Neil Smith Media Group. All rights reserved.</p>
+        <p>
+          <a href="/testimonials.html">Testimonials</a> |
+          <a href="/about-us/contact-us.html">Contact</a> |
+          <a href="/about-us/about.html">About</a> |
+          <a href="/about-us/privacy.html">Privacy Policy</a> |
+          <a href="/about-us/terms-conditions.html">Terms &amp; Conditions</a> |
           <a href="/services.html">Services</a>
-          <ul class="dropdown">
-            <li><a href="/services.html">Services</a></li>
-            <li><a href="/services/photography.html">Photography</a></li>
-            <li><a href="/services/videography.html">Videography</a></li>
-            <li><a href="/services/editing.html">Editing</a></li>
-            <li><a href="/services/other-services.html">Other Available Services</a></li>
-            <li><a href="/services/pricing.html">Pricing</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="/portfolio.html">Portfolio</a>
-          <ul class="dropdown">
-            <li><a href="/portfolio.html">Portfolio</a></li>
-            <li><a href="/gallery/gallery.html">Gallery</a></li>
-          </ul>
-        </li>
-        <li><a href="/blog.html">Blog</a></li>
-        <li><a href="/contact.html">Contact</a></li>
-      </ul>
-      <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </nav>
-  </div>
-</header>
+        </p>
+        <p class="footer-utility-links">
+          <a href="https://neil-smith.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=10035&issuetype=10019&labels=from_footer"
+             target="_blank" rel="noopener noreferrer">Report a bug</a>
+          <span aria-hidden="true"> · </span>
+          <a href="https://neil-smith.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=10035&issuetype=10021&labels=from_footer"
+             target="_blank" rel="noopener noreferrer">Request a feature</a>
+        </p>
+      </div>
+
+      <div class="footer-social">
+        <a href="https://www.facebook.com/NeilSmithMedia" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+          <img src="/media/icons/facebook.svg" alt="Facebook" />
+        </a>
+        <a href="https://www.instagram.com/NeilSmithMedia" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <img src="/media/icons/instagram.svg" alt="Instagram" />
+        </a>
+        <a href="https://youtube.com/@neilsmithmedia" aria-label="YouTube">
+          <img src="/media/icons/youtube.svg" alt="YouTube" />
+        </a>
+        <a href="mailto:neil@neilsmith.org" aria-label="Email">
+          <img src="/media/icons/email.svg" alt="Email" />
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Keep it minimal: set the year so we don't depend on /js/main.js
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
