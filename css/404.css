@@ -1,0 +1,57 @@
+/* NSM-92: Centered 404 layout with responsive & a11y considerations */
+
+/* Tweakable tokens (kept simple to avoid dependency on site vars) */
+:root {
+  --page-gap: clamp(16px, 2vw, 24px);
+  --card-pad: clamp(16px, 2.5vw, 32px);
+  --maxw: 720px;
+}
+
+/* Center only the error content; header/footer remain in normal flow */
+main.error-page {
+  display: flex;
+  align-items: center;        /* vertical center on desktop-ish heights */
+  justify-content: center;    /* horizontal center */
+  min-height: 70svh;          /* avoids overlap with header/footer */
+  padding: var(--page-gap);
+}
+
+/* Content card */
+.error-card {
+  max-width: var(--maxw);
+  width: 100%;
+  text-align: center;
+  padding: var(--card-pad);
+  margin-inline: auto;
+}
+
+.error-card h1 {
+  margin: 0 0 0.5em;
+  font-size: clamp(28px, 5vw, 40px);
+  line-height: 1.2;
+}
+
+.error-card p {
+  margin: 0 0 1.25em;
+  line-height: 1.6;
+}
+
+/* Actions row uses your existing .btn styles; we only handle layout & focus */
+.error-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Ensure visible keyboard focus regardless of theme */
+.error-actions .btn:focus {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+
+/* Small screens: comfortable padding, no horizontal scroll */
+@media (max-width: 600px) {
+  main.error-page { min-height: 60svh; padding: 20px; }
+  .error-card     { padding: 20px; }
+}

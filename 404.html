@@ -5,34 +5,34 @@
   <meta name="robots" content="noindex,nofollow" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>404 – Page Not Found | Neil Smith Media Group</title>
+
+  <!-- Site styles -->
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/header.css" />
   <link rel="stylesheet" href="/css/navigation.css" />
   <link rel="stylesheet" href="/css/footer.css" />
+  <!-- Page-specific styles for NSM-92 -->
+  <link rel="stylesheet" href="/css/404.css" />
 </head>
 <body>
   <div id="header-container"></div>
 
-  <main class="error-page">
-    <h1>404 – Page Not Found</h1>
-    <p>Sorry, we couldn’t find the page you’re looking for.</p>
-    <p>
-      <a href="/" class="btn">Go Home</a>
-      <a href="/services.html" class="btn">View Our Services</a>
-    </p>
+  <main id="main" class="error-page" role="main" aria-labelledby="e-title" aria-describedby="e-desc">
+    <section class="error-card">
+      <h1 id="e-title">404 – Page Not Found</h1>
+      <p id="e-desc">Sorry, we couldn’t find the page you’re looking for.</p>
+      <div class="error-actions">
+        <a href="/" class="btn">Go Home</a>
+        <a href="/services.html" class="btn">View Our Services</a>
+        <a href="/about-us/contact-us.html" class="btn">Contact Us</a>
+      </div>
+    </section>
   </main>
 
   <div id="footer-container"></div>
 
-  <script>
-    fetch('/header.html')
-      .then(r => r.text())
-      .then(html => document.getElementById('header-container').innerHTML = html);
-    fetch('/footer.html')
-      .then(r => r.text())
-      .then(html => document.getElementById('footer-container').innerHTML = html);
-  </script>
+  <!-- Site bootstrap: loads header/footer, sets a11y helpers, etc. -->
   <script type="module" src="/js/main.js" defer></script>
 </body>
 </html>
