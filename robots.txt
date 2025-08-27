@@ -1,0 +1,6 @@
+﻿
+User-agent: *
+Allow: /
+
+# The line below is kept up-to-date by Generate-Sitemap.ps1
+Sitemap: https://neilsmith.org/sitemap.xml
