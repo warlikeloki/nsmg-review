@@ -35,10 +35,8 @@
 - NSM-88 - Fix Testimonials Carousel on Homepage
 - NSM-89 - Add Dynamic Sidebar Content
 - NSM-90 - Configure Development Cache Control for Local Environment
-- NSM-92 - Improve 404 Page Layout and Styling
 - NSM-103 - Mobile Nav: submenu does not open on tap (parent is also a link)
 - NSM-104 - Services page: dashboard hamburger doesn't expand on mobile
-- NSM-105 - Add "Report a Bug / Request a Feature" links in global footer
 - NSM-106 - Security & Access Hardening
 - NSM-107 - Application Security & Administration
 - NSM-108 - Mobile Navigation & UX
@@ -59,6 +57,7 @@
 - NSM-123 - Site-wide security headers baseline
 - NSM-124 - Consent and privacy alignment for analytics (GDPR-friendly)
 - NSM-125 - Broken link and 404 monitoring (CI + scheduled)
+- NSM-126 - 500.html page header and footer need correction
 
 ## Closed / Done
 - NSM-1 - Set up custom domain neilsmith.org
@@ -112,6 +111,7 @@
 - NSM-85 - Make Services Dashboard accessible on Mobile View
 - NSM-87 - Fix "Other Services" Content Loading in Services Dashboard
 - NSM-91 - Investigate Hamburger Menu Issues in Mobile
+- NSM-92 - Improve 404 Page Layout and Styling
 - NSM-93 - Reinstall required applications for programming
 - NSM-94 - Version Control & Issue Tracking
 - NSM-95 - Code Editor & Terminal
@@ -122,3 +122,4 @@
 - NSM-100 - Browsers & Developer Extensions
 - NSM-101 - Productivity & Ultilities
 - NSM-102 - NSMG Logo shows broken link on index.html
+- NSM-105 - Add "Report a Bug / Request a Feature" links in global footer
