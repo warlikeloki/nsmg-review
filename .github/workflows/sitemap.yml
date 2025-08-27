@@ -1,0 +1,45 @@
+
+name: sitemap
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1" # Mondays 03:00 UTC
+
+jobs:
+  build-and-commit:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate sitemap.xml and update robots.txt (NSM-121)
+        shell: pwsh
+        run: |
+          pwsh -File .\scripts\Generate-Sitemap.ps1 -BaseUrl "https://neilsmith.org" -RootPath "." -OutFile "sitemap.xml" -RobotsPath "robots.txt"
+
+      - name: Commit sitemap/robots if changed
+        shell: pwsh
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sitemap.xml robots.txt
+          if (git diff --cached --quiet) {
+            echo "No changes to commit."
+          } else {
+            git commit -m "chore(ci): regenerate sitemap.xml and robots.txt (NSM-121)"
+            git push
+          }
+
+      - name: Ping Google/Bing (optional)
+        if: always()
+        shell: pwsh
+        run: |
+          $smap = [System.Uri]::EscapeDataString("https://neilsmith.org/sitemap.xml")
+          try { Invoke-WebRequest -Uri "https://www.google.com/ping?sitemap=$smap" -Method GET -TimeoutSec 10 -UseBasicParsing | Out-Null } catch { }
+          try { Invoke-WebRequest -Uri "https://www.bing.com/ping?sitemap=$smap"   -Method GET -TimeoutSec 10 -UseBasicParsing | Out-Null } catch { }
