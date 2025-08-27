@@ -1,5 +1,15 @@
-# ────────────────────────────────────────────
-# NSM-42: Custom Error Pages
+# Minimal baseline — avoids common traps
+<IfModule mod_negotiation.c>
+  Options -MultiViews
+</IfModule>
+Options -Indexes
+
+# If you later add rewrites, don't rewrite the error pages themselves
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^(404|500)\.html$ - [L]
+</IfModule>
+
+# Custom error pages (absolute paths from web root)
 ErrorDocument 404 /404.html
 ErrorDocument 500 /500.html
-# ────────────────────────────────────────────
