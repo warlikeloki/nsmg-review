@@ -52,12 +52,10 @@
 - NSM-118 - Error tracking and crash reporting (frontend + PHP)
 - NSM-119 - Automated accessibility and quality gates in CI (axe + Lighthouse)
 - NSM-120 - Responsive images pipeline (AVIF/WebP, srcset/sizes)
-- NSM-121 - Sitemap and robots automation in CI
 - NSM-122 - Nightly backups and restore drill (DB + media)
 - NSM-123 - Site-wide security headers baseline
 - NSM-124 - Consent and privacy alignment for analytics (GDPR-friendly)
 - NSM-125 - Broken link and 404 monitoring (CI + scheduled)
-- NSM-126 - 500.html page header and footer need correction
 
 ## Closed / Done
 - NSM-1 - Set up custom domain neilsmith.org
@@ -123,3 +121,5 @@
 - NSM-101 - Productivity & Ultilities
 - NSM-102 - NSMG Logo shows broken link on index.html
 - NSM-105 - Add "Report a Bug / Request a Feature" links in global footer
+- NSM-121 - Sitemap and robots automation in CI
+- NSM-126 - 500.html page header and footer need correction

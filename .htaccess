@@ -1,3 +1,47 @@
-  # Custom error pages (absolute paths from web root)
-  ErrorDocument 404 /404.html
-  ErrorDocument 500 /500.html
+# --- NSM-18: Security Headers & Hardening ---
+# Place this at the root of your site (same folder as index.*).
+# Safe defaults for HostGator/Apache. Requires mod_headers.
+
+<IfModule mod_headers.c>
+  # Prevent MIME sniffing
+  Header always set X-Content-Type-Options "nosniff"
+
+  # Basic clickjacking protection (pair with CSP frame-ancestors)
+  Header always set X-Frame-Options "SAMEORIGIN"
+
+  # Modern referrer policy
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Reduce fingerprinting of PHP/stack
+  Header always unset X-Powered-By
+
+  # Legacy XSS filter off (prevents false positives)
+  Header always set X-XSS-Protection "0"
+
+  # Lock down risky browser features by default
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()"
+
+  # Content Security Policy — REPORT-ONLY to start (does not block).
+  # Tighten after observing console warnings for a few days.
+  Header set Content-Security-Policy-Report-Only "default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'self';"
+</IfModule>
+
+# --- Optional: Force HTTPS (enable only if SSL is active everywhere) ---
+# <IfModule mod_rewrite.c>
+#   RewriteEngine On
+#   RewriteCond %{HTTPS} !=on
+#   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
+
+# --- Optional: HSTS (enable ONLY when site is always HTTPS and stable) ---
+# <IfModule mod_headers.c>
+#   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+# </IfModule>
+
+# --- Disable directory listing globally ---
+Options -Indexes
+
+# --- Your existing custom error pages (kept) ---
+# Absolute paths from web root:
+ErrorDocument 404 /404.html
+ErrorDocument 500 /500.html

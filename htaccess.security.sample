@@ -1,0 +1,42 @@
+# --- NSM-18: Security Headers & Hardening ---
+# Requires: mod_headers enabled on Apache.
+# Place these near the top of your existing .htaccess, after RewriteEngine On (if present).
+
+# Prevent MIME sniffing
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+
+  # Basic clickjacking protection (use CSP frame-ancestors too)
+  Header always set X-Frame-Options "SAMEORIGIN"
+
+  # Modern referrer policy
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Reduce fingerprinting of PHP/stack
+  Header always unset X-Powered-By
+
+  # Legacy XSS filter off (prevents false positives)
+  Header always set X-XSS-Protection "0"
+
+  # Permissions Policy: deny risky APIs by default
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()"
+
+  # Content Security Policy — REPORT-ONLY to start (does not block)
+  # Adjust sources as needed (e.g., add your CDN, analytics, etc.).
+  Header set Content-Security-Policy-Report-Only "default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https:; font-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'self'; frame-src https://challenges.cloudflare.com;"
+</IfModule>
+
+# Optional: force HTTPS (uncomment if desired and cert is active)
+# <IfModule mod_rewrite.c>
+#   RewriteEngine On
+#   RewriteCond %{HTTPS} !=on
+#   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
+
+# Optional: HSTS (enable ONLY if your site is always HTTPS)
+# <IfModule mod_headers.c>
+#   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+# </IfModule>
+
+# Disable directory listing
+Options -Indexes
