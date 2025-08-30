@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Neil Smith Media Group</title>
+  <meta name="description" content="Our story, values, and the team behind Neil Smith Media Group." />
+  <link rel="canonical" href="https://neilsmith.org/about" />
+
+  <link rel="icon" type="image/png" href="/media/icons/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
+  <link rel="shortcut icon" href="/media/icons/favicon.ico" />
+
+  <link rel="stylesheet" href="/css/global.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/css/footer.css" />
+  <link rel="stylesheet" href="/css/navigation.css" />
+  <link rel="stylesheet" href="/css/forms.css" />
+  <link rel="stylesheet" href="/css/mobile.css" />
+  <link rel="stylesheet" href="/css/a11y.css" />
+
+
+  <script type="module" src="/js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- Header -->
+  <div id="header-container"></div>
+
+  <div class="page-container">
+    <aside class="sidebar left-sidebar" aria-label="Left sidebar"></aside>
+
+    <main class="main-content" id="main">
+      <section class="about-section">
+        <h1>About Neil Smith Media Group</h1>
+        <p>
+          At Neil Smith Media Group, we believe that powerful stories deserve to be told with clarity, creativity, and care. Whether you're launching a brand, planning a wedding, organizing a community event, or promoting a campaign, we bring your vision to life through compelling photography, dynamic video, and thoughtful post-production. We work closely with each client to ensure their message resonates — not just visually, but emotionally. With a flexible approach, professional-grade equipment, and a passion for elevating ideas, Neil Smith Media Group is the creative partner you've been looking for. We don’t just capture moments — we craft lasting impressions that help you connect, engage, and grow.
+        </p>
+
+        <h2>Meet the Team</h2>
+
+        <article class="team-member">
+          <img src="/media/team/neil-smith.jpg" alt="Neil Smith" class="team-photo" decoding="async" loading="lazy" />
+          <h3>Neil Smith</h3>
+          <p>Founder, Photographer, Videographer, and Creative Director</p>
+          <p> Neil is a multimedia professional with a sharp eye for detail, a passion for visual storytelling, and over a decade of hands-on experience in photography, videography, and post-production. From concept development to final delivery, Neil brings a calm, confident presence to every project — whether it's capturing live events, producing corporate content, or developing creative assets for campaigns and clients. His approach blends technical skill with creative insight, ensuring every frame tells a story and every project exceeds expectations. </p>
+          <p> When not behind the camera or editing suite, Neil is often refining his gear setup, consulting on creative strategy, or — let's be honest — indulging his canine intern's unspoken demand for regular breaks and treats. </p>
+        </article>
+
+        <article class="team-member">
+          <img src="/media/team/intern.jpg" alt="Tallulah the Intern" class="team-photo" decoding="async" loading="lazy" />
+          <h3>Tallulah</h3>
+          <p>Intern (Unofficial CEO and Cuddling Coordinator)</p>
+          <p>
+            Tallulah may have "intern" in her title, but don’t let that fool you — she runs a tight ship. Equal parts adorable and authoritative, she supervises every project from the comfort of a sunny spot on the floor. Her favorite tasks include barking during video calls, overseeing snack breaks, and enforcing mandatory petting sessions. As far as she’s concerned, she’s the boss — and honestly, she probably is.
+          </p>
+        </article>
+
+        <h2>Why Choose Neil Smith Media Group?</h2>
+        <ul>
+          <li>Personalized service with a creative touch</li>
+          <li>Attention to detail that makes your brand shine</li>
+          <li>Over a decade of experience in digital media and content creation</li>
+          <li>Flexibility to handle projects of any size — from solo entrepreneurs to larger businesses</li>
+        </ul>
+
+        <p>
+          Ready to bring your vision to life? <a href="/contact.html">Let's Connect</a> and make something amazing together.
+        </p>
+      </section>
+    </main>
+
+    <aside class="sidebar right-sidebar" aria-label="Right sidebar"></aside>
+  </div>
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranked Choice Voting</title>
+    <link rel="stylesheet" href="/css/global.css" />
+    <link rel="stylesheet" href="/css/layout.css" />
+    <link rel="stylesheet" href="/css/navigation.css" />
+    <link rel="stylesheet" href="/css/forms.css" />
+    <link rel="stylesheet" href="/css/media.css" />
+    <link rel="stylesheet" href="/css/mobile.css" />
+    <link rel="stylesheet" href="/ranked-choice/ranked-choice.css" />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
+    <link rel="icon" type="image/png" href="/media/icons/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
+    <link rel="shortcut icon" href="/media/icons/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/media/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="NSMG" />
+    <link rel="manifest" href="/media/icons/site.webmanifest" />
+    <script src="/ranked-choice/ranked-choice.js" defer></script>
+</head>
+<body>
+    <div id="header-container"></div>
+
+<main class="ranked-choice-main">
+  <h1>Ranked Choice Voting Demo</h1>
+  <form id="ranked-choice-form">
+    
+    <!-- Candidate Count Selector -->
+    <div class="form-group">
+      <label for="candidate-count">How many candidates do you wish to show?</label>
+      <select id="candidate-count" name="candidate-count" required>
+        <option value="" disabled selected>Select number</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+      </select>
+    </div>
+
+    <!-- Candidate Name Fields -->
+    <div id="candidate-fields" class="candidate-fields"></div>
+
+    <!-- Ranking Dropdowns -->
+    <div id="ranking-groups" class="ranking-groups"></div>
+
+    <!-- Live Ballot Preview -->
+    <section id="ballot-preview" class="ballot-preview hidden">
+      <h2>Your Ranked Choices</h2>
+      <ol id="ranked-output"></ol>
+    </section>
+
+    <!-- Submit -->
+    <div class="form-group">
+      <button type="submit" class="submit-btn">Submit Ballot</button>
+    </div>
+  </form>
+</main>
+
+
+    <div id="footer-container"></div>
+
+    <script>
+        // Load header and footer
+        fetch('/header.html')
+            .then(response => response.text())
+            .then(html => document.getElementById('header-container').innerHTML = html);
+
+        fetch('/footer.html')
+            .then(response => response.text())
+            .then(html => document.getElementById('footer-container').innerHTML = html);
+    </script>
+</body>
+</html>

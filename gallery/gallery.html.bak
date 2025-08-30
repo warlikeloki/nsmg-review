@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gallery - Neil Smith Media Group</title>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/header.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/footer.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/mobile.css">
+  <link rel="stylesheet" href="/css/gallery.css">
+
+  <!-- Scripts -->
+<script type="module" src="/js/main.js" defer></script>
+
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <div class="page-container">
+    <!-- Left Sidebar -->
+    <aside class="sidebar left-sidebar"></aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h1>Photo Gallery</h1>
+      <p>Browse our featured images and moments.</p>
+
+      <div id="gallery-grid" class="gallery-grid">
+        <!-- Gallery images will go here -->
+      </div>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="sidebar right-sidebar"></aside>
+  </div>
+
+  <div id="footer-container"></div>
+
+  <script>
+    fetch('/header.html')
+      .then(res => res.text())
+      .then(html => document.getElementById('header-container').innerHTML = html);
+
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(html => document.getElementById('footer-container').innerHTML = html);
+  </script>
+</body>
+</html>
