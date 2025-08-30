@@ -1,0 +1,10 @@
+{
+  "enabled": true,
+  "message": "Good news—updates are shipping live. You may see things change while we work.",
+  "details": "We’re actively polishing layout, content, and performance. If something seems off, it’s likely mid-deploy and will settle shortly.",
+  "windowText": "Current window: Aug 30 – Sep 15.",
+  "showModalOnFirstVisit": true,
+  "snoozeHours": 4,
+  "startDate": "2025-08-30T00:00:00-04:00",
+  "endDate": "2025-09-15T23:59:59-04:00"
+}

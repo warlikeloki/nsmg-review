@@ -1,0 +1,168 @@
+/* Work-In-Progress (WIP) notice styles */
+:root {
+  --wip-bg: #111827;            /* slate-900 */
+  --wip-fg: #ffffff;
+  --wip-accent: var(--primary-color, #0073e6);
+  --wip-accent-2: #f59e0b;      /* amber-500 */
+  --wip-shadow: 0 10px 20px rgba(0,0,0,.25);
+  --wip-radius: 14px;
+  --wip-z: 2147483000;          /* above most things */
+  --wip-font: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+#nsmg-wip-banner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: var(--wip-z);
+  background: linear-gradient(90deg, var(--wip-bg), #0b1220);
+  color: var(--wip-fg);
+  box-shadow: var(--wip-shadow);
+  display: none; /* shown by JS when enabled */
+  font-family: var(--wip-font);
+}
+
+#nsmg-wip-banner .wip-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: 28px 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+}
+
+#nsmg-wip-banner .wip-icon {
+  width: 22px;
+  height: 22px;
+  color: var(--wip-accent-2);
+}
+
+#nsmg-wip-banner .wip-text {
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+#nsmg-wip-banner .wip-actions button {
+  margin-left: 8px;
+}
+
+.nsmg-wip-btn {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,.18);
+  background: transparent;
+  color: var(--wip-fg);
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform .04s ease, background .2s ease, border-color .2s ease;
+}
+.nsmg-wip-btn:hover { background: rgba(255,255,255,.08); }
+.nsmg-wip-btn:active { transform: translateY(1px); }
+
+.nsmg-wip-btn.primary {
+  background: var(--wip-accent);
+  border-color: var(--wip-accent);
+}
+
+#nsmg-wip-modal-backdrop {
+  position: fixed;
+  /* inset: 0; */           /* replaced for broader Safari support */
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: rgba(0,0,0,.5);
+  z-index: calc(var(--wip-z) + 1);
+  display: none;
+}
+
+#nsmg-wip-modal {
+  position: fixed;
+  /* inset: 0; */           /* replaced for broader Safari support */
+  top: 0; right: 0; bottom: 0; left: 0;
+  display: none;
+  place-items: center;
+  z-index: calc(var(--wip-z) + 2);
+}
+
+#nsmg-wip-modal .wip-card {
+  background: #0f172a; /* slate-900 deep */
+  color: var(--wip-fg);
+  width: min(720px, 92vw);
+  border-radius: var(--wip-radius);
+  box-shadow: var(--wip-shadow);
+  border: 1px solid rgba(255,255,255,.08);
+  overflow: hidden;
+  font-family: var(--wip-font);
+}
+
+#nsmg-wip-modal .wip-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  background: linear-gradient(90deg, #0b1220, #0e1a33);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+#nsmg-wip-modal .wip-body {
+  padding: 18px;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+#nsmg-wip-modal .wip-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 18px 16px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+#nsmg-wip-badge {
+  position: fixed;
+  bottom: 18px;
+  left: 18px;
+  z-index: var(--wip-z);
+  background: #0b1220;
+  color: var(--wip-fg);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 999px;
+  padding: 8px 12px;
+  box-shadow: var(--wip-shadow);
+  font: 600 13px var(--wip-font);
+  display: none; /* shown by JS */
+  cursor: pointer;
+
+  /* Prevent text selection across browsers (Safari requires prefix) */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  /* Improves hit target on touch devices */
+  touch-action: manipulation;
+}
+
+#nsmg-wip-badge .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--wip-accent-2);
+  margin-right: 8px;
+  animation: nsmgPulse 2.5s infinite ease-in-out;
+}
+
+@keyframes nsmgPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,.65); }
+  50%      { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
+}
+
+@media (max-width: 640px) {
+  #nsmg-wip-banner .wip-inner {
+    grid-template-columns: 22px 1fr auto;
+  }
+  #nsmg-wip-banner .wip-actions .hide-on-mobile {
+    display: none;
+  }
+}
