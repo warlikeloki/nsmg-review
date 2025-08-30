@@ -1,0 +1,106 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>500 — Internal Server Error | Neil Smith Media Group</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+
+  <!-- Use your site CSS; page remains readable even if these fail -->
+  <link rel="stylesheet" href="/css/global.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/css/navigation.css" />
+  <link rel="stylesheet" href="/css/footer.css" />
+
+  <style>
+    /* Safety net styles so the page is usable even if external CSS fails */
+    :root { --gap: clamp(16px, 2vw, 24px); --btnpad: 12px 16px; }
+    .container, .footer-container { width: min(960px, 92vw); margin-inline: auto; }
+    .site-header { padding: var(--gap) 0; }
+    .site-header .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 600; }
+    .site-header .brand img { height: 28px; width: auto; }
+    nav.primary a { margin-right: 12px; text-decoration: none; }
+    main.error-page { display: flex; align-items: center; justify-content: center; min-height: 60svh; padding: var(--gap); text-align: center; }
+    .error-card { width: 100%; max-width: 720px; margin-inline: auto; }
+    .error-card h1 { margin: 0 0 .5em; font-size: clamp(28px, 5vw, 40px); line-height: 1.2; }
+    .error-card p { margin: 0 0 1.25em; line-height: 1.6; }
+    .error-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .error-actions .btn { display: inline-block; padding: var(--btnpad); border: 2px solid currentColor; border-radius: 10px; text-decoration: none; line-height: 1; }
+    .error-actions .btn.primary { background: #111; color: #fff; border-color: transparent; }
+    .error-actions .btn:focus { outline: 3px solid currentColor; outline-offset: 3px; }
+  </style>
+</head>
+<body>
+
+  <!-- Minimal, static header (no JS dependencies) -->
+  <header class="site-header" role="banner">
+    <div class="container">
+      <a class="brand" href="/" aria-label="Neil Smith Media Group — Home">
+        <img src="/media/logos/nsmg-logo.png" alt="" />
+        <span>Neil Smith Media Group</span>
+      </a>
+      <nav class="primary" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/services.html">Services</a>
+        <a href="/about-us/about.html">About</a>
+        <a href="/about-us/contact-us.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="error-page" role="main" aria-labelledby="e-title" aria-describedby="e-desc">
+    <section class="error-card">
+      <h1 id="e-title">Something went wrong (500)</h1>
+      <p id="e-desc">Please try again in a moment. If this continues, <a href="/about-us/contact-us.html">let us know</a>.</p>
+      <div class="error-actions">
+        <a href="/" class="btn primary">Go Home</a>
+        <a href="/services.html" class="btn">View Services</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Full, static footer (matches your footer.html) -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-info">
+        <p>&copy; <span id="year">2025</span> Neil Smith Media Group. All rights reserved.</p>
+        <p>
+          <a href="/testimonials.html">Testimonials</a> |
+          <a href="/about-us/contact-us.html">Contact</a> |
+          <a href="/about-us/about.html">About</a> |
+          <a href="/about-us/privacy.html">Privacy Policy</a> |
+          <a href="/about-us/terms-conditions.html">Terms &amp; Conditions</a> |
+          <a href="/services.html">Services</a>
+        </p>
+        <p class="footer-utility-links">
+          <a href="https://neil-smith.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=10035&issuetype=10019&labels=from_footer"
+             target="_blank" rel="noopener noreferrer">Report a bug</a>
+          <span aria-hidden="true"> · </span>
+          <a href="https://neil-smith.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=10035&issuetype=10021&labels=from_footer"
+             target="_blank" rel="noopener noreferrer">Request a feature</a>
+        </p>
+      </div>
+
+      <div class="footer-social">
+        <a href="https://www.facebook.com/NeilSmithMedia" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+          <img src="/media/icons/facebook.svg" alt="Facebook" />
+        </a>
+        <a href="https://www.instagram.com/NeilSmithMedia" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <img src="/media/icons/instagram.svg" alt="Instagram" />
+        </a>
+        <a href="https://youtube.com/@neilsmithmedia" aria-label="YouTube">
+          <img src="/media/icons/youtube.svg" alt="YouTube" />
+        </a>
+        <a href="mailto:neil@neilsmith.org" aria-label="Email">
+          <img src="/media/icons/email.svg" alt="Email" />
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Minimal JS to set the year; avoids any dependency on main.js
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
