@@ -26,3 +26,4 @@ build/
 scripts/Build-IssuesFromApi.ps1
 # Admin auth config (keep out of git)
 php/includes/admin_auth_config.php
+tools/generate_hash.php
