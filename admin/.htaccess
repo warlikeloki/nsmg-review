@@ -1,3 +1,2 @@
-﻿DirectoryIndex index.php index.html
-Options -Indexes
-
+DirectoryIndex index.php index.html
+# Options -Indexes (commented by protect-admin-fix)

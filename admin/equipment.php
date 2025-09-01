@@ -1,4 +1,4 @@
-﻿<?php require __DIR__ . '/_auth.php'; ?>
+<?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/_auth.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
