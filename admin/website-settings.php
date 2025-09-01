@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿<?php require __DIR__ . '/_auth.php'; ?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -32,3 +33,4 @@
   </main>
 </body>
 </html>
+
