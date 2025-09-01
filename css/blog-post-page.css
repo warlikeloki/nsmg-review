@@ -1,0 +1,60 @@
+/* /css/blog-post-page.css
+   Scoped styles for the blog post detail page.
+*/
+
+#blog-post-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+#blog-post-page .status-note {
+  margin: .5rem 0 1rem 0;
+  opacity: .9;
+}
+
+#blog-post-page .post-hero {
+  margin: 0 0 1rem 0;
+}
+#blog-post-page .post-hero__inner {
+  width: 100%;
+  aspect-ratio: 16 / 9;          /* keeps hero consistent & not too tall */
+  overflow: hidden;
+  background: #f3f4f6;
+  border-radius: 12px;
+}
+#blog-post-page .post-hero__inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;              /* crop large images nicely */
+  object-position: center;
+  display: block;
+}
+
+#blog-post-page .post-title {
+  margin: .25rem 0 .25rem 0;
+  font-size: clamp(1.4rem, 2vw + 1rem, 2rem);
+  line-height: 1.2;
+}
+
+#blog-post-page .post-meta {
+  font-size: .95rem;
+  opacity: .8;
+  margin-bottom: 1rem;
+}
+
+#blog-post-page .post-content {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+#blog-post-page .post-content p { margin: 0 0 1rem 0; }
+#blog-post-page .post-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+#blog-post-page .post-content h2,
+#blog-post-page .post-content h3 {
+  margin-top: 1.25rem;
+  margin-bottom: .5rem;
+}
