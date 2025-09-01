@@ -5,11 +5,9 @@
 - NSM-15 - Add SEO Metadata & JSON-LD
 - NSM-16 - Dynamic testimonials page
 - NSM-17 - Portfolio/Gallery Dynamic loading
-- NSM-18 - Harden security & configuration
 - NSM-20 - Confirm the “Pricing” button shows the pricing tables and hides equipment sidebar
 - NSM-21 - Enter valid data → “Thank you! Your request has been submitted.” success
 - NSM-24 - Add Portfolio Preview & Blog Teaser Fetch Logic
-- NSM-28 - Harden SSH & Deployment Security
 - NSM-30 - Set Up CI/CD Pipeline
 - NSM-31 - Optimize performance & Caching
 - NSM-32 - Implement Gallery Keyboard & Arrow Navigation
@@ -71,12 +69,14 @@
 - NSM-11 - Add Main.js to all HTML templates
 - NSM-12 - Configure and Associate Elastic IP
 - NSM-13 - Add sidebars to all pages
+- NSM-18 - Harden security & configuration
 - NSM-19 - Add Blog to header
 - NSM-22 - Redesign Homepage with Hero, Services, Blog, Contact CTA
 - NSM-23 - Create `homepage.css` for Homepage Layout and Styling
 - NSM-25 - Remove debug logging from JS
 - NSM-26 - Clean up unused CSS files
 - NSM-27 - Add meta description tags into HTML pages
+- NSM-28 - Harden SSH & Deployment Security
 - NSM-29 - Request Service Form bug fix
 - NSM-42 - Custom Error pages 404 & 500
 - NSM-48 - Create SQL code for tables
@@ -123,3 +123,4 @@
 - NSM-105 - Add "Report a Bug / Request a Feature" links in global footer
 - NSM-121 - Sitemap and robots automation in CI
 - NSM-126 - 500.html page header and footer need correction
+- NSM-127 - Site-wide “Work-In-Progress” Notice (Banner + Badge + Modal)
