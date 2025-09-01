@@ -1,147 +1,117 @@
-// testimonials.js
+// /js/testimonials.js
+// Loads testimonials from /json/testimonials.json and renders them as cards.
+// Keeps styling neutral to avoid conflicts with testimonials.css.
 
-document.addEventListener("DOMContentLoaded", () => {
-    const fullTestimonialsContainer = document.getElementById("testimonials-container");
-    const homepageTestimonialsContainer = document.getElementById("homepage-testimonials-container");
-    const CHARACTER_LIMIT = 100;
-    const HOMEPAGE_TESTIMONIALS_COUNT = 10;
-    let currentIndex = 0;
+(function () {
+  const PAGE_SCOPE = document.getElementById('testimonials-page');
+  if (!PAGE_SCOPE) return; // only run on testimonials.html
 
-    // Fetch testimonials from JSON file
-    async function loadTestimonials() {
-        try {
-            const response = await fetch("/json/testimonials.json");
-            if (!response.ok) throw new Error("Failed to load testimonials.json");
-            const testimonials = await response.json();
+  const container = document.querySelector('.testimonials-grid');
+  const statusEl  = document.querySelector('#testimonials-status');
 
-            // Render full testimonials page
-            if (fullTestimonialsContainer) {
-                renderFullTestimonials(testimonials, fullTestimonialsContainer);
-            }
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text) node.textContent = text;
+    return node;
+  }
 
-            // Render homepage testimonials slideshow
-            if (homepageTestimonialsContainer) {
-                renderHomepageTestimonials(testimonials.slice(0, HOMEPAGE_TESTIMONIALS_COUNT));
-            }
+  function truncate(text, limit) {
+    if (!text) return '';
+    if (text.length <= limit) return text;
+    return text.slice(0, limit).trim() + '…';
+  }
 
-        } catch (error) {
-            console.error("Error loading testimonials:", error);
+  function renderCard(t) {
+    const card = el('article', 'testimonial-card');
+
+    // Optional photo
+    const imgWrap = el('div', 'testimonial-photo');
+    const img = el('img');
+    img.alt = `${t.author} photo`;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.src = t.photo && t.photo.trim() !== '' ? t.photo : '/media/photos/placeholders/avatar-placeholder.png';
+    imgWrap.appendChild(img);
+
+    // Header
+    const header = el('div', 'testimonial-header');
+    const name   = el('h3', 'testimonial-author', t.author || 'Client');
+    const meta   = el('div', 'testimonial-meta',
+      [t.role, t.location].filter(Boolean).join(' • ')
+    );
+    header.appendChild(name);
+    if (meta.textContent) header.appendChild(meta);
+
+    // Body with preview/expand
+    const body = el('div', 'testimonial-body');
+    const previewLimit = 220;
+    const fullText = (t.full && t.full.trim().length > 0) ? t.full : (t.short || '');
+
+    const preview = el('p', 'testimonial-text');
+    const needsToggle = fullText.length > previewLimit;
+    preview.textContent = needsToggle ? truncate(fullText, previewLimit) : fullText;
+
+    body.appendChild(preview);
+
+    if (needsToggle) {
+      const toggle = el('button', 'testimonial-toggle', 'Read more');
+      toggle.type = 'button';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!expanded));
+        if (expanded) {
+          preview.textContent = truncate(fullText, previewLimit);
+          toggle.textContent  = 'Read more';
+        } else {
+          preview.textContent = fullText;
+          toggle.textContent  = 'Show less';
         }
+      });
+      body.appendChild(toggle);
     }
 
-    // Render full testimonials page
-    function renderFullTestimonials(testimonials, container) {
-    container.innerHTML = testimonials.map((testimonial, i) => {
-        const fullMessage = testimonial.message;
-        const teaser = fullMessage.length > CHARACTER_LIMIT
-            ? fullMessage.substring(0, CHARACTER_LIMIT).trim() + "..."
-            : fullMessage;
-        const needsReadMore = fullMessage.length > CHARACTER_LIMIT;
+    // Footer (date / rating / sample tag)
+    const footer = el('div', 'testimonial-footer');
+    const bits = [];
+    if (t.date) bits.push(new Date(t.date).toLocaleDateString());
+    if (typeof t.rating === 'number') bits.push(`★ ${t.rating}/5`);
+    if (t.sample) bits.push('SAMPLE');
+    footer.textContent = bits.join(' • ');
 
-        return `
-            <div class="testimonial-card" data-index="${i}">
-                <p class="testimonial-message">
-                    <span class="testimonial-teaser">${teaser}</span>
-                    <span class="testimonial-full" style="display: none;">${fullMessage}</span>
-                </p>
-                <div class="testimonial-name">${testimonial.name}</div>
-                ${needsReadMore ? `<button class="read-more" aria-expanded="false">Read More</button>` : ""}
-            </div>
-        `;
-    }).join("");
+    // Assemble
+    card.appendChild(imgWrap);
+    card.appendChild(header);
+    card.appendChild(body);
+    if (footer.textContent) card.appendChild(footer);
 
-    // Attach click event listeners for 'Read More' buttons
-    container.querySelectorAll(".read-more").forEach(button => {
-        button.addEventListener("click", () => {
-            const card = button.closest(".testimonial-card");
-            const teaser = card.querySelector(".testimonial-teaser");
-            const full = card.querySelector(".testimonial-full");
+    // data attributes (helpful later)
+    card.dataset.id = t.id || '';
+    if (t.sample) card.dataset.sample = 'true';
 
-            const expanded = button.getAttribute("aria-expanded") === "true";
-            button.setAttribute("aria-expanded", !expanded);
-            button.textContent = expanded ? "Read More" : "Read Less";
-            teaser.style.display = expanded ? "inline" : "none";
-            full.style.display = expanded ? "none" : "inline";
-        });
-    });
-}
+    return card;
+  }
 
+  async function loadTestimonials() {
+    try {
+      statusEl.textContent = 'Loading testimonials…';
+      const res = await fetch('/json/testimonials.json', { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!Array.isArray(data) || data.length === 0) {
+        statusEl.textContent = 'No testimonials available yet.';
+        return;
+      }
 
-    // Render homepage testimonials as a slideshow
-    function renderHomepageTestimonials(testimonials) {
-    const slides = testimonials.map((testimonial, index) => {
-        const fullMessage = testimonial.message;
-        const teaser = fullMessage.length > CHARACTER_LIMIT
-            ? fullMessage.substring(0, CHARACTER_LIMIT).trim() + "..."
-            : fullMessage;
-        const needsReadMore = fullMessage.length > CHARACTER_LIMIT;
+      container.innerHTML = '';
+      data.forEach(t => container.appendChild(renderCard(t)));
+      statusEl.textContent = ''; // clear
+    } catch (err) {
+      console.error('Testimonials load failed:', err);
+      statusEl.textContent = 'Unable to load testimonials right now.';
+    }
+  }
 
-        return `
-            <div class="testimonial-slide" data-index="${index}">
-                <p class="testimonial-message">
-                    <span class="testimonial-teaser">${teaser}</span>
-                    <span class="testimonial-full" style="display: none;">${fullMessage}</span>
-                </p>
-                <div class="testimonial-name">– ${testimonial.name}</div>
-                ${needsReadMore ? `<button class="read-more" aria-expanded="false">Read More</button>` : ""}
-            </div>
-        `;
-    });
-
-    // Add the "View All" card
-    slides.push(`
-        <div class="testimonial-slide view-all" data-index="${slides.length}">
-            <a href="/testimonials.html" class="view-all-link">View All Testimonials</a>
-        </div>
-    `);
-
-    homepageTestimonialsContainer.innerHTML = slides.join("");
-    updateSlideVisibility();
-
-    // Read More toggle
-    homepageTestimonialsContainer.querySelectorAll(".read-more").forEach(button => {
-        button.addEventListener("click", () => {
-            const card = button.closest(".testimonial-slide");
-            const teaser = card.querySelector(".testimonial-teaser");
-            const full = card.querySelector(".testimonial-full");
-
-            const expanded = button.getAttribute("aria-expanded") === "true";
-            button.setAttribute("aria-expanded", !expanded);
-            button.textContent = expanded ? "Read More" : "Read Less";
-            teaser.style.display = expanded ? "inline" : "none";
-            full.style.display = expanded ? "none" : "inline";
-        });
-    });
-}
-
-
-
-    // Update slide visibility for homepage slider
-    function updateSlideVisibility() {
-    const slides = document.querySelectorAll(".testimonial-slide");
-    slides.forEach((slide, index) => {
-        slide.style.display = index === currentIndex ? "block" : "none";
-    });
-}
-
-const prevButton = document.getElementById("testimonial-prev");
-const nextButton = document.getElementById("testimonial-next");
-
-if (prevButton && nextButton) {
-    prevButton.addEventListener("click", () => {
-        const slides = document.querySelectorAll(".testimonial-slide");
-        currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-        updateSlideVisibility();
-    });
-
-    nextButton.addEventListener("click", () => {
-        const slides = document.querySelectorAll(".testimonial-slide");
-        currentIndex = (currentIndex + 1) % slides.length;
-        updateSlideVisibility();
-    });
-}
-
-
-    // Initial load
-    loadTestimonials();
-});
+  loadTestimonials();
+})();

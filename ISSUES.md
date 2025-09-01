@@ -5,36 +5,35 @@
 - NSM-15 - Add SEO Metadata & JSON-LD
 - NSM-16 - Dynamic testimonials page
 - NSM-17 - Portfolio/Gallery Dynamic loading
-- NSM-20 - Confirm the “Pricing” button shows the pricing tables and hides equipment sidebar
-- NSM-21 - Enter valid data → “Thank you! Your request has been submitted.” success
-- NSM-24 - Add Portfolio Preview & Blog Teaser Fetch Logic
+- NSM-20 - Confirm the “Pricing” button shows the pricing tables and hides equipment sidebar (Sprint: Sprint 7)
+- NSM-21 - Enter valid data → “Thank you! Your request has been submitted.” success (Sprint: Sprint 7)
+- NSM-24 - Add Portfolio Preview & Blog Teaser Fetch Logic (Sprint: Sprint 9)
 - NSM-30 - Set Up CI/CD Pipeline
-- NSM-31 - Optimize performance & Caching
+- NSM-31 - Optimize performance & Caching (Sprint: Sprint 8)
 - NSM-32 - Implement Gallery Keyboard & Arrow Navigation
 - NSM-33 - Perform Cross-Browser QA
-- NSM-34 - Admin Dashboard UI Access
-- NSM-35 - Tap same parent again → its submenu collapses
-- NSM-36 - Create Manage Services Admin Panel
+- NSM-34 - Admin Dashboard UI Access (Sprint: Sprint 10)
+- NSM-35 - Tap same parent again → its submenu collapses (Sprint: Sprint 7)
+- NSM-36 - Create Manage Services Admin Panel (Sprint: Sprint 10)
 - NSM-37 - Review and update global CSS variables
-- NSM-38 - Add Blog post data to populate blog page
-- NSM-39 - Expand Admin dashboard
-- NSM-40 - Blog pagination
-- NSM-41 - Blog Search & Filtering
-- NSM-43 - Analytics Integration
-- NSM-44 - Form Spam protection
+- NSM-38 - Add Blog post data to populate blog page (Sprint: Sprint 9)
+- NSM-39 - Expand Admin dashboard (Sprint: Sprint 10)
+- NSM-40 - Blog pagination (Sprint: Sprint 9)
+- NSM-41 - Blog Search & Filtering (Sprint: Sprint 9)
+- NSM-43 - Analytics Integration (Sprint: Sprint 8)
+- NSM-44 - Form Spam protection (Sprint: Sprint 6)
 - NSM-45 - PWA Offline Support
-- NSM-46 - Blog Categories/Tags
-- NSM-47 - RSS Feed for Blog
-- NSM-77 - Embed Pricing in Services Dashboard
+- NSM-46 - Blog Categories/Tags (Sprint: Sprint 9)
+- NSM-47 - RSS Feed for Blog (Sprint: Sprint 9)
+- NSM-77 - Embed Pricing in Services Dashboard (Sprint: Sprint 10)
 - NSM-80 - Harden Server Access & phpMyAdmin
-- NSM-81 - Website Settings Page (Admin)
-- NSM-82 - Admin Access / Authentication
-- NSM-86 - Integrate Flickr Account with Gallery/Portfolio
-- NSM-88 - Fix Testimonials Carousel on Homepage
-- NSM-89 - Add Dynamic Sidebar Content
-- NSM-90 - Configure Development Cache Control for Local Environment
-- NSM-103 - Mobile Nav: submenu does not open on tap (parent is also a link)
-- NSM-104 - Services page: dashboard hamburger doesn't expand on mobile
+- NSM-81 - Website Settings Page (Admin) (Sprint: Sprint 10)
+- NSM-86 - Integrate Flickr Account with Gallery/Portfolio (Sprint: Sprint 9)
+- NSM-88 - Fix Testimonials Carousel on Homepage (Sprint: Sprint 7)
+- NSM-89 - Add Dynamic Sidebar Content (Sprint: Sprint 10)
+- NSM-90 - Configure Development Cache Control for Local Environment (Sprint: Sprint 10)
+- NSM-103 - Mobile Nav: submenu does not open on tap (parent is also a link) (Sprint: Sprint 7)
+- NSM-104 - Services page: dashboard hamburger doesn't expand on mobile (Sprint: Sprint 7)
 - NSM-106 - Security & Access Hardening
 - NSM-107 - Application Security & Administration
 - NSM-108 - Mobile Navigation & UX
@@ -45,40 +44,48 @@
 - NSM-113 - Admin Console & Settings
 - NSM-114 - Accessibility & Quality
 - NSM-115 - Analytic & Feedback
-- NSM-116 - Enforce lowercase static asset paths & prevent case-mismatch 404s
-- NSM-117 - Content Security Policy (Report-Only to Enforced)
-- NSM-118 - Error tracking and crash reporting (frontend + PHP)
-- NSM-119 - Automated accessibility and quality gates in CI (axe + Lighthouse)
-- NSM-120 - Responsive images pipeline (AVIF/WebP, srcset/sizes)
+- NSM-116 - Enforce lowercase static asset paths & prevent case-mismatch 404s (Sprint: Sprint 8)
+- NSM-117 - Content Security Policy (Report-Only to Enforced) (Sprint: Sprint 10)
+- NSM-118 - Error tracking and crash reporting (frontend + PHP) (Sprint: Sprint 7)
+- NSM-119 - Automated accessibility and quality gates in CI (axe + Lighthouse) (Sprint: Sprint 8)
+- NSM-120 - Responsive images pipeline (AVIF/WebP, srcset/sizes) (Sprint: Sprint 8)
 - NSM-122 - Nightly backups and restore drill (DB + media)
-- NSM-123 - Site-wide security headers baseline
-- NSM-124 - Consent and privacy alignment for analytics (GDPR-friendly)
-- NSM-125 - Broken link and 404 monitoring (CI + scheduled)
+- NSM-123 - Site-wide security headers baseline (Sprint: Sprint 6)
+- NSM-124 - Consent and privacy alignment for analytics (GDPR-friendly) (Sprint: Sprint 8)
+- NSM-125 - Broken link and 404 monitoring (CI + scheduled) (Sprint: Sprint 10)
+- NSM-128 - Pricing: Visibility Toggle for Services (Sprint: Sprint 7)
+- NSM-129 - Services Page: Refresh Equipment Descriptions & Placeholder Images (Sprint: Sprint 7)
+- NSM-130 - Home Page: Refine Services Section (Links vs Details) (Sprint: Sprint 7)
+- NSM-131 - Testimonials: Seed Mock Testimonials (Clearly Annotated) (Sprint: Sprint 6)
+- NSM-132 - Blog: Seed Mock Blog Posts (Annotated as Samples) (Sprint: Sprint 6)
+- NSM-133 - Blog: First Real Post - "Building This Website" (Sprint: Sprint 7)
+- NSM-134 - Admin Dashboard - Style & Navigation (Sprint: Sprint 7)
+- NSM-135 - Enrich ISSUES.md with Priority & Story Points (and Sprint)
 
 ## Closed / Done
-- NSM-1 - Set up custom domain neilsmith.org
-- NSM-2 - Install & Configure SSL/HTTPS
-- NSM-3 - Sprint 1 Testing
-- NSM-4 - Sitemap update
-- NSM-5 - Mobile navigation collapse
-- NSM-6 - Pricing page missing sidebars and data
-- NSM-7 - Services page - equipment filter
-- NSM-8 - Pricing page backend hookup
-- NSM-9 - Improve mobile dropdown behavior
-- NSM-10 - Contact and Service-request form integration
-- NSM-11 - Add Main.js to all HTML templates
-- NSM-12 - Configure and Associate Elastic IP
-- NSM-13 - Add sidebars to all pages
-- NSM-18 - Harden security & configuration
-- NSM-19 - Add Blog to header
-- NSM-22 - Redesign Homepage with Hero, Services, Blog, Contact CTA
-- NSM-23 - Create `homepage.css` for Homepage Layout and Styling
+- NSM-1 - Set up custom domain neilsmith.org (Sprint: Sprint 5)
+- NSM-2 - Install & Configure SSL/HTTPS (Sprint: Sprint 5)
+- NSM-3 - Sprint 1 Testing (Sprint: Sprint 1)
+- NSM-4 - Sitemap update (Sprint: Sprint 1)
+- NSM-5 - Mobile navigation collapse (Sprint: Sprint 1)
+- NSM-6 - Pricing page missing sidebars and data (Sprint: Sprint 1)
+- NSM-7 - Services page - equipment filter (Sprint: Sprint 1)
+- NSM-8 - Pricing page backend hookup (Sprint: Sprint 1)
+- NSM-9 - Improve mobile dropdown behavior (Sprint: Sprint 1)
+- NSM-10 - Contact and Service-request form integration (Sprint: Sprint 1)
+- NSM-11 - Add Main.js to all HTML templates (Sprint: Sprint 1)
+- NSM-12 - Configure and Associate Elastic IP (Sprint: Sprint 1)
+- NSM-13 - Add sidebars to all pages (Sprint: Sprint 1)
+- NSM-18 - Harden security & configuration (Sprint: Sprint 6)
+- NSM-19 - Add Blog to header (Sprint: Sprint 2)
+- NSM-22 - Redesign Homepage with Hero, Services, Blog, Contact CTA (Sprint: Sprint 2)
+- NSM-23 - Create `homepage.css` for Homepage Layout and Styling (Sprint: Sprint 2)
 - NSM-25 - Remove debug logging from JS
-- NSM-26 - Clean up unused CSS files
-- NSM-27 - Add meta description tags into HTML pages
-- NSM-28 - Harden SSH & Deployment Security
-- NSM-29 - Request Service Form bug fix
-- NSM-42 - Custom Error pages 404 & 500
+- NSM-26 - Clean up unused CSS files (Sprint: Sprint 2)
+- NSM-27 - Add meta description tags into HTML pages (Sprint: Sprint 2)
+- NSM-28 - Harden SSH & Deployment Security (Sprint: Sprint 6)
+- NSM-29 - Request Service Form bug fix (Sprint: Sprint 2)
+- NSM-42 - Custom Error pages 404 & 500 (Sprint: Sprint 2)
 - NSM-48 - Create SQL code for tables
 - NSM-49 - services page equipment filter, pull from SQL, pricing page setup. Is…
 - NSM-50 - mobile menu updates to address issue Mobile navigation collapse #42
@@ -98,19 +105,20 @@
 - NSM-64 - verifying latest updates work with elastic IP.
 - NSM-65 - Sprint_1_backlog
 - NSM-66 - updates to allow local php and SQL testing
-- NSM-72 - Sprint 2 Testing
-- NSM-74 - Move website to new host
-- NSM-75 - Services not displaying
-- NSM-76 - Correct issues found during CSS file review
-- NSM-78 - Update Footer Links
-- NSM-79 - Move Database Credentials Out of Code
+- NSM-72 - Sprint 2 Testing (Sprint: Sprint 2)
+- NSM-74 - Move website to new host (Sprint: Sprint 5)
+- NSM-75 - Services not displaying (Sprint: Sprint 5)
+- NSM-76 - Correct issues found during CSS file review (Sprint: Sprint 2)
+- NSM-78 - Update Footer Links (Sprint: Sprint 2)
+- NSM-79 - Move Database Credentials Out of Code (Sprint: Sprint 5)
+- NSM-82 - Admin Access / Authentication (Sprint: Sprint 6)
 - NSM-83 - Expand Admin Dashboard Sections
-- NSM-84 - Update 'Learn More' buttons to take user to service
-- NSM-85 - Make Services Dashboard accessible on Mobile View
-- NSM-87 - Fix "Other Services" Content Loading in Services Dashboard
-- NSM-91 - Investigate Hamburger Menu Issues in Mobile
-- NSM-92 - Improve 404 Page Layout and Styling
-- NSM-93 - Reinstall required applications for programming
+- NSM-84 - Update 'Learn More' buttons to take user to service (Sprint: Sprint 2)
+- NSM-85 - Make Services Dashboard accessible on Mobile View (Sprint: Sprint 2)
+- NSM-87 - Fix "Other Services" Content Loading in Services Dashboard (Sprint: Sprint 5)
+- NSM-91 - Investigate Hamburger Menu Issues in Mobile (Sprint: Sprint 5)
+- NSM-92 - Improve 404 Page Layout and Styling (Sprint: Sprint 5)
+- NSM-93 - Reinstall required applications for programming (Sprint: Sprint 4)
 - NSM-94 - Version Control & Issue Tracking
 - NSM-95 - Code Editor & Terminal
 - NSM-96 - Language Runtimes & Package Managers
@@ -119,8 +127,8 @@
 - NSM-99 - API Testing & HTTP Clients
 - NSM-100 - Browsers & Developer Extensions
 - NSM-101 - Productivity & Ultilities
-- NSM-102 - NSMG Logo shows broken link on index.html
-- NSM-105 - Add "Report a Bug / Request a Feature" links in global footer
-- NSM-121 - Sitemap and robots automation in CI
-- NSM-126 - 500.html page header and footer need correction
-- NSM-127 - Site-wide “Work-In-Progress” Notice (Banner + Badge + Modal)
+- NSM-102 - NSMG Logo shows broken link on index.html (Sprint: Sprint 5)
+- NSM-105 - Add "Report a Bug / Request a Feature" links in global footer (Sprint: Sprint 5)
+- NSM-121 - Sitemap and robots automation in CI (Sprint: Sprint 5)
+- NSM-126 - 500.html page header and footer need correction (Sprint: Sprint 5)
+- NSM-127 - Site-wide “Work-In-Progress” Notice (Banner + Badge + Modal) (Sprint: Sprint 6)
