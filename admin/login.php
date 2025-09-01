@@ -9,13 +9,24 @@ function csrf_token(): string {
   }
   return $_SESSION['csrf'];
 }
-
 function verify_csrf(string $t): bool {
   return isset($_SESSION['csrf']) && hash_equals($_SESSION['csrf'], $t);
 }
+function sanitize_admin_path(?string $p, string $default): string {
+  if (!is_string($p) || $p === '') return $default;
+  $path = parse_url($p, PHP_URL_PATH);
+  if (!is_string($path) || $path === '') return $default;
+  // Only allow paths under /admin
+  if ($path === '/admin' || $path === '/admin/') return $default;
+  if (strpos($path, '/admin/') !== 0) return $default;
+  if ($path === '/admin/login.php') return $default;
+  return $path;
+}
 
-$redir = isset($_GET['redir']) ? $_GET['redir'] : '/admin/';
+$DEFAULT_AFTER_LOGIN = '/admin/index.php';
+$redir = isset($_GET['redir']) ? sanitize_admin_path($_GET['redir'], $DEFAULT_AFTER_LOGIN) : $DEFAULT_AFTER_LOGIN;
 $err   = '';
+$timeout = isset($_GET['timeout']) ? true : false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $token = $_POST['csrf'] ?? '';
@@ -29,18 +40,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($u === $cfgUser && password_verify($p, $cfgHash)) {
       $_SESSION['admin_auth'] = true;
       $_SESSION['last_seen']  = time();
-      // Rotate CSRF after login
-      unset($_SESSION['csrf']);
-      header('Location: ' . (isset($_POST['redir']) ? $_POST['redir'] : '/admin/'));
+      unset($_SESSION['csrf']); // rotate after login
+      $postedRedir = sanitize_admin_path($_POST['redir'] ?? '', $DEFAULT_AFTER_LOGIN);
+      header('Location: ' . $postedRedir);
       exit;
     } else {
-      // Generic error message
       $err = 'Invalid username or password.';
     }
   }
 }
-
-$timeout = isset($_GET['timeout']) ? true : false;
 ?>
 <!doctype html>
 <html lang="en">
@@ -80,7 +88,7 @@ $timeout = isset($_GET['timeout']) ? true : false;
     <input type="hidden" name="csrf" value="<?=htmlspecialchars(csrf_token(), ENT_QUOTES)?>">
     <input type="hidden" name="redir" value="<?=htmlspecialchars($redir, ENT_QUOTES)?>">
     <button type="submit">Sign In</button>
-    <div class="hint">Use the admin credentials you set in <code>php/includes/admin_auth_config.php</code>.</div>
+    <div class="hint">Use the admin credentials set in <code>/home4/…/private/admin_auth_config.php</code>.</div>
   </form>
 </body>
 </html>
