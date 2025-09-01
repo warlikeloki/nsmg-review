@@ -2,32 +2,55 @@
 declare(strict_types=1);
 
 function nsmg_admin_secrets(): array {
-  $docroot = isset($_SERVER['DOCUMENT_ROOT']) ? rtrim($_SERVER['DOCUMENT_ROOT'], '/') : '';
-  $home = $docroot ? dirname($docroot) : null;
-
-  // Preferred: outside web root (survives deploys). Fallback: inside includes/
+  // Normalize DOCUMENT_ROOT (may be .../public_html or .../public_html/neilsmith.org)
+  $docroot = isset($_SERVER['DOCUMENT_ROOT']) ? rtrim((string)$_SERVER['DOCUMENT_ROOT'], '/') : '';
   $candidates = [];
-  if ($home) {
-    $candidates[] = $home . '/private/admin_auth_config.php';
+
+  // Prefer a HOME-like path if available
+  $homeEnv = getenv('HOME');
+  if ($homeEnv && is_string($homeEnv)) {
+    $home = rtrim($homeEnv, '/');
+    if ($home !== '') {
+      $candidates[] = $home . '/private/admin_auth_config.php';
+    }
   }
+
+  // Derive cPanel "home" by stripping the /public_html suffix (and any subfolder after it)
+  if ($docroot !== '') {
+    $pos = strpos($docroot, '/public_html');
+    if ($pos !== false) {
+      $homeFromDocroot = substr($docroot, 0, $pos);              // e.g., /home4/USER
+      if ($homeFromDocroot !== '') {
+        $candidates[] = $homeFromDocroot . '/private/admin_auth_config.php';
+      }
+    }
+
+    // Also try parent-of-docroot and grandparent-of-docroot, just in case
+    $parent = rtrim(dirname($docroot), '/');                     // e.g., /home4/USER/public_html
+    $grand  = rtrim(dirname($parent), '/');                      // e.g., /home4/USER
+    if ($grand !== '') {
+      $candidates[] = $grand . '/private/admin_auth_config.php';
+    }
+  }
+
+  // Last-resort: allow a copy alongside this file (not recommended; gets wiped on deploy)
   $candidates[] = __DIR__ . '/admin_auth_config.php';
 
   foreach ($candidates as $cfg) {
-    if ($cfg && is_file($cfg)) {
+    if (is_string($cfg) && $cfg !== '' && is_file($cfg)) {
       $data = require $cfg;
       return [
-        'user' => (string)($data['user'] ?? ''),
+        'user'      => (string)($data['user'] ?? ''),
         'pass_hash' => (string)($data['pass_hash'] ?? ''),
       ];
     }
   }
 
-  http_response_code(500);
-  header('Content-Type: text/plain; charset=utf-8');
-  echo "Admin authentication is not configured. Provide admin_auth_config.php at:\n";
-  if ($home) {
-    echo " - {$home}/private/admin_auth_config.php\n";
+  // Helpful error with the exact paths we tried
+  header('Content-Type: text/plain; charset=utf-8', true, 500);
+  echo "Admin authentication is not configured. Checked:\n";
+  foreach ($candidates as $cfg) {
+    echo " - $cfg\n";
   }
-  echo ' - ' . (__DIR__ . '/admin_auth_config.php') . "\n";
   exit;
 }
