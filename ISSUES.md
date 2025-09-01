@@ -56,11 +56,13 @@
 - NSM-128 - Pricing: Visibility Toggle for Services (Sprint: Sprint 7)
 - NSM-129 - Services Page: Refresh Equipment Descriptions & Placeholder Images (Sprint: Sprint 7)
 - NSM-130 - Home Page: Refine Services Section (Links vs Details) (Sprint: Sprint 7)
-- NSM-131 - Testimonials: Seed Mock Testimonials (Clearly Annotated) (Sprint: Sprint 6)
 - NSM-132 - Blog: Seed Mock Blog Posts (Annotated as Samples) (Sprint: Sprint 6)
 - NSM-133 - Blog: First Real Post - "Building This Website" (Sprint: Sprint 7)
 - NSM-134 - Admin Dashboard - Style & Navigation (Sprint: Sprint 7)
 - NSM-135 - Enrich ISSUES.md with Priority & Story Points (and Sprint)
+- NSM-136 - Placeholder image does not appear on testimonials
+- NSM-137 - Public Testimonial Submission & Moderation
+- NSM-138 - Gues Blog Submission & Editorial Workflow
 
 ## Closed / Done
 - NSM-1 - Set up custom domain neilsmith.org (Sprint: Sprint 5)
@@ -132,3 +134,4 @@
 - NSM-121 - Sitemap and robots automation in CI (Sprint: Sprint 5)
 - NSM-126 - 500.html page header and footer need correction (Sprint: Sprint 5)
 - NSM-127 - Site-wide “Work-In-Progress” Notice (Banner + Badge + Modal) (Sprint: Sprint 6)
+- NSM-131 - Testimonials: Seed Mock Testimonials (Clearly Annotated) (Sprint: Sprint 6)
