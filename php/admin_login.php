@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 // 1. Load your DB connection (adjust path if needed)
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button type="submit" class="btn">Log In</button>
     </form>
 
-    <p><a href="/admin/login.html">← Back to Login</a></p>
+    <p><a href="/admin/login.php">â† Back to Login</a></p>
   </main>
     </div>
 </body>
