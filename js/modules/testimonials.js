@@ -1,4 +1,4 @@
-// /js/testimonials.js
+// /js/modules/testimonials.js
 // Loads testimonials from /json/testimonials.json and renders them as cards.
 // Keeps styling neutral to avoid conflicts with testimonials.css.
 
@@ -28,10 +28,13 @@
     // Optional photo
     const imgWrap = el('div', 'testimonial-photo');
     const img = el('img');
-    img.alt = `${t.author} photo`;
+    img.alt = `${t.author || 'Client'} photo`;
     img.loading = 'lazy';
     img.decoding = 'async';
-    img.src = t.photo && t.photo.trim() !== '' ? t.photo : '/media/photos/placeholders/avatar-placeholder.png';
+    img.src =
+      t.photo && t.photo.trim() !== ''
+        ? t.photo
+        : '/media/photos/placeholders/avatar-placeholder.svg';
     imgWrap.appendChild(img);
 
     // Header

@@ -1,14 +1,11 @@
 /* /css/testimonials-page.css
-   Scoped styles for the Testimonials page only.
-   Safe: everything is under #testimonials-page.
+   Scoped styles for the Testimonials page only (no global bleed).
 */
 
 /* ==============================
    Left sidebar → button-style nav
    ============================== */
-#testimonials-page .left-sidebar .sidebar-nav {
-  display: block;
-}
+#testimonials-page .left-sidebar .sidebar-nav { display: block; }
 
 #testimonials-page .left-sidebar .sidebar-nav ul {
   list-style: none;
@@ -18,10 +15,7 @@
   gap: 0.5rem;
 }
 
-#testimonials-page .left-sidebar .sidebar-nav li {
-  margin: 0;
-  padding: 0;
-}
+#testimonials-page .left-sidebar .sidebar-nav li { margin: 0; padding: 0; }
 
 #testimonials-page .left-sidebar .sidebar-nav a {
   display: block;
@@ -37,7 +31,6 @@
   transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .03s ease-in-out;
 }
 
-/* Hover / Active / Focus-visible */
 #testimonials-page .left-sidebar .sidebar-nav a:hover {
   background: var(--btn-hover-bg, #f3f4f6);
   border-color: var(--btn-hover-border, #cfd4dc);
@@ -53,8 +46,6 @@
   outline-offset: 2px;
 }
 
-/* Optional "current page" styling:
-   If you add aria-current="page" to the active link, it will look selected. */
 #testimonials-page .left-sidebar .sidebar-nav a[aria-current="page"],
 #testimonials-page .left-sidebar .sidebar-nav a.is-active {
   background: var(--btn-active-bg, #e5eefc);
@@ -62,7 +53,6 @@
   color: var(--btn-active-fg, #0f172a);
 }
 
-/* Collapse spacing on small screens if needed */
 @media (max-width: 560px) {
   #testimonials-page .left-sidebar .sidebar-nav a {
     padding: 0.6rem 0.8rem;
@@ -141,9 +131,7 @@
 }
 
 @media (max-width: 1000px) {
-  #testimonials-page.with-sidebars {
-    grid-template-columns: 1fr;
-  }
+  #testimonials-page.with-sidebars { grid-template-columns: 1fr; }
   #testimonials-page .left-sidebar,
   #testimonials-page .right-sidebar { order: 2; }
   #testimonials-page .content { order: 1; }
