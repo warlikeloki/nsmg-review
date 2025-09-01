@@ -1,0 +1,150 @@
+/* /css/testimonials-page.css
+   Scoped styles for the Testimonials page only.
+   Safe: everything is under #testimonials-page.
+*/
+
+/* ==============================
+   Left sidebar → button-style nav
+   ============================== */
+#testimonials-page .left-sidebar .sidebar-nav {
+  display: block;
+}
+
+#testimonials-page .left-sidebar .sidebar-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+#testimonials-page .left-sidebar .sidebar-nav li {
+  margin: 0;
+  padding: 0;
+}
+
+#testimonials-page .left-sidebar .sidebar-nav a {
+  display: block;
+  text-decoration: none;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 0.65rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--btn-border, #d1d5db);
+  background: var(--btn-bg, #f9fafb);
+  color: var(--btn-fg, #111827);
+  box-shadow: var(--btn-shadow, 0 1px 1px rgba(0,0,0,.04));
+  transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .03s ease-in-out;
+}
+
+/* Hover / Active / Focus-visible */
+#testimonials-page .left-sidebar .sidebar-nav a:hover {
+  background: var(--btn-hover-bg, #f3f4f6);
+  border-color: var(--btn-hover-border, #cfd4dc);
+}
+
+#testimonials-page .left-sidebar .sidebar-nav a:active {
+  transform: translateY(1px);
+  box-shadow: var(--btn-pressed-shadow, inset 0 1px 2px rgba(0,0,0,.06));
+}
+
+#testimonials-page .left-sidebar .sidebar-nav a:focus-visible {
+  outline: 2px solid var(--focus-ring, #2563eb);
+  outline-offset: 2px;
+}
+
+/* Optional "current page" styling:
+   If you add aria-current="page" to the active link, it will look selected. */
+#testimonials-page .left-sidebar .sidebar-nav a[aria-current="page"],
+#testimonials-page .left-sidebar .sidebar-nav a.is-active {
+  background: var(--btn-active-bg, #e5eefc);
+  border-color: var(--btn-active-border, #93c5fd);
+  color: var(--btn-active-fg, #0f172a);
+}
+
+/* Collapse spacing on small screens if needed */
+@media (max-width: 560px) {
+  #testimonials-page .left-sidebar .sidebar-nav a {
+    padding: 0.6rem 0.8rem;
+    border-radius: 10px;
+  }
+}
+
+/* ==============================
+   Status note & grid
+   ============================== */
+#testimonials-page .status-note {
+  margin: 0.5rem 0 1rem 0;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+#testimonials-page .testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* ==============================
+   Card skeleton (non-invasive)
+   ============================== */
+#testimonials-page .testimonial-card {
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--card-border, #e5e7eb);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: var(--card-shadow, 0 1px 2px rgba(0,0,0,.04));
+}
+
+#testimonials-page .testimonial-photo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+#testimonials-page .testimonial-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#testimonials-page .testimonial-header { margin-bottom: 0.5rem; }
+#testimonials-page .testimonial-author { font-size: 1.05rem; margin: 0; }
+#testimonials-page .testimonial-meta { font-size: 0.9rem; opacity: 0.8; }
+
+#testimonials-page .testimonial-body { margin: 0.5rem 0; }
+#testimonials-page .testimonial-text { margin: 0 0 0.5rem 0; line-height: 1.5; }
+#testimonials-page .testimonial-toggle {
+  display: inline-block;
+  border: 1px solid var(--btn-border, #d1d5db);
+  background: var(--btn-bg, #f9fafb);
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#testimonials-page .testimonial-footer {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* ==============================
+   Page layout with sidebars
+   ============================== */
+#testimonials-page.with-sidebars {
+  display: grid;
+  grid-template-columns: 240px 1fr 260px;
+  gap: 1rem;
+}
+
+@media (max-width: 1000px) {
+  #testimonials-page.with-sidebars {
+    grid-template-columns: 1fr;
+  }
+  #testimonials-page .left-sidebar,
+  #testimonials-page .right-sidebar { order: 2; }
+  #testimonials-page .content { order: 1; }
+}
