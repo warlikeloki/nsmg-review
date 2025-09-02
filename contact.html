@@ -4,11 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contact Us - Neil Smith Media Group</title>
-  <!-- SEO Meta Description -->
-  <meta
-    name="description"
-    content="Contact Neil Smith Media Group for photography, videography, editing, and other services inquiries. Fill out our form or find our direct contact details."
-  />
+  <meta name="description" content="Contact Neil Smith Media Group for photography, videography, editing, and other services inquiries. Fill out our form or find our direct contact details." />
+
   <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/layout.css" />
@@ -18,6 +15,8 @@
   <link rel="stylesheet" href="/css/footer.css" />
   <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/wip.css" />
+
+  <!-- WIP banner loader -->
   <script type="module" src="/js/wip.js" defer></script>
 </head>
 <body>
@@ -37,7 +36,11 @@
         <h1>Contact Us</h1>
         <p>Use the form below to get in touch with Neil Smith Media Group. We'll get back to you as soon as possible.</p>
 
-        <form id="contact-form">
+        <!-- NOTE:
+             1) method/action provide a safe POST fallback if JS fails.
+             2) JS intercepts submit and shows an inline success message (no reload).
+        -->
+        <form id="contact-form" method="post" action="/php/submit_contact.php">
           <label for="name">Name<span>*</span></label>
           <input type="text" id="name" name="name" required />
 
@@ -45,7 +48,7 @@
           <input type="email" id="email" name="email" required />
 
           <label for="topic">What is this regarding?<span>*</span></label>
-          <!-- CHANGED: name="category" (was 'topic') -->
+          <!-- Use name="category" to align with backend; keeps id="topic" for label association -->
           <select id="topic" name="category" required>
             <option value="" disabled selected>Select a topic</option>
             <option value="Photography">Photography</option>
@@ -59,7 +62,7 @@
           <textarea id="message" name="message" rows="6" required></textarea>
 
           <button type="submit" class="btn">Send Message</button>
-          <div id="form-status" class="form-status"></div>
+          <div id="form-status" class="form-status" aria-live="polite" role="status"></div>
         </form>
       </section>
     </main>
@@ -75,7 +78,12 @@
       .then(html => document.getElementById('footer-container').innerHTML = html);
   </script>
 
-  <!-- Load all JS modules -->
+  <!-- Site bootstrap -->
   <script type="module" src="/js/main.js" defer></script>
+
+  <!-- Ensure the contact module is loaded regardless of main.js timing -->
+  <script type="module">
+    import '/js/modules/contact.js';
+  </script>
 </body>
 </html>

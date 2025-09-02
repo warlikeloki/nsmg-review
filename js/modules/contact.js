@@ -1,67 +1,73 @@
 // /js/modules/contact.js
-// Attach immediately on module import (no DOMContentLoaded wrapper)
+// Robust attach: works whether the module loads before or after DOMContentLoaded.
 
-(function initContactForm() {
-  const form = document.getElementById("contact-form");
-  const status = document.getElementById("form-status");
-  if (!form || !status) return;
+(function initContactModule() {
+  const BOUND_FLAG = 'data-contact-bound';
 
-  // Utility: set status text accessibly
-  function setStatus(msg) {
-    status.textContent = msg;
-    status.setAttribute("role", "status");
-    status.setAttribute("aria-live", "polite");
+  function setStatus(el, msg) {
+    if (!el) return;
+    el.textContent = msg;
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
   }
 
-  form.addEventListener("submit", async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-    setStatus("Sending…");
+    const form = e.currentTarget;
+    const status = document.getElementById('form-status');
+    setStatus(status, 'Sending…');
 
-    const submitBtn = form.querySelector('button[type="submit"]');
-    if (submitBtn) submitBtn.disabled = true;
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn) btn.disabled = true;
 
     try {
       const fd = new FormData(form);
 
-      // Back-compat: if form uses name="topic", map it to "category"
-      if (fd.has("topic") && !fd.has("category")) {
-        const val = fd.get("topic") || "General";
-        fd.set("category", val);
+      // Default subject if none set server-side
+      if (!fd.has('subject') || !fd.get('subject')) {
+        const cat = (fd.get('category') || 'General') + '';
+        fd.set('subject', `Website Contact (${cat})`);
       }
 
-      // Provide a default subject if none provided
-      if (!fd.has("subject") || !fd.get("subject")) {
-        const cat = (fd.get("category") || "General") + "";
-        fd.set("subject", `Website Contact (${cat})`);
-      }
-
-      const res = await fetch("/php/submit_contact.php", {
-        method: "POST",
+      const res = await fetch('/php/submit_contact.php', {
+        method: 'POST',
         body: fd,
-        // Note: letting the browser set the multipart/form-data boundary
-        credentials: "same-origin"
+        credentials: 'same-origin'
       });
 
-      // Try to parse JSON even if server doesn't send correct header
       let result = {};
       try { result = await res.json(); } catch (_) {}
 
       if (res.ok && result && result.success) {
-        setStatus("Thank you! Your message has been sent.");
+        setStatus(status, 'Thank you! Your message has been sent.');
         form.reset();
-        // Keep the form visible per NSM-145; change to hide if desired:
-        // form.style.display = "none";
+        // Optional: hide the form after success
+        // form.style.display = 'none';
       } else {
-        const msg =
-          (result && (result.error || result.message)) ||
-          `Error ${res.status || ""}: Unable to send message.`;
-        setStatus(msg);
+        const msg = (result && (result.error || result.message)) || `Error ${res.status || ''}: Unable to send message.`;
+        setStatus(status, msg);
       }
     } catch (err) {
-      console.error("Contact form error:", err);
-      setStatus("Network error sending message.");
+      console.error('Contact form error:', err);
+      setStatus(status, 'Network error sending message.');
     } finally {
-      if (submitBtn) submitBtn.disabled = false;
+      if (btn) btn.disabled = false;
     }
-  });
+  }
+
+  function bind() {
+    const form = document.getElementById('contact-form');
+    const status = document.getElementById('form-status');
+    if (!form || !status) return false;
+    if (form.getAttribute(BOUND_FLAG) === '1') return true;
+
+    form.addEventListener('submit', handleSubmit);
+    form.setAttribute(BOUND_FLAG, '1');
+    return true;
+  }
+
+  // Try now; if elements aren’t present yet, bind on DOMContentLoaded
+  if (!bind()) {
+    document.addEventListener('DOMContentLoaded', bind, { once: true });
+  }
 })();
