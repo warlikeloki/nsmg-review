@@ -64,8 +64,15 @@
 - NSM-138 - Guest Blog Submission & Editorial Workflow
 - NSM-139 - Migrate Blog to SQL (Source of Truth) & Wire Frontend
 - NSM-140 - Publish-Time JSON Export & RSS Feed
-- NSM-141 - Contact Form: Audit, Fixes, and Verification (Sprint: Sprint 6)
 - NSM-142 - Contact Form Hardening & Notifications
+- NSM-143 - Size of Work In Progress message too large for some screens.
+- NSM-144 - Add Sticky Header capability
+- NSM-145 - Contact Form: Success Confirmation (Sprint: Sprint 6)
+- NSM-146 - Contact form submissions not inserted into SQL table (Sprint: Sprint 6)
+- NSM-147 - Adopt Edge CDN/WAF
+- NSM-148 - Move security headers to Edge
+- NSM-149 - Enable Turnstile & Edge rate-limits for Contact Form
+- NSM-150 - Edge Cache & Image Optimization Policy
 
 ## Closed / Done
 - NSM-1 - Set up custom domain neilsmith.org (Sprint: Sprint 5)
@@ -139,3 +146,4 @@
 - NSM-127 - Site-wide “Work-In-Progress” Notice (Banner + Badge + Modal) (Sprint: Sprint 6)
 - NSM-131 - Testimonials: Seed Mock Testimonials (Clearly Annotated) (Sprint: Sprint 6)
 - NSM-132 - Blog: Seed Mock Blog Posts (Annotated as Samples) (Sprint: Sprint 6)
+- NSM-141 - Contact Form: Audit, Fixes, and Verification (Sprint: Sprint 6)

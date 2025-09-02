@@ -1,47 +1,73 @@
 // /js/modules/contact.js
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("contact-form");
-  const status = document.getElementById("form-status");
-  if (!form || !status) return;
+// Robust attach: works whether the module loads before or after DOMContentLoaded.
 
-  form.addEventListener("submit", async (e) => {
+(function initContactModule() {
+  const BOUND_FLAG = 'data-contact-bound';
+
+  function setStatus(el, msg) {
+    if (!el) return;
+    el.textContent = msg;
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    status.textContent = "Sending…";
+    const form = e.currentTarget;
+    const status = document.getElementById('form-status');
+    setStatus(status, 'Sending…');
 
     const btn = form.querySelector('button[type="submit"]');
-    if (btn) { btn.disabled = true; }
+    if (btn) btn.disabled = true;
 
     try {
       const fd = new FormData(form);
-      // Backward-compat: accept either 'topic' or 'category'
-      if (fd.has("topic") && !fd.has("category")) {
-        fd.set("category", fd.get("topic") || "General");
-      }
-      // Provide a default subject if none was supplied
-      if (!fd.has("subject") || !fd.get("subject")) {
-        const cat = (fd.get("category") || "General").toString();
-        fd.set("subject", `Website Contact (${cat})`);
+
+      // Default subject if none set server-side
+      if (!fd.has('subject') || !fd.get('subject')) {
+        const cat = (fd.get('category') || 'General') + '';
+        fd.set('subject', `Website Contact (${cat})`);
       }
 
-      const res = await fetch("/php/submit_contact.php", {
-        method: "POST",
-        body: fd
+      const res = await fetch('/php/submit_contact.php', {
+        method: 'POST',
+        body: fd,
+        credentials: 'same-origin'
       });
 
-      const result = await res.json().catch(() => ({}));
+      let result = {};
+      try { result = await res.json(); } catch (_) {}
 
       if (res.ok && result && result.success) {
-        status.textContent = "Thank you! Your message has been sent.";
+        setStatus(status, 'Thank you! Your message has been sent.');
         form.reset();
+        // Optional: hide the form after success
+        // form.style.display = 'none';
       } else {
-        const msg = (result && (result.error || result.message)) || `Error ${res.status}: Unable to send message.`;
-        status.textContent = msg;
+        const msg = (result && (result.error || result.message)) || `Error ${res.status || ''}: Unable to send message.`;
+        setStatus(status, msg);
       }
     } catch (err) {
-      console.error("Contact form error:", err);
-      status.textContent = "Network error sending message.";
+      console.error('Contact form error:', err);
+      setStatus(status, 'Network error sending message.');
     } finally {
-      if (btn) { btn.disabled = false; }
+      if (btn) btn.disabled = false;
     }
-  });
-});
+  }
+
+  function bind() {
+    const form = document.getElementById('contact-form');
+    const status = document.getElementById('form-status');
+    if (!form || !status) return false;
+    if (form.getAttribute(BOUND_FLAG) === '1') return true;
+
+    form.addEventListener('submit', handleSubmit);
+    form.setAttribute(BOUND_FLAG, '1');
+    return true;
+  }
+
+  // Try now; if elements aren’t present yet, bind on DOMContentLoaded
+  if (!bind()) {
+    document.addEventListener('DOMContentLoaded', bind, { once: true });
+  }
+})();
