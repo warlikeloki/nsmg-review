@@ -1,47 +1,67 @@
 // /js/modules/contact.js
-document.addEventListener("DOMContentLoaded", () => {
+// Attach immediately on module import (no DOMContentLoaded wrapper)
+
+(function initContactForm() {
   const form = document.getElementById("contact-form");
   const status = document.getElementById("form-status");
   if (!form || !status) return;
 
+  // Utility: set status text accessibly
+  function setStatus(msg) {
+    status.textContent = msg;
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+  }
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    status.textContent = "Sending…";
+    setStatus("Sending…");
 
-    const btn = form.querySelector('button[type="submit"]');
-    if (btn) { btn.disabled = true; }
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
 
     try {
       const fd = new FormData(form);
-      // Backward-compat: accept either 'topic' or 'category'
+
+      // Back-compat: if form uses name="topic", map it to "category"
       if (fd.has("topic") && !fd.has("category")) {
-        fd.set("category", fd.get("topic") || "General");
+        const val = fd.get("topic") || "General";
+        fd.set("category", val);
       }
-      // Provide a default subject if none was supplied
+
+      // Provide a default subject if none provided
       if (!fd.has("subject") || !fd.get("subject")) {
-        const cat = (fd.get("category") || "General").toString();
+        const cat = (fd.get("category") || "General") + "";
         fd.set("subject", `Website Contact (${cat})`);
       }
 
       const res = await fetch("/php/submit_contact.php", {
         method: "POST",
-        body: fd
+        body: fd,
+        // Note: letting the browser set the multipart/form-data boundary
+        credentials: "same-origin"
       });
 
-      const result = await res.json().catch(() => ({}));
+      // Try to parse JSON even if server doesn't send correct header
+      let result = {};
+      try { result = await res.json(); } catch (_) {}
 
       if (res.ok && result && result.success) {
-        status.textContent = "Thank you! Your message has been sent.";
+        setStatus("Thank you! Your message has been sent.");
         form.reset();
+        // Keep the form visible per NSM-145; change to hide if desired:
+        // form.style.display = "none";
       } else {
-        const msg = (result && (result.error || result.message)) || `Error ${res.status}: Unable to send message.`;
-        status.textContent = msg;
+        const msg =
+          (result && (result.error || result.message)) ||
+          `Error ${res.status || ""}: Unable to send message.`;
+        setStatus(msg);
       }
     } catch (err) {
       console.error("Contact form error:", err);
-      status.textContent = "Network error sending message.";
+      setStatus("Network error sending message.");
     } finally {
-      if (btn) { btn.disabled = false; }
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
-});
+})();
