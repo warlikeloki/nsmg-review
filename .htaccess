@@ -1,35 +1,32 @@
-# --- NSM-18: Security Headers & Hardening ---
-# Place this at the root of your site (same folder as index.*).
-# Safe defaults for HostGator/Apache. Requires mod_headers.
+# =========================================
+# NSM-123 Safe Security Headers (HostGator)
+# =========================================
 
-<IfModule mod_headers.c>
-  # Prevent MIME sniffing
-  Header always set X-Content-Type-Options "nosniff"
-
-  # Basic clickjacking protection (pair with CSP frame-ancestors)
-  Header always set X-Frame-Options "SAMEORIGIN"
-
-  # Modern referrer policy
-  Header always set Referrer-Policy "strict-origin-when-cross-origin"
-
-  # Minimal feature lockdown (apply to ALL responses, not just PHP)
-  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()"
-
-  # Reduce fingerprinting of PHP/stack
-  Header always unset X-Powered-By
-...
-# </IfModule>
-
-# --- Optional: HSTS (enable ONLY when site is always HTTPS and stable) ---
-# If ready, uncomment the block below to apply HSTS to ALL responses.
-<IfModule mod_headers.c>
-  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" "expr=%{HTTPS} == 'on'"
-</IfModule>
-
-# --- Disable directory listing globally ---
+# Prevent directory listings
 Options -Indexes
 
-# --- Your existing custom error pages (kept) ---
-# Absolute paths from web root:
+# Core security headers (apply to all responses)
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Minimal feature lockdown (static + PHP)
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()"
+
+  # Reduce stack fingerprinting
+  Header always unset X-Powered-By
+</IfModule>
+
+# HSTS only when HTTPS is on (no expr=)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} on
+  <IfModule mod_headers.c>
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  </IfModule>
+</IfModule>
+
+# Custom error documents (keep or remove if you don't have these files)
 ErrorDocument 404 /404.html
 ErrorDocument 500 /500.html
