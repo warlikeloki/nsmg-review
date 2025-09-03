@@ -67,12 +67,11 @@
 - NSM-142 - Contact Form Hardening & Notifications
 - NSM-143 - Size of Work In Progress message too large for some screens.
 - NSM-144 - Add Sticky Header capability
-- NSM-145 - Contact Form: Success Confirmation (Sprint: Sprint 6)
-- NSM-146 - Contact form submissions not inserted into SQL table (Sprint: Sprint 6)
 - NSM-147 - Adopt Edge CDN/WAF
 - NSM-148 - Move security headers to Edge
 - NSM-149 - Enable Turnstile & Edge rate-limits for Contact Form
 - NSM-150 - Edge Cache & Image Optimization Policy
+- NSM-151 - Add Phone Number to Contact Form
 
 ## Closed / Done
 - NSM-1 - Set up custom domain neilsmith.org (Sprint: Sprint 5)
@@ -147,3 +146,5 @@
 - NSM-131 - Testimonials: Seed Mock Testimonials (Clearly Annotated) (Sprint: Sprint 6)
 - NSM-132 - Blog: Seed Mock Blog Posts (Annotated as Samples) (Sprint: Sprint 6)
 - NSM-141 - Contact Form: Audit, Fixes, and Verification (Sprint: Sprint 6)
+- NSM-145 - Contact Form: Success Confirmation (Sprint: Sprint 6)
+- NSM-146 - Contact form submissions not inserted into SQL table (Sprint: Sprint 6)

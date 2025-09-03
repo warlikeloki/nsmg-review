@@ -12,31 +12,19 @@
   # Modern referrer policy
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
 
-  # Reduce fingerprinting of PHP/stack
-  Header always unset X-Powered-By
-
-  # Legacy XSS filter off (prevents false positives)
-  Header always set X-XSS-Protection "0"
-
-  # Lock down risky browser features by default
+  # Minimal feature lockdown (apply to ALL responses, not just PHP)
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()"
 
-  # Content Security Policy — REPORT-ONLY to start (does not block).
-  # Tighten after observing console warnings for a few days.
-  Header set Content-Security-Policy-Report-Only "default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'self';"
-</IfModule>
-
-# --- Optional: Force HTTPS (enable only if SSL is active everywhere) ---
-# <IfModule mod_rewrite.c>
-#   RewriteEngine On
-#   RewriteCond %{HTTPS} !=on
-#   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  # Reduce fingerprinting of PHP/stack
+  Header always unset X-Powered-By
+...
 # </IfModule>
 
 # --- Optional: HSTS (enable ONLY when site is always HTTPS and stable) ---
-# <IfModule mod_headers.c>
-#   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-# </IfModule>
+# If ready, uncomment the block below to apply HSTS to ALL responses.
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" "expr=%{HTTPS} == 'on'"
+</IfModule>
 
 # --- Disable directory listing globally ---
 Options -Indexes
