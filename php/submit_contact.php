@@ -6,6 +6,19 @@ require_once __DIR__ . '/../includes/util.php';
 nsmg_nocache();
 require_method('POST');
 
+// Helpers
+function sanitize_phone_optional(?string $s): ?string {
+    if ($s === null) return null;
+    $s = trim($s);
+    if ($s === '') return null;
+    // Allow digits, spaces, hyphens, parentheses, and a single leading '+'
+    // Remove any '+' not at the beginning
+    $s = preg_replace('/(?!^)\+/', '', $s);
+    // Strip any character not allowed
+    $s = preg_replace('/[^0-9\-\s\(\)\+]/', '', $s);
+    return $s === '' ? null : $s;
+}
+
 // Read inputs (accept legacy 'topic' alias for 'category')
 $name     = get_str($_POST, 'name', '');
 $email    = get_str($_POST, 'email', '');
@@ -15,6 +28,7 @@ if ($category === '' && isset($_POST['topic'])) {
 }
 $subject  = get_str($_POST, 'subject', '');
 $message  = get_str($_POST, 'message', '');
+$phone    = isset($_POST['phone']) ? get_str($_POST, 'phone', '') : '';
 
 // Basic validation
 if ($name === '' || !validate_email($email) || $message === '') {
@@ -27,15 +41,19 @@ try {
     // Default subject if not provided
     $subject = $subject !== '' ? $subject : sprintf('Website Contact (%s)', $category !== '' ? $category : 'General');
 
+    // Sanitize phone (optional)
+    $phone = sanitize_phone_optional($phone);
+
     $stmt = $pdo->prepare("
-        INSERT INTO contact_messages (name, email, subject, category, message)
-        VALUES (:name, :email, :subject, :category, :message)
+        INSERT INTO contact_messages (name, email, subject, category, phone, message)
+        VALUES (:name, :email, :subject, :category, :phone, :message)
     ");
     $stmt->execute([
         ':name'     => $name,
         ':email'    => $email,
         ':subject'  => $subject,
         ':category' => $category !== '' ? $category : null,
+        ':phone'    => $phone, // null if not provided
         ':message'  => $message,
     ]);
 
