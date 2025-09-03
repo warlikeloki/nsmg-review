@@ -36,19 +36,28 @@
         <h1>Contact Us</h1>
         <p>Use the form below to get in touch with Neil Smith Media Group. We'll get back to you as soon as possible.</p>
 
-        <!-- NOTE:
-             1) method/action provide a safe POST fallback if JS fails.
-             2) JS intercepts submit and shows an inline success message (no reload).
-        -->
+        <!-- JS intercepts submit; method/action are safe fallbacks -->
         <form id="contact-form" method="post" action="/php/submit_contact.php">
           <label for="name">Name<span>*</span></label>
           <input type="text" id="name" name="name" required />
 
           <label for="email">Email<span>*</span></label>
-          <input type="email" id="email" name="email" required />
+          <input type="email" id="email" name="email" required autocomplete="email" />
+
+          <label for="phone">Phone (optional)</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            inputmode="tel"
+            autocomplete="tel"
+            placeholder="+1 (555) 123-4567"
+            aria-describedby="phone-help"
+          />
+          <small id="phone-help">Digits or +country code. Formatting is flexible.</small>
 
           <label for="topic">What is this regarding?<span>*</span></label>
-          <!-- Use name="category" to align with backend; keeps id="topic" for label association -->
+          <!-- Align with backend: name="category" -->
           <select id="topic" name="category" required>
             <option value="" disabled selected>Select a topic</option>
             <option value="Photography">Photography</option>
