@@ -21,7 +21,7 @@
 - NSM-40 - Blog pagination (Sprint: Sprint 9)
 - NSM-41 - Blog Search & Filtering (Sprint: Sprint 9)
 - NSM-43 - Analytics Integration (Sprint: Sprint 8)
-- NSM-44 - Form Spam protection (Sprint: Sprint 6)
+- NSM-44 - Form Spam protection
 - NSM-45 - PWA Offline Support
 - NSM-46 - Blog Categories/Tags (Sprint: Sprint 9)
 - NSM-47 - RSS Feed for Blog (Sprint: Sprint 9)
@@ -50,7 +50,6 @@
 - NSM-119 - Automated accessibility and quality gates in CI (axe + Lighthouse) (Sprint: Sprint 8)
 - NSM-120 - Responsive images pipeline (AVIF/WebP, srcset/sizes) (Sprint: Sprint 8)
 - NSM-122 - Nightly backups and restore drill (DB + media)
-- NSM-123 - Site-wide security headers baseline (Sprint: Sprint 6)
 - NSM-124 - Consent and privacy alignment for analytics (GDPR-friendly) (Sprint: Sprint 8)
 - NSM-125 - Broken link and 404 monitoring (CI + scheduled) (Sprint: Sprint 10)
 - NSM-128 - Pricing: Visibility Toggle for Services (Sprint: Sprint 7)
@@ -65,13 +64,13 @@
 - NSM-139 - Migrate Blog to SQL (Source of Truth) & Wire Frontend
 - NSM-140 - Publish-Time JSON Export & RSS Feed
 - NSM-142 - Contact Form Hardening & Notifications
-- NSM-143 - Size of Work In Progress message too large for some screens.
-- NSM-144 - Add Sticky Header capability
+- NSM-143 - Size of Work In Progress message too large for some screens. (Sprint: Sprint 6)
+- NSM-144 - Add Sticky Header capability (Sprint: Sprint 6)
 - NSM-147 - Adopt Edge CDN/WAF
 - NSM-148 - Move security headers to Edge
 - NSM-149 - Enable Turnstile & Edge rate-limits for Contact Form
 - NSM-150 - Edge Cache & Image Optimization Policy
-- NSM-151 - Add Phone Number to Contact Form
+- NSM-152 - Highlight Service Region on Site (optional US-only access toggle)
 
 ## Closed / Done
 - NSM-1 - Set up custom domain neilsmith.org (Sprint: Sprint 5)
@@ -141,6 +140,7 @@
 - NSM-102 - NSMG Logo shows broken link on index.html (Sprint: Sprint 5)
 - NSM-105 - Add "Report a Bug / Request a Feature" links in global footer (Sprint: Sprint 5)
 - NSM-121 - Sitemap and robots automation in CI (Sprint: Sprint 5)
+- NSM-123 - Site-wide security headers baseline (Sprint: Sprint 6)
 - NSM-126 - 500.html page header and footer need correction (Sprint: Sprint 5)
 - NSM-127 - Site-wide “Work-In-Progress” Notice (Banner + Badge + Modal) (Sprint: Sprint 6)
 - NSM-131 - Testimonials: Seed Mock Testimonials (Clearly Annotated) (Sprint: Sprint 6)
@@ -148,3 +148,4 @@
 - NSM-141 - Contact Form: Audit, Fixes, and Verification (Sprint: Sprint 6)
 - NSM-145 - Contact Form: Success Confirmation (Sprint: Sprint 6)
 - NSM-146 - Contact form submissions not inserted into SQL table (Sprint: Sprint 6)
+- NSM-151 - Add Phone Number to Contact Form (Sprint: Sprint 6)

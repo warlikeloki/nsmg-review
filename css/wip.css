@@ -149,7 +149,136 @@
   height: 8px;
   border-radius: 999px;
   background: var(--wip-accent-2);
-  margin-right: 8px;
+  margin-right: 8px;/* NSM-143: Responsive WIP banner (safe selectors, no page inflation)
+   - Targets ONLY #wip, #wip-banner, or [data-wip-overlay]
+   - Caps banner height so it never blocks the page
+   - Keeps text compact and wraps long content
+   - iOS safe-area aware; Safari user-select fix
+*/
+
+/* === Overlay container (top-fixed, non-blocking) === */
+#wip,
+#wip-banner,
+[data-wip-overlay] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  display: flex;
+  justify-content: center;
+
+  pointer-events: none;           /* clicks pass through unless on card/close */
+  z-index: 9999;
+
+  background: transparent;
+  -webkit-user-select: none;      /* Safari warning fix */
+  user-select: none;
+
+  /* Do NOT set font-size on the container — avoids page-wide inflation */
+}
+
+/* === Inner card (if your script creates a child wrapper) === */
+#wip .wip-card,
+#wip-banner .wip-card,
+[data-wip-overlay] .wip-card {
+  pointer-events: auto;
+  margin-top: max(0.5rem, env(safe-area-inset-top));
+  inline-size: min(92vw, 44rem);
+  max-height: 34vh;               /* never cover more than ~1/3 of viewport */
+  overflow-y: auto;
+
+  background: rgba(17, 24, 39, 0.95);   /* dark translucent */
+  color: #f9fafb;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  padding: clamp(10px, 2.2vw, 14px);
+  border: 1px solid rgba(255,255,255,0.08);
+
+  font-size: clamp(0.9rem, 1.2vw + 0.2rem, 1.05rem);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+/* === Fallback: if no .wip-card exists, style direct children safely === */
+#wip > *,
+#wip-banner > *,
+[data-wip-overlay] > * {
+  pointer-events: auto;
+  margin-top: max(0.5rem, env(safe-area-inset-top));
+  inline-size: min(92vw, 44rem);
+  max-height: 34vh;
+  overflow-y: auto;
+
+  background: rgba(17, 24, 39, 0.95);
+  color: #f9fafb;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  padding: clamp(10px, 2.2vw, 14px);
+  border: 1px solid rgba(255,255,255,0.08);
+
+  font-size: clamp(0.9rem, 1.2vw + 0.2rem, 1.05rem);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+/* === Headline emphasis inside the card === */
+#wip strong,
+#wip-banner strong,
+[data-wip-overlay] strong,
+#wip .wip-card strong,
+#wip-banner .wip-card strong,
+[data-wip-overlay] .wip-card strong {
+  font-weight: 700;
+  font-size: clamp(1rem, 1.6vw + 0.15rem, 1.15rem);
+}
+
+/* === Close/dismiss button (any of these are supported) === */
+#wip .wip-close,
+#wip-banner .wip-close,
+[data-wip-overlay] .wip-close,
+#wip #wip-close,
+#wip-banner #wip-close,
+[data-wip-overlay] #wip-close {
+  pointer-events: auto;
+  position: absolute;
+  top: max(0.25rem, env(safe-area-inset-top));
+  right: 0.5rem;
+
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* === Links inside the banner === */
+#wip a, #wip-banner a, [data-wip-overlay] a,
+#wip .wip-card a, #wip-banner .wip-card a, [data-wip-overlay] .wip-card a {
+  color: #93c5fd; /* sky-300 */
+  text-decoration: underline;
+}
+#wip a:hover, #wip-banner a:hover, [data-wip-overlay] a:hover,
+#wip .wip-card a:hover, #wip-banner .wip-card a:hover, [data-wip-overlay] .wip-card a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* === Reduced motion respect (if your JS animates) === */
+@media (prefers-reduced-motion: reduce) {
+  #wip, #wip-banner, [data-wip-overlay] {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
   animation: nsmgPulse 2.5s infinite ease-in-out;
 }
 
