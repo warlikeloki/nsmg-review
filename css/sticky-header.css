@@ -1,0 +1,35 @@
+/* NSM-144 v2: Desktop-only sticky header with ZERO visual changes
+   - Sticky applied to the wrapper (#header-container), not inner markup
+   - No background, color, or shadow changes
+   - Mobile (<768px): not sticky
+*/
+
+/* Mobile: do nothing / ensure non-sticky */
+@media (max-width: 767.98px) {
+  #header-container,
+  #header-container > header,
+  header.site-header,
+  #site-header {
+    position: static;
+    top: auto;
+    z-index: auto;
+  }
+}
+
+/* Desktop & tablets: sticky */
+@media (min-width: 768px) {
+  /* Make the wrapper sticky so inner structure variations don't matter */
+  #header-container {
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* below WIP overlay (9999), above page content */
+    /* no background/color/shadow changes here */
+  }
+
+  /* Optional: help anchor links land below the sticky header.
+     If your header is ~64–80px tall, this is usually fine.
+     Adjust if needed, or remove if you prefer page defaults. */
+  :where(main, section, article, [id]) {
+    scroll-margin-top: 80px;
+  }
+}
