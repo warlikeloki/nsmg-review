@@ -1,8 +1,8 @@
 # Neil Smith Media Group — Website
 
-_Updated: 2025-08-26
+_Updated: 2025-09-07_
 
-Public marketing site with dynamic sections (Services, Blog, Portfolio) and an Admin area. Front end is **static HTML/CSS/JS** with modular ES modules; backend uses **light PHP** endpoints for data and form handling. **GitHub Actions** handles deploys. **Jira** is the system of record for issues/sprints/epics.
+Public marketing site with dynamic sections (Services, Blog, Portfolio) and a light PHP backend for data and forms. Front end is **static HTML/CSS/JS** (ES modules). Backend uses **PHP 8+** for endpoints (contact form, utilities). **Jira** is the source of truth for issues/sprints/epics. Deploys via GitHub Actions or cPanel/FTP as needed.
 
 ---
 
@@ -11,6 +11,9 @@ Public marketing site with dynamic sections (Services, Blog, Portfolio) and an A
 - [Project Structure](#project-structure)
 - [Local Development](#local-development)
 - [Environment & Secrets](#environment--secrets)
+- [Contact Flow & Email (NSM-142/145/146/151)](#contact-flow--email-nsm-142145146151)
+- [Service Region Messaging (NSM-152)](#service-region-messaging-nsm-152)
+- [Sticky Header & WIP Banner (NSM-144/143)](#sticky-header--wip-banner-nsm-144143)
 - [Admin Auth (NSM-82)](#admin-auth-nsm-82)
 - [Testing & QA](#testing--qa)
 - [Issues & Workflow](#issues--workflow)
@@ -27,84 +30,73 @@ Public marketing site with dynamic sections (Services, Blog, Portfolio) and an A
 
 ### Prerequisites
 - [ ] **Git**
-- [ ] **PHP 8+** (for `/php/*.php` endpoints and local server)
-- [ ] **NodeJS (optional)** — only if you use extra tooling; not required for basic dev
-- [ ] **VS Code** (recommended) with HTML, PHP, and Markdown extensions
+- [ ] **PHP 8+** (CLI + server runtime)
+- [ ] **Composer** (for `vendor/` dependencies)
+- [ ] **VS Code** (recommended) with PHP + Markdown extensions
 
 ### Quick start (serve locally)
 ```powershell
 # From repo root
-php -S 127.0.0.1:8000 -t .
+php -S 127.0.0.1:8000 -t .\Website
 # Visit http://127.0.0.1:8000
 ```
-> VS Code “Live Server” is fine for static pages, but PHP endpoints still require the PHP built‑in server above.
+> VS Code “Live Server” works for static HTML, but PHP endpoints require the PHP server above.
 
 ---
 
 ## Project Structure
 ```
 /
-├─ index.html
-├─ header.html
-├─ footer.html
-├─ about-us/                 # About, Contact, Privacy, Terms, etc.
-├─ admin/                    # Admin UI pages (authentication required)
-├─ css/
-│  ├─ navigation.css
-│  ├─ homepage.css
-│  └─ ... (component/page styles)
-├─ js/
-│  ├─ main.js                # Bootstraps header/footer, module auto-init
-│  └─ modules/
-│     ├─ navigation.js
-│     ├─ homepage.js
-│     ├─ blog.js
-│     ├─ blog-post.js
-│     ├─ testimonials.js
-│     ├─ equipment.js
-│     ├─ pricing.js
-│     ├─ contact.js
-│     ├─ other-services.js
-│     ├─ services-nav.js
-│     └─ portfolio.js
-├─ media/
-│  ├─ icons/                 # svg/png icons
-│  └─ logos/                 # brand assets (use lowercase filenames/paths)
-├─ php/
-│  ├─ auth/                  # login/logout handlers (NSM-82)
-│  ├─ get_services.php
-│  ├─ ... other endpoints ...
-│  └─ config.local.php       # NOT IN GIT; local secrets (see below)
+├─ Website/
+│  ├─ index.html
+│  ├─ header.html
+│  ├─ footer.html
+│  ├─ about-us/              # About, Contact, Privacy, Terms
+│  ├─ css/
+│  │  ├─ navigation.css
+│  │  ├─ homepage.css
+│  │  ├─ sticky-header.css   # NSM-144
+│  │  └─ wip.css             # NSM-143
+│  ├─ js/
+│  │  ├─ main.js
+│  │  └─ modules/
+│  │     ├─ contact.js       # NSM-145/146/151/142
+│  │     └─ site-settings.js # NSM-152
+│  ├─ json/
+│  │  └─ site-settings.json  # NSM-152
+│  ├─ php/
+│  │  ├─ includes/
+│  │  │  ├─ db.php
+│  │  │  ├─ util.php
+│  │  │  └─ mail.php         # NSM-142 (PHPMailer if available; mails fallback otherwise)
+│  │  ├─ geo_access.php      # NSM-152 (US-only stub; off by default)
+│  │  └─ submit_contact.php  # NSM-145/146/151/142
+│  ├─ 403-us-only.html       # NSM-152 (optional)
+│  └─ media/                 # icons/logos/etc. (prefer lowercase paths)
 ├─ scripts/
-│  └─ Build-IssuesFromApi.ps1# Sync ISSUES.md from Jira
-└─ .github/
-   └─ ISSUE_TEMPLATE/
-      ├─ bug.md
-      ├─ feature.md
-      └─ config.yml          # “Create in Jira” buttons
+│  ├─ Add-StickyHeaderLink.ps1     # NSM-144
+│  ├─ Add-SiteSettingsModule.ps1   # NSM-152
+│  └─ Build-IssuesFromApi.ps1      # Sync ISSUES.md from Jira (gitignored on deploy)
+├─ composer.json
+└─ vendor/                   # created by Composer; DEPLOY with site
 ```
 
 ---
 
 ## Local Development
 
-### 1) Create local PHP config (DB, options)
-Create **`php/config.local.php`** (do **not** commit):
-
+### 1) Optional local PHP config
+If you need local DB or overrides, create **`Website/php/config.local.php`** (do **not** commit):
 ```php
 <?php
-// php/config.local.php (example)
+// Example overrides
 define('DB_HOST', '127.0.0.1');
 define('DB_NAME', 'nsmg');
-define('DB_USER', 'nsmg_local');
+define('DB_USER', 'nsmg');
 define('DB_PASS', 'CHANGE_ME');
-
-// Optional session config (overrides)
-define('SESSION_NAME', 'nsmg_admin');
-define('SESSION_SECURE', true); // HTTPS only
 ```
 
-Your PHP endpoints should include it if present:
+Include it in your PHP entry points if desired:
 ```php
 $local = __DIR__ . '/config.local.php';
 if (file_exists($local)) { require_once $local; }
@@ -112,140 +104,222 @@ if (file_exists($local)) { require_once $local; }
 
 ### 2) Run a local server
 ```powershell
-php -S 127.0.0.1:8000 -t .
+php -S 127.0.0.1:8000 -t .\Website
 ```
 
 ### 3) Verify modules
-- [ ] Header/footer load (via `main.js` partials)
-- [ ] Homepage services render
-- [ ] Testimonials carousel shows items
-- [ ] Blog list/post pages fetch (if enabled)
-- [ ] Contact form posts to `/php/...` (use a local stub if needed)
+- [ ] Header/footer load (via `main.js`)
+- [ ] Contact form posts to `/php/submit_contact.php` and shows success
+- [ ] Service region text appears (if enabled in `json/site-settings.json`)
 
 ---
 
 ## Environment & Secrets
-- **Never commit secrets.** Keep DB creds and admin password in `php/config.local.php` (local) and secure env on prod.
-- **Case-sensitive assets:** Use **lowercase** filenames/paths for everything under `/media`, `/css`, `/js`. (See **NSM-116**.)
-- **Security headers & CSP:** Baseline headers (NSM-123) and a CSP moving from Report‑Only to Enforced (NSM-117) are tracked issues.
+- **Never commit secrets.** Keep SMTP creds and other secrets off git.
+- Use `Website/secure-config/config.php` **on the server** for SMTP; block web access with:
+  ```
+  Website/secure-config/.htaccess
+  -------------------------------
+  Require all denied
+  ```
+- **Case-sensitive assets:** Use lowercase paths/filenames under `/media`, `/css`, `/js`.
+
+---
+
+## Contact Flow & Email (NSM-142/145/146/151)
+
+**What’s included**
+- **Front-end**: `Website/js/modules/contact.js`
+- **Endpoint**: `Website/php/submit_contact.php`
+- **DB**: Inserts into `contact_messages` (includes optional `phone`)
+- **Meta table**: Auto-creates `contact_messages_meta` (IP, UA, timestamp) for rate-limiting/audit
+- **Honeypot**: Hidden `website` field blocks common bots
+- **Rate limit**: Default **5 submissions / 10 minutes / IP**
+- **Notifications**: `Website/php/includes/mail.php` sends email
+  - Uses **PHPMailer** if `vendor/` is present; otherwise falls back to `mail()`
+  - Gmail/Workspace SMTP supported via **App Password**
+
+**SMTP (Google Workspace) quick setup**
+1. Create **App Password** for `contact@neilsmith.org`  
+2. Install PHPMailer:
+   ```powershell
+   # in repo root
+   composer require phpmailer/phpmailer:^6.9
+   Test-Path .\vendor\autoload.php
+   ```
+3. Server-only config: `Website/secure-config/config.php`
+   ```php
+   <?php
+   return ['smtp' => [
+     'host' => 'smtp.gmail.com',
+     'port' => 465,         // or 587
+     'secure' => 'ssl',     // or 'tls' for 587
+     'username' => 'contact@neilsmith.org',
+     'password' => 'APP_PASSWORD_16_CHARS',
+     'from' => 'contact@neilsmith.org',
+     'from_name' => 'Neil Smith Media Group',
+     'to' => 'contact@neilsmith.org'
+   ]];
+   ```
+4. Deploy **`vendor/`** with the site
+
+**Endpoint smoke test**
+```powershell
+Invoke-WebRequest -Method POST `
+  -Uri "https://neilsmith.org/php/submit_contact.php" `
+  -Body @{ name="Readme Test"; email="test@example.com"; category="General"; message="Hello" } `
+  -UseBasicParsing | Select-Object -ExpandProperty Content
+```
+
+---
+
+## Service Region Messaging (NSM-152)
+
+**Config:** `Website/json/site-settings.json`
+```json
+{
+  "serviceRegion": {
+    "enabled": true,
+    "text": "Serving: Greater Orlando, FL",
+    "country": "US",
+    "states": ["FL"],
+    "cities": ["Orlando", "Winter Park", "Kissimmee"]
+  },
+  "accessControl": { "usOnly": false }
+}
+```
+
+**Module:** `Website/js/modules/site-settings.js`  
+- Renders the region text to `#service-region-text` or `[data-service-region]` (falls back to footer if not present)  
+- Injects **LocalBusiness** JSON-LD with `areaServed`
+
+**Add to every page (one-time helper)**
+```powershell
+.\scripts\Add-SiteSettingsModule.ps1 -Root ".\Website" -Backup
+```
+
+> US-only access is a **stub** (`php/geo_access.php`) and remains **off** until geo rules are added at the edge.
+
+---
+
+## Sticky Header & WIP Banner (NSM-144/143)
+
+- **Sticky header (desktop/tablet only):** `Website/css/sticky-header.css`
+  - Ensure it’s linked on all pages. If not:
+    ```powershell
+    .\scripts\Add-StickyHeaderLink.ps1 -Root ".\Website" -Backup
+    ```
+- **WIP banner sizing:** `Website/css/wip.css`
+  - Responsive, capped height overlay to avoid page inflation
 
 ---
 
 ## Admin Auth (NSM-82)
-Sprint 6 introduces:
-- **Login** `/admin/login.html` → `/php/auth/login.php`
-- **Session management**: cookie flags (**HttpOnly**, **Secure**, **SameSite=Lax**), idle timeout, absolute lifetime; rotate session ID on login
-- **CSRF**: per‑session token; verified on all state‑changing POSTs
-- **Guard**: reusable `auth_guard.php` included at the top of every protected admin page and `/php/*` endpoint
-- **Logout**: invalidates session and clears cookie
 
-> Until NSM‑82 is finished, restrict admin/phpMyAdmin at the host/network level (allowlists).
+_Tracked work:_ Login, session security (HttpOnly/Secure/SameSite), CSRF tokens for admin endpoints, guard include for `/admin/*` and sensitive `/php/*`. Until NSM-82 is complete, restrict access to admin tools at the host level.
 
 ---
 
 ## Testing & QA
 
-### Manual checks (high value)
-- [ ] **Mobile nav**: drawer open/close, submenus, services dashboard menu (NSM-103/104)
-- [ ] **Forms**: success/error flows; user‑friendly messages; no console errors (NSM-21)
-- [ ] **A11y**: keyboard focus; skip link to `#main`; headings/labels (NSM-14)
-- [ ] **Perf**: hero images optimized; caching behaving (NSM-31, NSM-120)
-
-### Automated (planned/adding)
-- **CI gates**: axe-core + Lighthouse CI (NSM-119)
-- **Broken links**: CI + weekly crawl (NSM-125)
-- **Error tracking**: Sentry (or similar) FE + PHP (NSM-118)
+### High-value manual checks
+- [ ] **Contact:** success path, 422 validation, and 429 rate-limit behavior
+- [ ] **DB:** rows appear in `contact_messages` and `contact_messages_meta`
+- [ ] **Email:** notification arrives (SMTP), Reply-To set to submitter
+- [ ] **Service region:** text displays; JSON-LD present; toggle `enabled` to verify hide/show
+- [ ] **Sticky header:** sticks on ≥768px; not sticky on mobile
+- [ ] **A11y:** labels, focus ring, `aria-live` on form status
+- [ ] **Perf:** caches and asset sizes reasonable (see NSM-31 plan)
 
 ---
 
 ## Issues & Workflow
 
-### Jira is the source of truth
-- **New issues**: Use Jira. GitHub **New issue** shows **“Create a Bug/Feature in Jira”** (configured in `/.github/ISSUE_TEMPLATE/config.yml`).
-- **Footer links**: The site footer contains **Report a bug** / **Request a feature** links that deep‑link to Jira create pages (NSM‑105).
+- **Jira** is the system of record. Create/track work there.
+- `ISSUES.md` can be refreshed from Jira:
+  ```powershell
+  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+  .\scripts\Build-IssuesFromApi.ps1 -ProjectKey "NSM" -OutPath ".\ISSUES.md"
+  ```
 
-### Keep `ISSUES.md` in sync from Jira
-```powershell
-# From repo root
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
-.\scripts\Build-IssuesFromApi.ps1 -ProjectKey "NSM" -OutPath ".\ISSUES.md"
-```
-_Add a timestamp line in the script if desired:_
-```powershell
-$lines.Insert(1, "_Generated from Jira on $(Get-Date -Format 'yyyy-MM-dd')_")
-```
-
-### Branch & PR guidelines
-- Branch names: `feat/...`, `fix/...`, `chore/...`; include Jira key, e.g., `feat/footer-jira-links-NSM-105`
-- Commit messages: reference Jira key in the subject, e.g.  
-  `feat(footer): add Jira bug/feature links (NSM-105)`
-- Link PRs to Jira tickets (Development panel).
+**Branch & PR**
+- Branch: `feat/...`, `fix/...`, `chore/...` + include Jira key (e.g., `feat/service-region-NSM-152`)
+- Commit subject: `feat(contact): add SMTP notifications (NSM-142)`
+- Link PR to the Jira ticket
 
 ---
 
 ## Deployment
-- Deployed via **GitHub Actions** (`.github/workflows/deploy.yml`).
-- Prefer **OIDC** for short‑lived deploy credentials over static keys (tracked under security epics).
-- Ensure assets keep **lowercase** names to avoid case‑sensitive 404s (NSM‑116).
 
-**Typical flow**
-1. Open PR → checks pass
-2. Merge to `main`
-3. GitHub Action deploys to host (cPanel/FTP/rsync, per workflow)
+- **GitHub Actions** (preferred): see workflow under `.github/workflows/*` if present
+- **Manual**: upload `Website/` and **`vendor/`** (Composer) to hosting. Ensure `.htaccess` and PHP version 8+.
+
+**Post-deploy quick checks**
+```powershell
+# Headers (HSTS, etc.)
+Invoke-WebRequest https://neilsmith.org/ | Select-Object -ExpandProperty Headers
+
+# Contact POST
+Invoke-WebRequest -Method POST `
+  -Uri "https://neilsmith.org/php/submit_contact.php" `
+  -Body @{ name="Deploy Test"; email="test@example.com"; category="General"; message="Hi" } `
+  -UseBasicParsing | Select-Object -ExpandProperty Content
+```
 
 ---
 
 ## Maintenance & Ops
-- **Backups**: Nightly DB + `/media` with retention; perform restore drill (NSM‑122)
-- **Security headers**: HSTS, X‑CTO, XFO/FO, Referrer‑Policy, Permissions‑Policy (NSM‑123)
-- **CSP**: Start **Report‑Only**, fix violations, then **Enforce** (NSM‑117)
-- **Consent**: GA4 Consent Mode or cookie gating as appropriate (NSM‑124)
-- **Monitoring**: Error tracking for FE + PHP (NSM‑118); broken‑link monitoring (NSM‑125)
+
+### Email deliverability (Workspace)
+- **SPF (root TXT)** — single record:
+  ```
+  v=spf1 include:_spf.google.com include:websitewelcome.com ~all
+  ```
+- **DKIM (TXT at `<selector>._domainkey`)** — generate in Google Admin → Gmail → DKIM  
+  If HostGator UI truncates the value, paste as **multiple quoted strings** in one TXT record (DNS concatenates).
+- **DMARC (TXT at `_dmarc`)** — start monitor mode:
+  ```
+  v=DMARC1; p=none; rua=mailto:postmaster@neilsmith.org; fo=1
+  ```
+
+### Backups / Monitoring (tracked)
+- Nightly DB + media backups with retention, restore drill (NSM-122)
+- Error tracking (FE + PHP) (NSM-118)
+- Broken link checks (NSM-125)
 
 ---
 
 ## Roadmap & Sprints
-- Cadence: **3‑week sprints**; Sprint 6 begins Sep 1, 2025.
-- Epics (created as NSM‑106 → NSM‑115):
-  - Security & Access Hardening (NSM‑106)
-  - Application Security & Authentication (NSM‑107)
-  - Mobile Navigation & UX (NSM‑108)
-  - Forms & Conversion Flows (NSM‑109)
-  - Performance & Caching (NSM‑110)
-  - SEO & Metadata (NSM‑111)
-  - Content & Publishing (NSM‑112)
-  - Admin Console & Settings (NSM‑113)
-  - Accessibility & Quality (NSM‑114)
-  - Analytics & Feedback (NSM‑115)
 
-See **`ISSUES.md`** for current Open/Closed lists (synced from Jira).
+- **Sprint 6** (started 2025-09-01)
+  - **Done:** NSM-141, NSM-145, NSM-146, NSM-143, NSM-144, NSM-123
+  - **In testing:** **NSM-142** (contact hardening + SMTP)
+  - **In progress:** **NSM-152** (service region + JSON-LD)
+  - **Stretch:** NSM-31 (performance & caching)
 
 ---
 
 ## Release Checklist
-- [ ] **CI passes** for build/lint/tests (where applicable)
-- [ ] **CSP** is in **Report‑Only** or **Enforced** as planned (NSM‑117); no broken pages
-- [ ] **Security headers** present (HSTS, X‑CTO, XFO/FO, Referrer‑Policy, Permissions‑Policy) (NSM‑123)
-- [ ] **Admin auth** enforced for admin pages and `/php/*` endpoints (NSM‑82)
-- [ ] **Forms**: success/error flows verified; anti‑spam enabled (NSM‑21, NSM‑44)
-- [ ] **Mobile nav**: drawer/submenus/services dashboard behave on iOS Safari & Android Chrome (NSM‑103/104)
-- [ ] **Performance**: LCP/TBT within targets on mobile profile; responsive images in place (NSM‑31, NSM‑120)
-- [ ] **SEO**: meta + JSON‑LD present; `sitemap.xml`/`robots.txt` current (NSM‑15, NSM‑121)
-- [ ] **Analytics**: base tagging + consent behavior verified (NSM‑43, NSM‑124)
-- [ ] **Error tracking**: frontend + PHP events received (NSM‑118)
-- [ ] **Links**: no internal 404s; weekly link check green (NSM‑125)
-- [ ] **Backups**: nightly job healthy; last restore drill documented (NSM‑122)
-- [ ] **Footer Jira links**: render & open correctly (NSM‑105)
+
+- [ ] CI/build/lint pass (if enabled)
+- [ ] Security headers present (NSM-123); HSTS on HTTPS
+- [ ] Contact flow: success, DB insert, rate-limit, notification (NSM-145/146/142)
+- [ ] Service region displays & JSON-LD valid (NSM-152)
+- [ ] Sticky header works on desktop, not on mobile (NSM-144)
+- [ ] No console errors; a11y basics pass
+- [ ] DNS: SPF single record; DKIM authenticated; DMARC present
+- [ ] Vendor deployed (PHPMailer available) and secure-config present on server
 
 ---
 
 ## Contributing
-- Add/adjust **ARIA and focus states** for interactive elements.
-- Keep filenames/paths **lowercase**.
-- Avoid inline scripts/styles that CSP will block once enforced.
-- Update docs if you add a new admin page or `/php/*` endpoint (auth guard + CSRF).
+
+- Keep filenames/paths **lowercase**
+- Avoid inline scripts/styles that future CSP may block
+- Add ARIA labels and focus states for interactive elements
+- Update this README when you add endpoints or modules
 
 ---
 
 ## License
-Copyright © Neil Smith
+MIT © Neil Smith
