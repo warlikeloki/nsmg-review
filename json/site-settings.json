@@ -1,0 +1,12 @@
+{
+  "serviceRegion": {
+    "enabled": true,
+    "text": "Serving: Hampton Roads, Virginia",
+    "country": "US",
+    "states": ["VA"],
+    "cities": ["Virginia Beach", "Chesapeake", "Norfolk", "Portsmouth", "Hampton", "Newport News", "Suffolk"]
+  },
+  "accessControl": {
+    "usOnly": false
+  }
+}
