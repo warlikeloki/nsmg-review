@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Request Services – Neil Smith Media Group</title>
+  <title>Request Services â€“ Neil Smith Media Group</title>
     <!-- SEO Meta Description -->
   <meta
     name="description"
@@ -13,11 +13,15 @@
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/css/sticky-header.css" />
   <link rel="stylesheet" href="/css/navigation.css" />
   <link rel="stylesheet" href="/css/footer.css" />
   <link rel="stylesheet" href="/css/forms.css" />
   <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/equipment.css" />
+  <link rel="stylesheet" href="/css/wip.css" />
+  <script type="module" src="/js/wip.js" defer></script>
+  <script type="module" src="/js/modules/site-settings.js"></script>
 </head>
 <body>
   <div id="header-container"></div>
@@ -40,7 +44,7 @@
     <main class="main-content" id="services-content">
       <section class="request-form-section">
         <h2>Request a Quote</h2>
-        <p>Fill out the form below to request a quote…</p>
+        <p>Fill out the form below to request a quoteâ€¦</p>
 
         <form id="service-request-form" novalidate>
           <div id="request-status" class="form-status" aria-live="polite"></div>
@@ -99,3 +103,4 @@
   <script type="module" src="/js/main.js" defer></script>
 </body>
 </html>
+

@@ -8,7 +8,7 @@
   h1{margin:0 0 8px;font-size:1.4rem}
   p{margin:.4rem 0 0;opacity:.9}
 </style>
-  <script type="module" src=""></script>
+  <script type="module" src="/js/modules/site-settings.js"></script>
 </head><body>
   <main class="card">
     <h1>Service Area Notice</h1>
@@ -16,5 +16,4 @@
     <p>If you believe youâ€™re seeing this message in error, please contact <a href="mailto:contact@neilsmith.org">contact@neilsmith.org</a>.</p>
   </main>
 </body></html>
-
 

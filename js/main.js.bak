@@ -1,4 +1,4 @@
-﻿// /js/main.js
+// /js/main.js
 // Site bootstrap: load header/footer, enhance nav & accordions, small a11y helpers.
 
 (() => {
@@ -131,7 +131,7 @@
   }
 
   function initSkipLink() {
-    // If thereâ€™s no #main, but #homepage exists, alias it
+    // If there’s no #main, but #homepage exists, alias it
     if (!$("#main") && $("#homepage")) {
       $("#homepage").setAttribute("id", "main");
     }
@@ -140,8 +140,8 @@
   async function start() {
     initSkipLink();
     await Promise.all([
-      loadPartial("=202509071829", "#header-container"),
-      loadPartial("=202509071829", "#footer-container")
+      loadPartial("/header.html", "#header-container"),
+      loadPartial("/footer.html", "#footer-container")
     ]);
 
     // Initialize mobile navigation right after header/footer injection
@@ -172,4 +172,3 @@
     start();
   }
 })();
-

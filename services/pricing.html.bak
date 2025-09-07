@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en-us">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pricing · Neil Smith Media Group</title>
+  <title>Pricing Â· Neil Smith Media Group</title>
 
   <!-- Icons -->
   <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml">
@@ -19,10 +19,14 @@
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/navigation.css" />
   <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/css/sticky-header.css" />
   <link rel="stylesheet" href="/css/footer.css" />
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/pricing.css" />
   <link rel="stylesheet" href="/css/mobile.css" />
+  <link rel="stylesheet" href="/css/wip.css" />
+  <script type="module" src="/js/wip.js" defer></script>
+  <script type="module" src="/js/modules/site-settings.js"></script>
 </head>
 <body>
   <!-- HEADER INJECTION (by /js/main.js) -->
@@ -45,7 +49,7 @@
       </section>
 
       <section id="ala-carte-section">
-        <h2>À La Carte</h2>
+        <h2>Ã€ La Carte</h2>
         <table class="pricing-table" id="ala-carte-table">
           <thead>
             <tr><th>Service</th><th>Description</th><th>Price</th></tr>
@@ -74,3 +78,5 @@
   <script type="module" src="/js/main.js?v=2025-08-22" defer></script>
 </body>
 </html>
+
+

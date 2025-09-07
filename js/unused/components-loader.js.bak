@@ -1,4 +1,4 @@
-﻿/* eslint-disable no-console */
+/* eslint-disable no-console */
 function loadComponents(components) {
     components.forEach(({ id, file }) => {
         fetch(file)
@@ -18,7 +18,7 @@ function loadComponents(components) {
 
 document.addEventListener("DOMContentLoaded", () => {
     loadComponents([
-        { id: "header", file: "=202509071829" }, // Changed path
-        { id: "footer", file: "=202509071829" }  // Changed path
+        { id: "header", file: "/header.html" }, // Changed path
+        { id: "footer", file: "/footer.html" }  // Changed path
     ]);
 });
