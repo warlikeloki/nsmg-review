@@ -1,11 +1,12 @@
 # =========================================
 # NSM-123 Safe Security Headers (HostGator)
+# + NSM-31 Performance & Caching
 # =========================================
 
 # Prevent directory listings
 Options -Indexes
 
-# Core security headers (apply to all responses)
+# -------- Security headers (NSM-123) --------
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"
@@ -27,6 +28,79 @@ Options -Indexes
   </IfModule>
 </IfModule>
 
-# Custom error documents (keep or remove if you don't have these files)
+# -------- Compression (NSM-31) --------
+# Prefer Brotli; fall back to Deflate if unavailable
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS \
+    text/plain text/html text/css text/javascript application/javascript \
+    application/json application/ld+json application/xml image/svg+xml font/woff2
+  # Prevent re-compression of already compressed assets
+  SetEnvIfNoCase Request_URI "\.(?:woff2|7z|gz|zip|bz2)$" no-brotli=1
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE \
+    text/plain text/html text/css text/javascript application/javascript \
+    application/json application/ld+json application/xml image/svg+xml
+  # Prevent re-compression of already compressed assets
+  SetEnvIfNoCase Request_URI "\.(?:woff2|7z|gz|zip|bz2)$" no-gzip=1
+  # Old browser quirks
+  BrowserMatch ^Mozilla/4 gzip-only-text/html
+  BrowserMatch ^Mozilla/4\.0[678] no-gzip
+  BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+</IfModule>
+
+# -------- Caching (NSM-31) --------
+# Add Vary and disable ETag (inode variance on shared hosting)
+<IfModule mod_headers.c>
+  Header append Vary Accept-Encoding
+  Header unset ETag
+</IfModule>
+FileETag None
+
+# Expires (far-future for static assets, short for HTML/JSON)
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # HTML — revalidate each visit
+  ExpiresByType text/html "access plus 0 seconds"
+
+  # JSON — short cache (site-settings also uses no-store in JS fetch)
+  ExpiresByType application/json    "access plus 5 minutes"
+  ExpiresByType application/ld+json "access plus 5 minutes"
+
+  # CSS/JS — 1 year (use ?v= for cache busting)
+  ExpiresByType text/css                 "access plus 1 year"
+  ExpiresByType text/javascript          "access plus 1 year"
+  ExpiresByType application/javascript   "access plus 1 year"
+
+  # Images — 1 year
+  ExpiresByType image/png     "access plus 1 year"
+  ExpiresByType image/jpeg    "access plus 1 year"
+  ExpiresByType image/webp    "access plus 1 year"
+  ExpiresByType image/gif     "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+
+  # Fonts — 1 year
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType font/woff  "access plus 1 year"
+  ExpiresByType font/ttf   "access plus 1 year"
+  ExpiresByType font/otf   "access plus 1 year"
+</IfModule>
+
+# Fallback Cache-Control in case mod_expires is missing
+<IfModule mod_headers.c>
+  <FilesMatch "\.(?:css|js|mjs|png|jpe?g|gif|webp|svg|woff2?|ttf|otf)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(?:json|ld\+json)$">
+    Header set Cache-Control "public, max-age=300"
+  </FilesMatch>
+  <FilesMatch "\.(?:html)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+# -------- Custom error documents --------
 ErrorDocument 404 /404.html
 ErrorDocument 500 /500.html

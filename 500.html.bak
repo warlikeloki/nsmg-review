@@ -1,7 +1,7 @@
-<html lang="en">
+﻿<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>500 — Internal Server Error | Neil Smith Media Group</title>
+  <title>500 Internal Server Error | Neil Smith Media Group</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
 
@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/css/sticky-header.css" />
   <link rel="stylesheet" href="/css/navigation.css" />
   <link rel="stylesheet" href="/css/footer.css" />
 
@@ -29,13 +30,16 @@
     .error-actions .btn.primary { background: #111; color: #fff; border-color: transparent; }
     .error-actions .btn:focus { outline: 3px solid currentColor; outline-offset: 3px; }
   </style>
+  <link rel="stylesheet" href="/css/wip.css" />
+  <script type="module" src="/js/wip.js" defer></script>
+  <script type="module" src="/js/modules/site-settings.js"></script>
 </head>
 <body>
 
   <!-- Minimal, static header (no JS dependencies) -->
   <header class="site-header" role="banner">
     <div class="container">
-      <a class="brand" href="/" aria-label="Neil Smith Media Group — Home">
+      <a class="brand" href="/" aria-label="Neil Smith Media Group Home">
         <img src="/media/logos/nsmg-logo.png" alt="" />
         <span>Neil Smith Media Group</span>
       </a>
@@ -75,7 +79,7 @@
         <p class="footer-utility-links">
           <a href="https://neil-smith.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=10035&issuetype=10019&labels=from_footer"
              target="_blank" rel="noopener noreferrer">Report a bug</a>
-          <span aria-hidden="true"> · </span>
+          <span aria-hidden="true"> Â· </span>
           <a href="https://neil-smith.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=10035&issuetype=10021&labels=from_footer"
              target="_blank" rel="noopener noreferrer">Request a feature</a>
         </p>
@@ -104,3 +108,4 @@
   </script>
 </body>
 </html>
+

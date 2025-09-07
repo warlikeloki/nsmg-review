@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -9,10 +9,10 @@
   <link rel="canonical" href="https://neilsmith.org/" />
 
   <!-- Icons / Manifest -->
-  <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml" />
+  <link rel="preload" href="" as="image" type="image/svg+xml" />
   <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
-  <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
-  <link rel="icon" type="image/png" href="/media/icons/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="" />
+  <link rel="icon" type="image/png" href="" sizes="96x96" />
   <link rel="apple-touch-icon" sizes="180x180" href="/media/icons/apple-touch-icon.png" />
   <link rel="manifest" href="/media/icons/site.webmanifest" />
   <meta name="apple-mobile-web-app-title" content="NSMG" />
@@ -28,19 +28,23 @@
   <meta name="twitter:card" content="summary_large_image" />
 
   <!-- CSS -->
-  <link rel="stylesheet" href="/css/global.css" />
-  <link rel="stylesheet" href="/css/layout.css" />
-  <link rel="stylesheet" href="/css/header.css" />
-  <link rel="stylesheet" href="/css/navigation.css" />
-  <link rel="stylesheet" href="/css/testimonials.css" />
-  <link rel="stylesheet" href="/css/mobile.css" />
-  <link rel="stylesheet" href="/css/footer.css" />
-  <link rel="stylesheet" href="/css/homepage.css" />
-  <link rel="stylesheet" href="/css/a11y.css" />
+  <link rel="stylesheet" href="" />
+  <link rel="stylesheet" href="" />
+  <link rel="stylesheet" href="" />
+  <link rel="stylesheet" href="" />
+  <link rel="stylesheet" href="" />
+  <link rel="stylesheet" href="" />
+  <link rel="stylesheet" href="" />
+  <link rel="stylesheet" href="" />
+  <link rel="stylesheet" href="" />
+  <link rel="stylesheet" href="" />
 
 
   <!-- JS -->
-  <script type="module" src="/js/main.js" defer></script>
+  <script type="module" src="" defer></script>
+  <link rel="stylesheet" href="" />
+  <script type="module" src="" defer></script>
+  <script type="module" src=""></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
@@ -163,9 +167,9 @@
       <section id="about-preview" class="homepage-section">
         <h2>About Neil Smith Media Group</h2>
         <div class="about-content">
-          <img src="/media/logos/nsmg-logo.png" alt="Neil Smith Media Group Logo" class="about-logo" decoding="async" loading="lazy" />
+          <img src="" alt="Neil Smith Media Group Logo" class="about-logo" decoding="async" loading="lazy" />
           <div>
-            <p>We’re passionate about telling authentic stories through images and video. Our mission is to make every client look and feel their best on camera.</p>
+            <p>We're passionate about telling authentic stories through images and video. Our mission is to make every client look and feel their best on camera.</p>
             <a href="/about-us/about.html" class="about-link">Learn More</a>
           </div>
         </div>
@@ -187,3 +191,6 @@
   <div id="footer-container"></div>
 </body>
 </html>
+
+
+

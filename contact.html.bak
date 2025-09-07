@@ -1,22 +1,25 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contact Us - Neil Smith Media Group</title>
-  <!-- SEO Meta Description -->
-  <meta
-    name="description"
-    content="Contact Neil Smith Media Group for photography, videography, and editing inquiries. Fill out our form or find our direct contact details."
-  />
+  <meta name="description" content="Contact Neil Smith Media Group for photography, videography, editing, and other services inquiries. Fill out our form or find our direct contact details." />
+
   <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/css/sticky-header.css" />
   <link rel="stylesheet" href="/css/navigation.css" />
   <link rel="stylesheet" href="/css/forms.css" />
   <link rel="stylesheet" href="/css/footer.css" />
   <link rel="stylesheet" href="/css/mobile.css" />
+  <link rel="stylesheet" href="/css/wip.css" />
+
+  <!-- WIP banner loader -->
+  <script type="module" src="/js/wip.js" defer></script>
+  <script type="module" src="/js/modules/site-settings.js"></script>
 </head>
 <body>
   <!-- HEADER -->
@@ -33,17 +36,31 @@
     <main class="main-content">
       <section class="contact-section">
         <h1>Contact Us</h1>
-        <p>Use the form below to get in touch with Neil Smith Media Group. We’ll get back to you as soon as possible.</p>
+        <p>Use the form below to get in touch with Neil Smith Media Group. We'll get back to you as soon as possible.</p>
 
-        <form id="contact-form">
+        <!-- JS intercepts submit; method/action are safe fallbacks -->
+        <form id="contact-form" method="post" action="/php/submit_contact.php">
           <label for="name">Name<span>*</span></label>
           <input type="text" id="name" name="name" required />
 
           <label for="email">Email<span>*</span></label>
-          <input type="email" id="email" name="email" required />
+          <input type="email" id="email" name="email" required autocomplete="email" />
+
+          <label for="phone">Phone (optional)</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            inputmode="tel"
+            autocomplete="tel"
+            placeholder="+1 (555) 123-4567"
+            aria-describedby="phone-help"
+          />
+          <small id="phone-help">Digits or +country code. Formatting is flexible.</small>
 
           <label for="topic">What is this regarding?<span>*</span></label>
-          <select id="topic" name="topic" required>
+          <!-- Align with backend: name="category" -->
+          <select id="topic" name="category" required>
             <option value="" disabled selected>Select a topic</option>
             <option value="Photography">Photography</option>
             <option value="Videography">Videography</option>
@@ -56,7 +73,7 @@
           <textarea id="message" name="message" rows="6" required></textarea>
 
           <button type="submit" class="btn">Send Message</button>
-          <div id="form-status" class="form-status"></div>
+          <div id="form-status" class="form-status" aria-live="polite" role="status"></div>
         </form>
       </section>
     </main>
@@ -72,7 +89,14 @@
       .then(html => document.getElementById('footer-container').innerHTML = html);
   </script>
 
-  <!-- Load all JS modules -->
+  <!-- Site bootstrap -->
   <script type="module" src="/js/main.js" defer></script>
+
+  <!-- Ensure the contact module is loaded regardless of main.js timing -->
+  <script type="module">
+    import '/js/modules/contact.js';
+  </script>
 </body>
 </html>
+
+

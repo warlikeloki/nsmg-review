@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -7,17 +7,21 @@
   <!-- SEO Meta Description -->
   <meta
     name="description"
-    content="	Browse Neil Smith Media Group’s portfolio showcasing professional photography and videography from events, portraits, and commercial projects."
+    content="	Browse Neil Smith Media Group's portfolio showcasing professional photography and videography from events, portraits, and commercial projects."
   />
   <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/header.css">
+  <link rel="stylesheet" href="/css/sticky-header.css" />
   <link rel="stylesheet" href="/css/navigation.css">
   <link rel="stylesheet" href="/css/footer.css">
   <link rel="stylesheet" href="/css/forms.css">
   <link rel="stylesheet" href="/css/mobile.css">
   <link rel="stylesheet" href="/css/portfolio.css">
+  <link rel="stylesheet" href="/css/wip.css" />
+  <script type="module" src="/js/wip.js" defer></script>
+  <script type="module" src="/js/modules/site-settings.js"></script>
 </head>
 <body>
   <div id="header-container"></div>
@@ -86,3 +90,5 @@
 
 </body>
 </html>
+
+
