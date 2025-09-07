@@ -1,10 +1,10 @@
-﻿// /js/modules/site-settings.js
+// /js/modules/site-settings.js
 // Loads site settings JSON, renders service-region text, and injects LocalBusiness JSON-LD.
 // Auto-runs on import; safe if JSON is missing.
 
 export async function loadSiteSettings() {
   try {
-    const res = await fetch('=202509071829', {
+    const res = await fetch('/json/site-settings.json', {
       cache: 'no-store',
       credentials: 'same-origin'
     });
@@ -77,4 +77,3 @@ export function injectLocalBusinessLD(settings) {
   try { renderServiceRegion(settings); } catch {}
   try { injectLocalBusinessLD(settings); } catch {}
 })();
-
