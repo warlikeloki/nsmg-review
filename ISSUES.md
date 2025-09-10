@@ -3,13 +3,13 @@
 ## Open
 - NSM-14 - Conduct Accessibility Audit
 - NSM-15 - Add SEO Metadata & JSON-LD
-- NSM-16 - Dynamic testimonials page
+- NSM-16 - Dynamic testimonials page (Sprint: Sprint 7)
 - NSM-17 - Portfolio/Gallery Dynamic loading
 - NSM-20 - Confirm the “Pricing” button shows the pricing tables and hides equipment sidebar (Sprint: Sprint 7)
 - NSM-21 - Enter valid data → “Thank you! Your request has been submitted.” success (Sprint: Sprint 7)
 - NSM-24 - Add Portfolio Preview & Blog Teaser Fetch Logic (Sprint: Sprint 9)
 - NSM-30 - Set Up CI/CD Pipeline
-- NSM-31 - Optimize performance & Caching (Sprint: Sprint 8)
+- NSM-31 - Optimize performance & Caching (Sprint: Sprint 6)
 - NSM-32 - Implement Gallery Keyboard & Arrow Navigation
 - NSM-33 - Perform Cross-Browser QA
 - NSM-34 - Admin Dashboard UI Access (Sprint: Sprint 10)
@@ -63,14 +63,16 @@
 - NSM-138 - Guest Blog Submission & Editorial Workflow
 - NSM-139 - Migrate Blog to SQL (Source of Truth) & Wire Frontend
 - NSM-140 - Publish-Time JSON Export & RSS Feed
-- NSM-142 - Contact Form Hardening & Notifications
-- NSM-143 - Size of Work In Progress message too large for some screens. (Sprint: Sprint 6)
-- NSM-144 - Add Sticky Header capability (Sprint: Sprint 6)
+- NSM-142 - Contact Form Hardening & Notifications (Sprint: Sprint 6)
 - NSM-147 - Adopt Edge CDN/WAF
 - NSM-148 - Move security headers to Edge
 - NSM-149 - Enable Turnstile & Edge rate-limits for Contact Form
 - NSM-150 - Edge Cache & Image Optimization Policy
-- NSM-152 - Highlight Service Region on Site (optional US-only access toggle)
+- NSM-153 - Client-side UI Config Loader & Features Flag
+- NSM-154 - Reinstate sticky header globally (Sprint: Sprint 6)
+- NSM-155 - Site Settings include audit & fix (Sprint: Sprint 6)
+- NSM-156 - Sitewide asset reference audit
+- NSM-157 - Pricing: Show/Hide Services (Sprint: Sprint 6)
 
 ## Closed / Done
 - NSM-1 - Set up custom domain neilsmith.org (Sprint: Sprint 5)
@@ -146,6 +148,9 @@
 - NSM-131 - Testimonials: Seed Mock Testimonials (Clearly Annotated) (Sprint: Sprint 6)
 - NSM-132 - Blog: Seed Mock Blog Posts (Annotated as Samples) (Sprint: Sprint 6)
 - NSM-141 - Contact Form: Audit, Fixes, and Verification (Sprint: Sprint 6)
+- NSM-143 - Size of Work In Progress message too large for some screens. (Sprint: Sprint 6)
+- NSM-144 - Add Sticky Header capability (Sprint: Sprint 6)
 - NSM-145 - Contact Form: Success Confirmation (Sprint: Sprint 6)
 - NSM-146 - Contact form submissions not inserted into SQL table (Sprint: Sprint 6)
 - NSM-151 - Add Phone Number to Contact Form (Sprint: Sprint 6)
+- NSM-152 - Highlight Service Region on Site (optional US-only access toggle) (Sprint: Sprint 6)
