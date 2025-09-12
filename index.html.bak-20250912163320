@@ -44,7 +44,6 @@
   <!-- JS -->
   <script type="module" src="/js/main.js" defer></script>
   <script type="module" src="/js/wip.js" defer></script>
-  <script type="module" src="/js/modules/site-settings.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>

@@ -17,7 +17,6 @@
   <link rel="stylesheet" href="/css/footer.css"/>
   <link rel="stylesheet" href="/css/mobile.css"/>
   <link rel="stylesheet" href="/css/testimonials-page.css"/> <!-- new, scoped -->
-  <script type="module" src="/js/modules/site-settings.js"></script>
 </head>
 <body>
   <!-- Header -->
@@ -77,4 +76,3 @@
 
 
 >>>>>>> origin/main
-
