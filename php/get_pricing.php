@@ -1,6 +1,6 @@
 <?php
-// NSM-160 — Pricing API (read-only) with optional is_visible filter
-// MySQL 5.7, PHP 8+. If services.is_visible exists, only return rows where is_visible=1.
+// NSM-160 — Pricing API (read-only) with visibility + robust joins
+// MySQL 5.7, PHP 8+
 
 declare(strict_types=1);
 
@@ -14,15 +14,11 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 $debug = isset($_GET['debug']) && $_GET['debug'] == '1';
 
 /** ------------------------------------------------------------------------
- * DB connection
+ * DB connection (prefers shared $pdo if provided by includes/db.php)
  * ---------------------------------------------------------------------- */
 $pdo = null;
-
-// Prefer shared include if it sets $pdo
 $rootDb = dirname(__DIR__) . '/includes/db.php';
-if (file_exists($rootDb)) {
-  @require_once $rootDb;
-}
+if (file_exists($rootDb)) { @require_once $rootDb; }
 
 if (!$pdo) {
   $cfgs = [
@@ -32,6 +28,7 @@ if (!$pdo) {
   foreach ($cfgs as $cfg) {
     if (file_exists($cfg)) { @require_once $cfg; }
   }
+
   $host = defined('DB_HOST') ? DB_HOST : 'localhost';
   $name = defined('DB_NAME') ? DB_NAME : '';
   $user = defined('DB_USER') ? DB_USER : '';
@@ -50,7 +47,7 @@ if (!$pdo) {
 }
 
 /** ------------------------------------------------------------------------
- * Feature detect: does services.is_visible exist?
+ * Feature detect: services.is_visible
  * ---------------------------------------------------------------------- */
 $hasVisible = false;
 try {
@@ -67,10 +64,11 @@ try {
 }
 
 /** ------------------------------------------------------------------------
- * Build query dynamically so it works with/without is_visible
+ * Query (LEFT JOIN so items without a pricing row still show)
+ * Also treat NULL/absent is_visible as visible (COALESCE(...,1)=1)
  * ---------------------------------------------------------------------- */
 $selectVisible = $hasVisible ? ", s.is_visible AS is_visible" : "";
-$whereVisible  = $hasVisible ? "WHERE s.is_visible = 1" : "";
+$whereVisible  = $hasVisible ? "WHERE COALESCE(s.is_visible,1) = 1" : "";
 
 $sql = "
 SELECT
@@ -78,12 +76,15 @@ SELECT
   s.name          AS service_name,
   s.description   AS service_description,
   s.unit          AS service_unit,
-  s.is_package    AS is_package
+  CAST(s.is_package AS UNSIGNED) AS is_package
   $selectVisible,
   p.price         AS price,
-  GREATEST(COALESCE(s.updated_at, s.created_at), COALESCE(p.updated_at, p.created_at)) AS updated_at
-FROM pricing p
-JOIN services s ON s.id = p.service_id
+  GREATEST(
+    COALESCE(s.updated_at, s.created_at),
+    COALESCE(p.updated_at, p.created_at)
+  ) AS updated_at
+FROM services s
+LEFT JOIN pricing p ON p.service_id = s.id
 $whereVisible
 ORDER BY s.is_package DESC, s.name ASC
 ";
@@ -92,14 +93,14 @@ try {
   $stmt = $pdo->query($sql);
   $rows = $stmt->fetchAll();
 
-  $currency = 'USD';
+  $currency   = 'USD';
   $updatedMax = null;
-  $packages = [];
-  $alaCarte = [];
+  $packages   = [];
+  $alaCarte   = [];
 
   foreach ($rows as $r) {
-    $priceRaw = is_null($r['price']) ? null : (float)$r['price'];
-    $unit = $r['service_unit'] ?? null;
+    $priceRaw = isset($r['price']) ? (float)$r['price'] : null;
+    $unit     = $r['service_unit'] ?? null;
 
     $entry = [
       'id'          => (int)$r['service_id'],
@@ -107,11 +108,9 @@ try {
       'description' => $r['service_description'],
       'price'       => $priceRaw,
       'unit'        => $unit,
-      'isPackage'   => (int)$r['is_package'] === 1,
-      // Include isVisible only if column is present
+      'isPackage'   => ((int)$r['is_package'] === 1),
       'isVisible'   => $hasVisible ? ((int)($r['is_visible'] ?? 1) === 1) : true,
-
-      // Display helpers (optional)
+      // Display helpers
       'PriceDisplay' => is_null($priceRaw) ? '' : ('$' . number_format($priceRaw, 2)),
       'Service'      => $r['service_name'],
       'Description'  => $r['service_description'],
@@ -137,9 +136,17 @@ try {
     'alaCarte'  => $alaCarte,
   ];
 
-  echo $debug
-    ? json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-    : json_encode($payload, JSON_UNESCAPED_SLASHES);
+  if ($debug) {
+    $payload['_counts'] = [
+      'packages' => count($packages),
+      'alaCarte' => count($alaCarte),
+      'total'    => count($rows),
+      'hasVisibleColumn' => $hasVisible,
+    ];
+    echo json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+  } else {
+    echo json_encode($payload, JSON_UNESCAPED_SLASHES);
+  }
 
 } catch (Throwable $e) {
   if ($debug) {
