@@ -1,40 +1,45 @@
 {
   "currency": "USD",
-  "note": "Travel fees may apply for locations outside the Greater Orlando, FL area.",
+  "updatedAt": "2025-08-22T23:17:59Z",
   "packages": [
-    {
-      "Package": "Starter",
-      "Description": "Up to 2 hours coverage • Single camera • Basic color correction",
-      "Price": 399
-    },
-    {
-      "Package": "Essentials",
-      "Description": "Up to 4 hours coverage • 2 cameras • Color + audio sweetening",
-      "Price": 649
-    },
-    {
-      "Package": "Pro",
-      "Description": "Up to 6 hours coverage • 2 cameras + gimbal • On-site lighting kit",
-      "Price": 999
-    },
-    {
-      "Package": "Premium",
-      "Description": "Up to 8 hours coverage • 3 cameras + drone add-on • Full lighting + audio kit",
-      "Price": 1499
-    },
-    {
-      "Package": "Legacy (Temporarily Unavailable)",
-      "Description": "Archival media transfers • DVD/USB delivery",
-      "Price": 799,
-      "status": "hidden"
-    }
+    { "id": 2,  "service": "Event Photography - Basic Package",    "description": "4 hr coverage; ~100 edited images; online gallery",                         "price": 900,  "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 3,  "service": "Event Photography - Standard Package", "description": "6 hr coverage; ~150 edited images; gallery; 30 min engagement shoot",       "price": 1550, "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 4,  "service": "Event Photography - Premium Package",  "description": "8 hr full-day; ~250 edits; gallery; 20-page album; second shooter",        "price": 2200, "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 5,  "service": "Portrait Mini Session",                "description": "30 min session; 5 edited images",                                         "price": 125,  "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 10, "service": "Real Estate Photography - Standard",   "description": "≤2,000 sq ft; 20–25 photos",                                              "price": 175,  "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 11, "service": "Real Estate Photography - Large",      "description": "2,001–3,000 sq ft; 30–35 photos",                                         "price": 250,  "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 13, "service": "Real Estate Drone Add-On",             "description": "5–7 aerial images",                                                       "price": 200,  "unit": null, "isPackage": true, "isVisible": false },
+    { "id": 14, "service": "Real Estate 3D Tour Add-On",           "description": "Zillow 3D-style virtual tour",                                            "price": 100,  "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 16, "service": "Event Videography - Basic Package",    "description": "4 hr coverage; 3–5 min highlight reel",                                   "price": 1200, "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 17, "service": "Event Videography - Standard Package", "description": "6 hr coverage; 5–7 min reel; full ceremony edit",                         "price": 1650, "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 18, "service": "Event Videography - Premium Package",  "description": "8 hr; 7–10 min cinematic; two-camera; raw footage",                       "price": 2400, "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 19, "service": "Short Promo Video",                     "description": "30–60 sec commercial/promo",                                              "price": 600,  "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 20, "service": "Brand Story Video",                     "description": "2–5 min brand video",                                                     "price": 1200, "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 23, "service": "Video Editing - Advanced",              "description": "Motion graphics, sound design; 2 revisions",                              "price": 350,  "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 25, "service": "Photo Editing - Advanced",              "description": "Skin smoothing, object removal",                                          "price": 20,   "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 26, "service": "Bulk Photo Editing",                    "description": "Basic adjustments for 100 images",                                        "price": 175,  "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 33, "service": "Wedding Officiant - Standard",          "description": "Custom ceremony; license filing",                                         "price": 350,  "unit": null, "isPackage": true, "isVisible": true },
+    { "id": 34, "service": "Officiant Elopement",                   "description": "Simple ceremony; license filing",                                         "price": 200,  "unit": null, "isPackage": true, "isVisible": true }
   ],
-  "services": [
-    { "Service": "Editing",            "Description": "Nonlinear editing and assembly",     "Price": 75,  "unit": "/hour" },
-    { "Service": "Color Grading",      "Description": "Look creation and matching",          "Price": 50,  "unit": "/hour" },
-    { "Service": "Audio Cleanup",      "Description": "Noise reduction and leveling",        "Price": 40,  "unit": "/hour" },
-    { "Service": "Drone Add-On",       "Description": "Aerial footage (FAA licensed)",       "Price": 200, "unit": "flat", "status": "hidden"  },
-    { "Service": "Rush Turnaround 48h","Description": "Accelerated post-production timeline","Price": 250, "unit": "flat"  },
-    { "Service": "Raw Footage Delivery","Description":"Provide source footage to client",     "Price": 150, "unit": "flat", "enabled": false }
+  "alaCarte": [
+    { "id": 1,  "service": "Event Photography - Hourly Rate",       "description": "Weddings, Parties, Corporate Events",                                     "price": 175,  "unit": "per hour",       "isPackage": false, "isVisible": true },
+    { "id": 6,  "service": "Portrait Full Session",                 "description": "1 hr; 2 outfit changes; 1 location",                                     "price": 175,  "unit": "per session",    "isPackage": false, "isVisible": true },
+    { "id": 7,  "service": "Product Photography - Per Image",       "description": "Simple studio shots; white background; min 10 images",                   "price": 15,   "unit": "per image",      "isPackage": false, "isVisible": true },
+    { "id": 8,  "service": "Product Photography - Hourly Rate",     "description": "Lifestyle or on-location setups",                                        "price": 125,  "unit": "per hour",       "isPackage": false, "isVisible": true },
+    { "id": 9,  "service": "Product Photography - Day Rate",        "description": "Up to 8 hr complex shoots",                                              "price": 850,  "unit": "per day",        "isPackage": false, "isVisible": true },
+    { "id": 12, "service": "Real Estate Photography - Oversize",    "description": "Per additional 100 sq ft",                                               "price": 12,   "unit": "per 100 sq ft",  "isPackage": false, "isVisible": true },
+    { "id": 15, "service": "Event Videography - Hourly Rate",       "description": "Weddings, Parties, Corporate Events",                                     "price": 200,  "unit": "per hour",       "isPackage": false, "isVisible": true },
+    { "id": 21, "service": "Drone Videography",                     "description": "Aerial video (incl. basic editing)",                                     "price": 200,  "unit": "per hour",       "isPackage": false, "isVisible": false },
+    { "id": 22, "service": "Video Editing - Basic",                 "description": "Assembly, color correction, basic audio",                                 "price": 75,   "unit": "per hour",       "isPackage": false, "isVisible": true },
+    { "id": 24, "service": "Photo Editing - Basic",                 "description": "Batch color/exposure adjustments",                                       "price": 5,    "unit": "per image",      "isPackage": false, "isVisible": true },
+    { "id": 27, "service": "Color Grading",                         "description": "Dedicated grading pass for finished video",                              "price": 75,   "unit": "per minute",     "isPackage": false, "isVisible": true },
+    { "id": 28, "service": "On-Location Audio Recording",           "description": "2-channel field kit",                                                    "price": 75,   "unit": "per hour",       "isPackage": false, "isVisible": true },
+    { "id": 29, "service": "On-Location Audio Day Rate",            "description": "Up to 8 hr recording",                                                   "price": 500,  "unit": "per day",        "isPackage": false, "isVisible": true },
+    { "id": 30, "service": "Podcast Recording",                     "description": "Recording session",                                                      "price": 60,   "unit": "per hour",       "isPackage": false, "isVisible": true },
+    { "id": 31, "service": "Podcast Editing",                       "description": "Audio editing per audio hour",                                           "price": 50,   "unit": "per hour",       "isPackage": false, "isVisible": true },
+    { "id": 32, "service": "Voice-Over Recording",                  "description": "Finished audio minute",                                                  "price": 50,   "unit": "per minute",     "isPackage": false, "isVisible": true },
+    { "id": 35, "service": "Officiant Rehearsal",                   "description": "Rehearsal attendance",                                                   "price": 100,  "unit": "per hour",       "isPackage": false, "isVisible": true },
+    { "id": 36, "service": "Notary Act",                            "description": "Per signature/act (VA only)",                                            "price": 10,   "unit": "per act",        "isPackage": false, "isVisible": true },
+    { "id": 37, "service": "Notary Travel Fee",                     "description": "Beyond 10-mile radius",                                                  "price": 30,   "unit": "per mile",       "isPackage": false, "isVisible": true }
   ]
 }
