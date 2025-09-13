@@ -11,11 +11,7 @@
     if (document.getElementById(id)) return;
     const div = document.createElement('div');
     div.id = id;
-    if (position === 'start') {
-      document.body.prepend(div);
-    } else {
-      document.body.append(div);
-    }
+    position === 'start' ? document.body.prepend(div) : document.body.append(div);
   }
 
   async function loadPartial(url, containerSelector) {
@@ -23,17 +19,13 @@
     if (!container) return;
 
     try {
-      const res = await fetch(url, { credentials: "same-origin", cache: "no-store" });
+      const res = await fetch(url, { credentials: 'same-origin', cache: 'no-store' });
       if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
       const html = await res.text();
       container.innerHTML = html;
-      // After inject, update active nav highlighting
-      if (containerSelector === "#header-container") {
-        setActiveNav();
-      }
+      if (containerSelector === '#header-container') setActiveNav();
     } catch (err) {
-      // Minimal fallback so the page isn't blank if fetch fails
-      if (containerSelector === "#header-container") {
+      if (containerSelector === '#header-container') {
         container.innerHTML = `
           <header class="site-header">
             <div class="container">
@@ -41,7 +33,7 @@
               <nav aria-label="Primary"><a href="/">Home</a></nav>
             </div>
           </header>`;
-      } else if (containerSelector === "#footer-container") {
+      } else if (containerSelector === '#footer-container') {
         container.innerHTML = `
           <footer class="site-footer">
             <div class="container">
@@ -54,54 +46,47 @@
   }
 
   function setActiveNav() {
-    const path = location.pathname.replace(/\/+$/, "") || "/";
-    const links = $$("#header-container nav a[href]");
+    const path = location.pathname.replace(/\/+$/, '') || '/';
+    const links = $$('#header-container nav a[href]');
     links.forEach(a => {
       try {
         const href = new URL(a.href);
-        const hrefPath = href.pathname.replace(/\/+$/, "") || "/";
-        if (hrefPath === path) {
-          a.setAttribute("aria-current", "page");
-        } else {
-          a.removeAttribute("aria-current");
-        }
-      } catch {
-        /* ignore URL parsing errors */
-      }
+        const hrefPath = href.pathname.replace(/\/+$/, '') || '/';
+        if (hrefPath === path) a.setAttribute('aria-current', 'page');
+        else a.removeAttribute('aria-current');
+      } catch { /* ignore */ }
     });
   }
 
   // Accessible accordion for "Our Services"
   function enhanceServicesAccordion() {
-    const toggles = $$(".services-accordion .accordion-toggle");
+    const toggles = $$('.services-accordion .accordion-toggle');
     if (!toggles.length) return;
 
-    // Ensure ARIA state is synced to DOM
     toggles.forEach(btn => {
-      const controlsId = btn.getAttribute("aria-controls");
+      const controlsId = btn.getAttribute('aria-controls');
       const panel = controlsId ? document.getElementById(controlsId) : null;
-      const expanded = btn.getAttribute("aria-expanded") === "true";
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
       if (panel) panel.hidden = !expanded;
 
-      btn.addEventListener("click", () => {
-        const isExpanded = btn.getAttribute("aria-expanded") === "true";
-        btn.setAttribute("aria-expanded", String(!isExpanded));
+      btn.addEventListener('click', () => {
+        const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!isExpanded));
         if (panel) panel.hidden = isExpanded;
       });
 
-      // Keyboard support: Up/Down cycle, Home/End jump
-      btn.addEventListener("keydown", (e) => {
-        const keys = ["ArrowUp", "ArrowDown", "Home", "End"];
+      btn.addEventListener('keydown', (e) => {
+        const keys = ['ArrowUp', 'ArrowDown', 'Home', 'End'];
         if (!keys.includes(e.key)) return;
 
         const all = toggles;
         const idx = all.indexOf(btn);
         let nextIdx = idx;
 
-        if (e.key === "ArrowUp") nextIdx = (idx - 1 + all.length) % all.length;
-        if (e.key === "ArrowDown") nextIdx = (idx + 1) % all.length;
-        if (e.key === "Home") nextIdx = 0;
-        if (e.key === "End") nextIdx = all.length - 1;
+        if (e.key === 'ArrowUp') nextIdx = (idx - 1 + all.length) % all.length;
+        if (e.key === 'ArrowDown') nextIdx = (idx + 1) % all.length;
+        if (e.key === 'Home') nextIdx = 0;
+        if (e.key === 'End') nextIdx = all.length - 1;
 
         if (all[nextIdx]) all[nextIdx].focus();
         e.preventDefault();
@@ -111,15 +96,12 @@
 
   // Basic lazy enhancements
   function enhanceLazyMedia() {
-    // Add decoding async to images that don't have it
-    $$("img:not([decoding])").forEach(img => img.setAttribute("decoding", "async"));
-    // Ensure non-hero images lazy-load
-    $$('.homepage-section img:not([loading])').forEach(img => img.setAttribute("loading", "lazy"));
+    $$('img:not([decoding])').forEach(img => img.setAttribute('decoding', 'async'));
+    $$('.homepage-section img:not([loading])').forEach(img => img.setAttribute('loading', 'lazy'));
   }
 
   async function autoInitModules() {
     const has = sel => !!document.querySelector(sel);
-    // navigation.js is initialized right after header/footer load
     if (document.getElementById('homepage')) { try { await import('/js/modules/homepage.js'); } catch {} }
     if (document.getElementById('blog-posts-container')) { try { await import('/js/modules/blog.js'); } catch {} }
     if (document.getElementById('blog-post-content')) { try { await import('/js/modules/blog-post.js'); } catch {} }
@@ -143,31 +125,28 @@
   }
 
   function initSkipLink() {
-    // If there’s no #main, but #homepage exists, alias it
-    if (!$("#main") && $("#homepage")) {
-      $("#homepage").setAttribute("id", "main");
+    if (!$('#main') && $('#homepage')) {
+      $('#homepage').setAttribute('id', 'main');
     }
   }
 
   async function start() {
     initSkipLink();
 
-    // Make sure containers exist even if the page markup forgot them
+    // Ensure containers exist even if markup is missing
     ensureContainer('header-container', 'start');
     ensureContainer('footer-container', 'end');
 
-    // FIX: use correct, root-relative URLs (no stray version tokens)
+    // Load header & footer (no stray version tokens)
     await Promise.all([
-      loadPartial("/header.html", "#header-container"),
-      loadPartial("/footer.html", "#footer-container")
+      loadPartial('/header.html', '#header-container'),
+      loadPartial('/footer.html', '#footer-container')
     ]);
 
-    // Initialize mobile navigation right after header/footer injection
+    // Init mobile navigation right after header/footer injection
     try {
       await import('/js/modules/navigation.js');
       if (window.NSM?.navigation && typeof window.NSM.navigation.init === 'function') {
-        // IMPORTANT: turn off backdrop so it can't block link taps.
-        // Also cover both possible menu containers across pages.
         window.NSM.navigation.init({
           navSelector: '.nav-menu, #primary-nav',
           openClassOnNav: 'open',
@@ -178,14 +157,21 @@
       console.error('Failed to init navigation module:', e);
     }
 
+    // NEW: initialize site settings (renders service region + JSON-LD)
+    try {
+      const mod = await import('/js/modules/site-settings.js');
+      if (mod?.initSiteSettings) await mod.initSiteSettings();
+    } catch (e) {
+      console.error('Failed to init site settings:', e);
+    }
+
     enhanceServicesAccordion();
     enhanceLazyMedia();
     await autoInitModules();
   }
 
-  // Run on DOM ready (defer is set in HTML)
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", start, { once: true });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
   } else {
     start();
   }
