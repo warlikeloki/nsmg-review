@@ -1,229 +1,166 @@
 // /js/modules/pricing.js
-// NSM-159 — PHP-first pricing with robust payload coercion and JSON fallback.
-/* eslint-disable no-console */
+// NSM-159/160 — Robust Pricing loader with PHP-first, JSON fallback, and shape-agnostic parsing.
 
-const ENDPOINTS = {
-  php: '/php/get_pricing.php',
-  jsonPrimary: '/json/pricing.json',
-  jsonFallback: '/json/pricing.fallback.json'
-};
+const API_URL = '/php/get_pricing.php';
+const JSON_URL = '/json/pricing.json';
 
-const PHP_TIMEOUT_MS = 5000;
-const JSON_TIMEOUT_MS = 4000;
-const DEBUG_PREFIX = '[pricing]';
+function $(sel, root = document) { return root.querySelector(sel); }
 
-const qs = new URLSearchParams(location.search);
-const previewHidden = qs.has('previewHidden');
-
-/* -------------------- utilities -------------------- */
-
-function fetchWithTimeout(url, ms, options = {}) {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), ms);
-  return fetch(url, {
-    cache: 'no-store',
-    credentials: 'same-origin',
-    headers: { 'Accept': 'application/json' },
-    signal: controller.signal,
-    ...options
-  }).finally(() => clearTimeout(id));
-}
-
-function esc(s) {
-  return String(s ?? '')
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-function getCurrencyFormatter(code) {
-  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: code || 'USD' }); }
-  catch { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
-}
-
-function formatPrice(value, unit, fmt) {
-  if (value === null || value === undefined || value === '') return '';
-  if (typeof value === 'number') {
-    return `${fmt.format(value)}${unit ? ` ${unit}` : ''}`;
+function usd(n) {
+  if (n === null || n === undefined || isNaN(Number(n))) return '';
+  try {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n));
+  } catch {
+    return `$${Number(n).toFixed(2)}`;
   }
-  const s = String(value);
-  if (/^\s*\d+(\.\d+)?\s*$/.test(s)) {
-    const n = Number(s);
-    return `${fmt.format(n)}${unit ? ` ${unit}` : ''}`;
-  }
-  return esc(s); // e.g., "Call for quote"
 }
 
-/* -------------------- coercion -------------------- */
-/**
- * Accepts many server shapes and returns a standard object:
- * { currency: 'USD', packages: [...], services: [...] }
- * Returns null if definitely unusable (e.g., {error:...}).
- */
-function coercePayload(input) {
-  if (!input) return null;
-  if (typeof input === 'object' && 'error' in input) return null;
+async function getJson(url) {
+  const res = await fetch(url, { cache: 'no-store', credentials: 'same-origin' });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  return await res.json();
+}
 
-  // helper: normalize a single row into {kind,name,desc,price,unit,hidden}
-  const normalizeRow = (row, kind /* 'package'|'service' */) => {
-    const name =
-      row.Package ?? row.package ?? row.Name ?? row.name ??
-      row.Title ?? row.title ?? row.Service ?? row.service ?? '';
-    const desc = row.Description ?? row.description ?? row.desc ?? '';
-    const rawPrice = (row.Price ?? row.price ?? row.amount ?? row.Amount ?? row.cost ?? row.Cost ?? row.price_text);
-    const unit = row.unit ? String(row.unit) : '';
-    const status = (row.status || '').toString().toLowerCase();
-    const enabled = (typeof row.enabled === 'boolean') ? row.enabled
-                   : (typeof row.enabled === 'number') ? row.enabled !== 0
-                   : (row.visible !== false);
-    const hidden = !enabled || status === 'hidden' || status === 'disabled' || status === 'inactive';
+/** Detects our canonical PHP payload: {packages:[], alaCarte:[] } */
+function looksLikePhpPayload(x) {
+  return x && Array.isArray(x.packages) && Array.isArray(x.alaCarte);
+}
 
-    return { kind, name: String(name ?? ''), desc: String(desc ?? ''), price: rawPrice, unit, hidden };
-  };
-
-  // CASE 1: Already in standard shape (any casing)
-  const obj = (typeof input === 'object' && !Array.isArray(input)) ? input : {};
-  const dataRoot = (obj.data && typeof obj.data === 'object') ? obj.data : obj; // support {data:{...}}
-  const pk = dataRoot.packages || dataRoot.Packages;
-  const sv = dataRoot.services || dataRoot.Services;
-  if (Array.isArray(pk) || Array.isArray(sv)) {
-    const currency = String((dataRoot.currency || obj.currency || 'USD')).toUpperCase();
+/** Some older JSONs might be a flat array or {items:[...]} with keys in different cases. */
+function normalizeToSections(payload) {
+  // Case 1: canonical
+  if (looksLikePhpPayload(payload)) {
     return {
-      currency,
-      packages: (Array.isArray(pk) ? pk : []).map(r => normalizeRow(r, 'package')),
-      services: (Array.isArray(sv) ? sv : []).map(r => normalizeRow(r, 'service')),
+      packages: payload.packages.map(normalizeItem),
+      alaCarte: payload.alaCarte.map(normalizeItem),
     };
   }
 
-  // CASE 2: Flat array with category/name/description/price(+/_text)
-  const items = Array.isArray(input) ? input
-              : Array.isArray(obj.items) ? obj.items
-              : Array.isArray(obj.rows) ? obj.rows
-              : null;
-  if (Array.isArray(items)) {
-    const currency = String((obj.currency || 'USD')).toUpperCase();
-    const packages = [];
-    const services = [];
-    items.forEach(row => {
-      const catRaw = (row.category || row.Category || '').toString().toLowerCase();
-      const kind = (catRaw === 'package') ? 'package' : (catRaw === 'service' ? 'service' : (
-        // fallback: infer by presence of specific keys
-        ('Package' in row || 'package' in row) ? 'package' : 'service'
-      ));
-      const norm = normalizeRow(row, kind);
-      if (kind === 'package') packages.push(norm);
-      else services.push(norm);
-    });
-    return { currency, packages, services };
-  }
+  // Case 2: { items: [...] } or plain array
+  const items = Array.isArray(payload) ? payload
+             : Array.isArray(payload?.items) ? payload.items
+             : [];
 
-  // If we get here, we can’t confidently use it
-  return null;
+  const norm = items.map(normalizeItem);
+  const packages = norm.filter(i => i.isPackage === true);
+  const alaCarte = norm.filter(i => i.isPackage === false);
+
+  return { packages, alaCarte };
 }
 
-/* -------------------- rendering -------------------- */
+/** Accepts multiple key styles and returns a consistent item shape */
+function normalizeItem(row = {}) {
+  const name = row.service ?? row.Service ?? row.name ?? '';
+  const desc = row.description ?? row.Description ?? '';
+  const unit = row.unit ?? row.Unit ?? null;
 
-function filterForVisibility(rows) {
-  if (previewHidden) {
-    return rows.map(r => ({ ...r, previewBadge: r.hidden ? 'Hidden' : '' }));
-  }
-  return rows.filter(r => !r.hidden);
+  // price may already be formatted (Price, PriceDisplay), prefer numeric if present
+  const priceRaw = row.price ?? row.Price ?? null;
+  const priceDisp = row.PriceDisplay ?? null;
+  const price = (priceRaw === null || priceRaw === undefined || priceRaw === '')
+    ? null
+    : Number(priceRaw);
+
+  // package flag could be boolean, 0/1, "1", or missing; treat missing as false
+  const isPkg =
+    (typeof row.isPackage === 'boolean') ? row.isPackage :
+    (row.is_package !== undefined) ? (Number(row.is_package) === 1) :
+    (row.IsPackage !== undefined) ? Boolean(row.IsPackage) :
+    false;
+
+  // visibility may come from backend; default visible if unspecified
+  const isVisible =
+    (row.isVisible !== undefined) ? Boolean(row.isVisible) :
+    (row.is_visible !== undefined) ? (Number(row.is_visible) === 1) : true;
+
+  return {
+    service: String(name || '').trim(),
+    description: String(desc || '').trim(),
+    unit: unit ? String(unit).trim() : null,
+    price,                       // numeric or null
+    priceDisplay: priceDisp || null, // optional preformatted
+    isPackage: !!isPkg,
+    isVisible: !!isVisible,
+  };
 }
 
-function renderTbody(tbodySelector, rows, currency) {
-  const tbody = document.querySelector(tbodySelector);
+function clearBody(tbody) {
+  while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+}
+
+function rowHtml(item) {
+  const name = item.service || '';
+  const desc = item.description || '';
+  const priceText = item.priceDisplay || usd(item.price) || '';
+  const unitText = item.unit ? ` ${item.unit}` : '';
+
+  const priceCell = (priceText || unitText)
+    ? `${priceText}${unitText ? `<span class="unit">${unitText}</span>` : ''}`
+    : '—';
+
+  return `
+    <tr>
+      <td>${escapeHtml(name)}</td>
+      <td>${escapeHtml(desc)}</td>
+      <td>${priceCell}</td>
+    </tr>
+  `;
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderTable(tbodyId, items) {
+  const tbody = document.getElementById(tbodyId);
   if (!tbody) return;
 
-  const fmt = getCurrencyFormatter(currency);
-  const filtered = filterForVisibility(rows);
+  clearBody(tbody);
 
-  if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="3"><em>No items available.</em></td></tr>`;
+  const visible = (items || []).filter(i => i && i.isVisible !== false);
+  if (!visible.length) {
+    tbody.innerHTML = `<tr><td colspan="3">No items available.</td></tr>`;
     return;
   }
 
-  const rowsHtml = filtered.map(r => {
-    const badge = r.previewBadge ? ` <span class="badge-hidden" aria-label="Hidden">${esc(r.previewBadge)}</span>` : '';
-    const priceStr = formatPrice(r.price, r.unit, fmt);
-    return `<tr>
-      <td>${esc(r.name)}${badge}</td>
-      <td>${esc(r.desc)}</td>
-      <td class="price-cell" style="text-align:right; white-space:nowrap;">${priceStr}</td>
-    </tr>`;
-  }).join('');
-
-  tbody.innerHTML = rowsHtml;
+  tbody.innerHTML = visible.map(rowHtml).join('');
 }
 
-function renderAll(std) {
-  const currency = std.currency || 'USD';
-  renderTbody('#packages-body', std.packages || [], currency);
-  renderTbody('#ala-carte-body', (std.services || std['à_la_carte'] || []), currency);
-
-  // Optional: style for Hidden badge when previewing
-  if (previewHidden && !document.getElementById('pricing-hidden-badge-style')) {
-    const style = document.createElement('style');
-    style.id = 'pricing-hidden-badge-style';
-    style.textContent = `
-      .badge-hidden{display:inline-block;font-size:.75rem;line-height:1;padding:.15rem .35rem;border-radius:.35rem;border:1px solid #c99;color:#933;margin-left:.35rem;}
-    `;
-    document.head.appendChild(style);
-  }
-}
-
-/* -------------------- main flow -------------------- */
-
-async function getPricingDataSequential() {
-  // 1) Try PHP endpoint first
+async function getPricingPreferPhp() {
+  // 1) Try PHP
   try {
-    const res = await fetchWithTimeout(ENDPOINTS.php, PHP_TIMEOUT_MS);
-    if (!res.ok) throw new Error(`PHP ${res.status} ${res.statusText}`);
-
-    const raw = await res.json();
-    const std = coercePayload(raw);
-    if (!std) throw new Error('PHP payload invalid');
-
-    console.info(`${DEBUG_PREFIX} using PHP endpoint`);
-    return { std, source: 'php' };
-  } catch (err) {
-    console.warn(`${DEBUG_PREFIX} PHP failed; falling back to JSON.`, err);
+    const php = await getJson(API_URL);
+    if (looksLikePhpPayload(php)) {
+      console.info('[pricing] using PHP payload');
+      return normalizeToSections(php);
+    } else {
+      console.warn('[pricing] PHP payload unexpected shape; will try JSON fallback');
+      // fall through to JSON
+    }
+  } catch (e) {
+    console.warn('[pricing] PHP failed; will try JSON fallback. Error:', e);
   }
 
-  // 2) Primary JSON
-  try {
-    const res = await fetchWithTimeout(ENDPOINTS.jsonPrimary, JSON_TIMEOUT_MS);
-    if (!res.ok) throw new Error(`JSON primary ${res.status} ${res.statusText}`);
-    const raw = await res.json();
-    const std = coercePayload(raw);
-    if (!std) throw new Error('JSON primary payload invalid');
-
-    console.info(`${DEBUG_PREFIX} using JSON primary fallback`);
-    return { std, source: 'jsonPrimary' };
-  } catch (err) {
-    console.warn(`${DEBUG_PREFIX} JSON primary failed; trying secondary.`, err);
-  }
-
-  // 3) Secondary JSON
-  try {
-    const res = await fetchWithTimeout(ENDPOINTS.jsonFallback, JSON_TIMEOUT_MS);
-    if (!res.ok) throw new Error(`JSON fallback ${res.status} ${res.statusText}`);
-    const raw = await res.json();
-    const std = coercePayload(raw);
-    if (!std) throw new Error('JSON fallback payload invalid');
-
-    console.info(`${DEBUG_PREFIX} using JSON secondary fallback`);
-    return { std, source: 'jsonFallback' };
-  } catch (err) {
-    console.error(`${DEBUG_PREFIX} All sources failed.`, err);
-    return { std: null, source: 'none', error: err };
-  }
+  // 2) Fallback JSON
+  const j = await getJson(JSON_URL);
+  const norm = normalizeToSections(j);
+  console.info('[pricing] using JSON fallback');
+  return norm;
 }
 
 export async function loadPricing() {
-  const { std } = await getPricingDataSequential();
-  if (!std) {
-    renderTbody('#packages-body', [], 'USD');
-    renderTbody('#ala-carte-body', [], 'USD');
-    return;
+  try {
+    const data = await getPricingPreferPhp();
+    renderTable('packages-body', data.packages);
+    renderTable('ala-carte-body', data.alaCarte);
+  } catch (e) {
+    console.error('[pricing] fatal error rendering pricing:', e);
+    // graceful failure: show a terse message if DOM nodes exist
+    const pb = $('#packages-body'), ab = $('#ala-carte-body');
+    if (pb) pb.innerHTML = `<tr><td colspan="3">Pricing unavailable.</td></tr>`;
+    if (ab) ab.innerHTML = `<tr><td colspan="3">Pricing unavailable.</td></tr>`;
   }
-  renderAll(std);
 }
