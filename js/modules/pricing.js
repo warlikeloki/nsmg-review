@@ -1,259 +1,182 @@
 // /js/modules/pricing.js
-// NSMG Pricing renderer — SQL-table style:
-// Renders two tables with 3 columns:
-//   Packages:  [Package | Description | Price]
-//   A la carte:[Service | Description | Price]
-//
-// Data sources (in order):
-//   1) /php/get_pricing.php  (5s timeout)
-//   2) /json/pricing.json
-//   3) /json/pricing.fallback.json (optional)
-//
-// Field tolerance:
-// - Packages use "Package" (or name/title/package), "Description"/description/desc, "Price"/price
-// - Services use "Service" (or name/title/service), "Description"/description/desc, "Price"/price
-// - Hidden flags respected: hidden:true | enabled:false | visible:false | status:hidden|disabled
-// - Preview hidden rows with ?previewHidden=1
-//
-// DOM targets (quietly no-op if missing):
-//   #packages-body      -> table (if any packages)
-//   #ala-carte-body     -> table (if any services)
-//   #pricing-note or .pricing-note -> optional text note
+// NSM-159 — PHP-first pricing with JSON-only fallback.
+// Populates only the TBODYs already present in pricing.html:
+//   #packages-body  and  #ala-carte-body
+/* eslint-disable no-console */
+
+const ENDPOINTS = {
+  php: '/php/get_pricing.php',
+  jsonPrimary: '/json/pricing.json',
+  jsonFallback: '/json/pricing.fallback.json'
+};
+
+const PHP_TIMEOUT_MS = 5000;
+const JSON_TIMEOUT_MS = 4000;
+const DEBUG_PREFIX = '[pricing]';
+
+const qs = new URLSearchParams(location.search);
+const previewHidden = qs.has('previewHidden');
+
+function fetchWithTimeout(url, ms, options = {}) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), ms);
+  return fetch(url, {
+    cache: 'no-store',
+    credentials: 'same-origin',
+    headers: { 'Accept': 'application/json' },
+    signal: controller.signal,
+    ...options
+  }).finally(() => clearTimeout(id));
+}
+
+async function getPricingDataSequential() {
+  // 1) Try PHP endpoint first
+  try {
+    const res = await fetchWithTimeout(ENDPOINTS.php, PHP_TIMEOUT_MS);
+    if (!res.ok) throw new Error(`PHP ${res.status} ${res.statusText}`);
+    const data = await res.json();
+    if (!isValidPayload(data)) throw new Error('PHP payload invalid');
+    console.info(`${DEBUG_PREFIX} using PHP endpoint`);
+    return { data, source: 'php' };
+  } catch (err) {
+    console.warn(`${DEBUG_PREFIX} PHP failed; falling back to JSON.`, err);
+  }
+
+  // 2) Primary JSON
+  try {
+    const res = await fetchWithTimeout(ENDPOINTS.jsonPrimary, JSON_TIMEOUT_MS);
+    if (!res.ok) throw new Error(`JSON primary ${res.status} ${res.statusText}`);
+    const data = await res.json();
+    if (!isValidPayload(data)) throw new Error('JSON primary payload invalid');
+    console.info(`${DEBUG_PREFIX} using JSON primary fallback`);
+    return { data, source: 'jsonPrimary' };
+  } catch (err) {
+    console.warn(`${DEBUG_PREFIX} JSON primary failed; trying secondary.`, err);
+  }
+
+  // 3) Secondary JSON
+  try {
+    const res = await fetchWithTimeout(ENDPOINTS.jsonFallback, JSON_TIMEOUT_MS);
+    if (!res.ok) throw new Error(`JSON fallback ${res.status} ${res.statusText}`);
+    const data = await res.json();
+    if (!isValidPayload(data)) throw new Error('JSON fallback payload invalid');
+    console.info(`${DEBUG_PREFIX} using JSON secondary fallback`);
+    return { data, source: 'jsonFallback' };
+  } catch (err) {
+    console.error(`${DEBUG_PREFIX} All sources failed.`, err);
+    return { data: null, source: 'none', error: err };
+  }
+}
+
+function isValidPayload(obj) {
+  if (!obj || typeof obj !== 'object') return false;
+  const pkOk = Array.isArray(obj.packages);
+  const svOk = Array.isArray(obj.services);
+  return pkOk || svOk;
+}
+
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function getCurrencyFormatter(code) {
+  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: code || 'USD' }); }
+  catch { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+}
+
+function normalizeRow(row, kind /* 'package' | 'service' */) {
+  const name = row.Package ?? row.package ?? row.Name ?? row.name ?? row.Title ?? row.title ?? row.Service ?? row.service ?? '';
+  const desc = row.Description ?? row.description ?? row.desc ?? '';
+  const rawPrice = (row.Price ?? row.price ?? row.amount ?? row.Amount ?? row.cost ?? row.Cost);
+  const unit = row.unit ? String(row.unit) : '';
+  const status = (row.status || '').toString().toLowerCase();
+  const enabled = (typeof row.enabled === 'boolean') ? row.enabled : (row.visible !== false);
+  const hidden = !enabled || status === 'hidden' || status === 'disabled' || status === 'inactive';
+
+  return {
+    kind,
+    name: String(name ?? ''),
+    desc: String(desc ?? ''),
+    price: rawPrice,
+    unit,
+    hidden
+  };
+}
+
+function formatPrice(value, unit, fmt) {
+  if (value === null || value === undefined || value === '') return '';
+  if (typeof value === 'number') {
+    return `${fmt.format(value)}${unit ? ` ${unit}` : ''}`;
+  }
+  const s = String(value);
+  if (/^\s*\d+(\.\d+)?\s*$/.test(s)) {
+    const n = Number(s);
+    return `${fmt.format(n)}${unit ? ` ${unit}` : ''}`;
+  }
+  return esc(s); // e.g., "Call for quote"
+}
+
+function filterForVisibility(rows) {
+  if (previewHidden) {
+    return rows.map(r => ({ ...r, previewBadge: r.hidden ? 'Hidden' : '' }));
+  }
+  return rows.filter(r => !r.hidden);
+}
+
+function renderTbody(tbodySelector, rows, currency) {
+  const tbody = document.querySelector(tbodySelector);
+  if (!tbody) return;
+
+  const fmt = getCurrencyFormatter(currency);
+  const filtered = filterForVisibility(rows);
+
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="3"><em>No items available.</em></td></tr>`;
+    return;
+  }
+
+  const rowsHtml = filtered.map(r => {
+    const badge = r.previewBadge ? ` <span class="badge-hidden" aria-label="Hidden">${esc(r.previewBadge)}</span>` : '';
+    const priceStr = formatPrice(r.price, r.unit, fmt);
+    return `<tr>
+      <td>${esc(r.name)}${badge}</td>
+      <td>${esc(r.desc)}</td>
+      <td class="price-cell" style="text-align:right; white-space:nowrap;">${priceStr}</td>
+    </tr>`;
+  }).join('');
+
+  tbody.innerHTML = rowsHtml;
+}
+
+function normalizePayload(data) {
+  const currency = (data.currency || 'USD').toString().toUpperCase();
+  const packages = Array.isArray(data.packages) ? data.packages.map(r => normalizeRow(r, 'package')) : [];
+  const services = Array.isArray(data.services) ? data.services.map(r => normalizeRow(r, 'service')) : [];
+  return { currency, packages, services };
+}
 
 export async function loadPricing() {
-  var elPackages = document.getElementById("packages-body");
-  var elAlaCarte = document.getElementById("ala-carte-body");
-  if (!elPackages && !elAlaCarte) return;
+  const { data } = await getPricingDataSequential();
 
-  var previewHidden = location.search.indexOf("previewHidden=1") >= 0;
-
-  var sources = [
-    "/php/get_pricing.php",
-    "/json/pricing.json",
-    "/json/pricing.fallback.json"
-  ];
-  var opts = { credentials: "same-origin", cache: "no-store" };
-
-  var data = null;
-  for (var i = 0; i < sources.length; i++) {
-    try {
-      var res = await fetchWithTimeout(sources[i], opts, 5000);
-      if (!res || !res.ok) continue;
-      var json = await safeJson(res);
-      if (!json || typeof json !== "object") continue;
-      // Accept even if one of the two lists exists
-      var pkgs = collectArray(json, ["packages", "Packages", "bundles"]);
-      var svcs = collectArray(json, ["services", "Services", "alaCarte", "items"]);
-      if ((pkgs && pkgs.length) || (svcs && svcs.length)) {
-        data = json;
-        break;
-      }
-    } catch (e) { /* next */ }
-  }
-  if (!data) data = {};
-
-  var currency = (data && data.currency) ? String(data.currency) : "USD";
-  var note = data && data.note ? String(data.note) : "";
-
-  var rawPackages = collectArray(data, ["packages", "Packages", "bundles"]);
-  var rawServices = collectArray(data, ["services", "Services", "alaCarte", "items"]);
-
-  // Normalize records to { kind, name, description, price, hidden }
-  var packages = normalizeList(rawPackages, "package");
-  var services = normalizeList(rawServices, "service");
-
-  // Filter by hidden flags (unless previewHidden)
-  if (!previewHidden) {
-    packages = packages.filter(function (x) { return !x.hidden; });
-    services = services.filter(function (x) { return !x.hidden; });
+  if (!data) {
+    renderTbody('#packages-body', [], 'USD');
+    renderTbody('#ala-carte-body', [], 'USD');
+    return;
   }
 
-  if (elPackages) {
-    elPackages.innerHTML = renderTable(
-      "Package",
-      packages,
-      currency,
-      previewHidden
-    );
+  const { currency, packages, services } = normalizePayload(data);
+  renderTbody('#packages-body', packages, currency);
+  renderTbody('#ala-carte-body', services, currency);
+
+  // Optional: tiny style for Hidden badge if previewing
+  if (previewHidden && !document.getElementById('pricing-hidden-badge-style')) {
+    const style = document.createElement('style');
+    style.id = 'pricing-hidden-badge-style';
+    style.textContent = `
+      .badge-hidden{display:inline-block;font-size:.75rem;line-height:1;padding:.15rem .35rem;border-radius:.35rem;border:1px solid #c99;color:#933;margin-left:.35rem;}
+    `;
+    document.head.appendChild(style);
   }
-  if (elAlaCarte) {
-    elAlaCarte.innerHTML = renderTable(
-      "Service",
-      services,
-      currency,
-      previewHidden
-    );
-  }
-
-  var noteSlot = document.getElementById("pricing-note") || document.querySelector(".pricing-note");
-  if (noteSlot && note) noteSlot.textContent = note;
-}
-
-/* ---------------- data helpers ---------------- */
-
-function collectArray(obj, keys) {
-  var out = [];
-  if (!obj || typeof obj !== "object") return out;
-  for (var i = 0; i < keys.length; i++) {
-    var k = keys[i];
-    if (!Object.prototype.hasOwnProperty.call(obj, k)) continue;
-    var v = obj[k];
-    if (Array.isArray(v)) {
-      out = out.concat(v);
-    } else if (v && typeof v === "object") {
-      // allow grouped objects-of-arrays
-      for (var sub in v) {
-        if (!Object.prototype.hasOwnProperty.call(v, sub)) continue;
-        var maybeArr = v[sub];
-        if (Array.isArray(maybeArr)) out = out.concat(maybeArr);
-      }
-    }
-  }
-  return out;
-}
-
-function normalizeList(arr, kind) {
-  if (!Array.isArray(arr)) return [];
-  var out = [];
-  for (var i = 0; i < arr.length; i++) {
-    var it = arr[i] || {};
-    var name = extractName(it, kind);
-    var description = extractDescription(it);
-    var price = extractPrice(it);
-    var hidden = isHidden(it);
-    out.push({ kind: kind, name: name, description: description, price: price, hidden: hidden });
-  }
-  return out;
-}
-
-function extractName(it, kind) {
-  // Prefer exact SQL-like column first
-  if (kind === "package") {
-    return firstString(it, ["Package", "package", "name", "title"]) || "Package";
-  } else {
-    return firstString(it, ["Service", "service", "name", "title"]) || "Service";
-  }
-}
-
-function extractDescription(it) {
-  var desc = firstString(it, ["Description", "description", "desc", "text"]);
-  if (desc) return desc;
-  // If no description, try to stringify "features"
-  var f = it.features;
-  if (Array.isArray(f) && f.length) return f.join(" • ");
-  return "";
-}
-
-function extractPrice(it) {
-  // Allow number or formatted string in any of these fields
-  var v = it.hasOwnProperty("Price") ? it.Price :
-          it.hasOwnProperty("price") ? it.price :
-          it.hasOwnProperty("cost")  ? it.cost  : null;
-  // Keep unit (e.g., "/hour") when present
-  var unit = firstString(it, ["unit", "Unit"]);
-  return unit ? { value: v, unit: unit } : { value: v };
-}
-
-function firstString(obj, keys) {
-  for (var i = 0; i < keys.length; i++) {
-    var k = keys[i];
-    if (Object.prototype.hasOwnProperty.call(obj, k) && obj[k] != null && obj[k] !== "") {
-      return String(obj[k]);
-    }
-  }
-  return "";
-}
-
-function isHidden(item) {
-  if (!item || typeof item !== "object") return false;
-  if (item.hidden === true) return true;
-  if (item.enabled === false) return true;
-  if (item.visible === false) return true;
-  var st = (item.status ? String(item.status) : "").toLowerCase();
-  if (st === "hidden" || st === "disabled") return true;
-  return false;
-}
-
-/* ---------------- fetch helpers ---------------- */
-
-function safeJson(res) {
-  return res.text().then(function (t) {
-    try { return JSON.parse(t); } catch (e) { return null; }
-  });
-}
-
-function fetchWithTimeout(url, options, ms) {
-  var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-  var id;
-  if (controller) {
-    options = options || {};
-    options.signal = controller.signal;
-    id = setTimeout(function () { try { controller.abort(); } catch (e) {} }, ms || 5000);
-  }
-  return fetch(url, options).finally(function () {
-    if (id) clearTimeout(id);
-  });
-}
-
-/* ---------------- rendering ---------------- */
-
-function escapeHtml(s) {
-  s = String(s == null ? "" : s);
-  return s.replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
-}
-
-function formatPrice(price, currency) {
-  var v = price && typeof price === "object" ? price.value : price;
-  var unit = price && typeof price === "object" ? price.unit : "";
-  var out = "";
-  if (v == null || v === "") {
-    out = "";
-  } else if (typeof v === "number" || isFinite(Number(v))) {
-    var n = typeof v === "number" ? v : Number(v);
-    try {
-      out = new Intl.NumberFormat(undefined, { style: "currency", currency: currency || "USD" }).format(n);
-    } catch (e) {
-      out = "$" + n.toFixed(2);
-    }
-  } else {
-    // Already formatted string
-    out = String(v);
-  }
-  if (unit) out += " " + unit;
-  return out;
-}
-
-function renderTable(firstColHeader, rows, currency, previewHidden) {
-  if (!rows || !rows.length) {
-    return '<p class="pricing-empty" role="note">No items available at this time.</p>';
-  }
-
-  var thead = '' +
-    "<thead>" +
-      "<tr>" +
-        "<th scope=\"col\">" + escapeHtml(firstColHeader) + "</th>" +
-        "<th scope=\"col\">Description</th>" +
-        "<th scope=\"col\" style=\"text-align:right\">Price</th>" +
-      "</tr>" +
-    "</thead>";
-
-  var tbody = "<tbody>";
-  for (var i = 0; i < rows.length; i++) {
-    var r = rows[i];
-    var priceText = formatPrice(r.price, currency);
-    var cls = r.hidden ? " class=\"is-hidden\"" : "";
-    var badge = (r.hidden && previewHidden) ? ' <span class="badge-hidden">Hidden</span>' : "";
-    tbody += "" +
-      "<tr" + cls + ">" +
-        "<td>" + escapeHtml(r.name) + badge + "</td>" +
-        "<td>" + escapeHtml(r.description) + "</td>" +
-        "<td style=\"text-align:right\">" + escapeHtml(priceText) + "</td>" +
-      "</tr>";
-  }
-  tbody += "</tbody>";
-
-  return "<table class=\"pricing-table\">" + thead + tbody + "</table>";
 }

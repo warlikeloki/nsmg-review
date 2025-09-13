@@ -4,22 +4,22 @@
   "packages": [
     {
       "Package": "Starter",
-      "Description": "Up to 2 hours coverage • Single camera • Basic color correction • Delivery in 5 business days",
+      "Description": "Up to 2 hours coverage • Single camera • Basic color correction",
       "Price": 399
     },
     {
       "Package": "Essentials",
-      "Description": "Up to 4 hours coverage • 2 cameras • Color + audio sweetening • Delivery in 4 business days",
+      "Description": "Up to 4 hours coverage • 2 cameras • Color + audio sweetening",
       "Price": 649
     },
     {
       "Package": "Pro",
-      "Description": "Up to 6 hours coverage • 2 cameras + gimbal • On-site lighting kit • Delivery in 3 business days",
+      "Description": "Up to 6 hours coverage • 2 cameras + gimbal • On-site lighting kit",
       "Price": 999
     },
     {
       "Package": "Premium",
-      "Description": "Up to 8 hours coverage • 3 cameras + drone add-on • Full lighting + audio kit • Delivery in 2 business days",
+      "Description": "Up to 8 hours coverage • 3 cameras + drone add-on • Full lighting + audio kit",
       "Price": 1499
     },
     {
@@ -33,7 +33,7 @@
     { "Service": "Editing",            "Description": "Nonlinear editing and assembly",     "Price": 75,  "unit": "/hour" },
     { "Service": "Color Grading",      "Description": "Look creation and matching",          "Price": 50,  "unit": "/hour" },
     { "Service": "Audio Cleanup",      "Description": "Noise reduction and leveling",        "Price": 40,  "unit": "/hour" },
-    { "Service": "Drone Add-On",       "Description": "Aerial footage (FAA licensed)",       "Price": 200, "unit": "flat"  },
+    { "Service": "Drone Add-On",       "Description": "Aerial footage (FAA licensed)",       "Price": 200, "unit": "flat", "status": "hidden"  },
     { "Service": "Rush Turnaround 48h","Description": "Accelerated post-production timeline","Price": 250, "unit": "flat"  },
     { "Service": "Raw Footage Delivery","Description":"Provide source footage to client",     "Price": 150, "unit": "flat", "enabled": false }
   ]
