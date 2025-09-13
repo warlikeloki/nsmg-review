@@ -69,10 +69,11 @@
 - NSM-149 - Enable Turnstile & Edge rate-limits for Contact Form
 - NSM-150 - Edge Cache & Image Optimization Policy
 - NSM-153 - Client-side UI Config Loader & Features Flag
-- NSM-154 - Reinstate sticky header globally (Sprint: Sprint 6)
-- NSM-155 - Site Settings include audit & fix (Sprint: Sprint 6)
 - NSM-156 - Sitewide asset reference audit
 - NSM-157 - Pricing: Show/Hide Services (Sprint: Sprint 6)
+- NSM-158 - Left Sidebar does not move on Services dashboard
+- NSM-159 - Pricing: JS/JSON updates (fallback, 3-column render, hide/show)
+- NSM-160 - Pricing: SQL & PHP endpoint alignment
 
 ## Closed / Done
 - NSM-1 - Set up custom domain neilsmith.org (Sprint: Sprint 5)
@@ -154,3 +155,5 @@
 - NSM-146 - Contact form submissions not inserted into SQL table (Sprint: Sprint 6)
 - NSM-151 - Add Phone Number to Contact Form (Sprint: Sprint 6)
 - NSM-152 - Highlight Service Region on Site (optional US-only access toggle) (Sprint: Sprint 6)
+- NSM-154 - Reinstate sticky header globally (Sprint: Sprint 6)
+- NSM-155 - Site Settings include audit & fix (Sprint: Sprint 6)
