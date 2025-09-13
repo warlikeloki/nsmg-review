@@ -6,12 +6,24 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
+  // Ensure standard containers exist (prevents blank pages if markup was missing)
+  function ensureContainer(id, position = 'start') {
+    if (document.getElementById(id)) return;
+    const div = document.createElement('div');
+    div.id = id;
+    if (position === 'start') {
+      document.body.prepend(div);
+    } else {
+      document.body.append(div);
+    }
+  }
+
   async function loadPartial(url, containerSelector) {
     const container = $(containerSelector);
     if (!container) return;
 
     try {
-      const res = await fetch(url, { credentials: "same-origin" });
+      const res = await fetch(url, { credentials: "same-origin", cache: "no-store" });
       if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
       const html = await res.text();
       container.innerHTML = html;
@@ -53,8 +65,8 @@
         } else {
           a.removeAttribute("aria-current");
         }
-      } catch (e) {
-        // ignore URL parsing errors
+      } catch {
+        /* ignore URL parsing errors */
       }
     });
   }
@@ -108,30 +120,30 @@
   async function autoInitModules() {
     const has = sel => !!document.querySelector(sel);
     // navigation.js is initialized right after header/footer load
-    if (document.getElementById('homepage')) { try { await import('/js/modules/homepage.js'); } catch (e) {} }
-    if (document.getElementById('blog-posts-container')) { try { await import('/js/modules/blog.js'); } catch (e) {} }
-    if (document.getElementById('blog-post-content')) { try { await import('/js/modules/blog-post.js'); } catch (e) {} }
-    if (document.getElementById('testimonials-container') || document.getElementById('homepage-testimonials-container') || has('.testimonials-slider')) { try { await import('/js/modules/testimonials.js'); } catch (e) {} }
+    if (document.getElementById('homepage')) { try { await import('/js/modules/homepage.js'); } catch {} }
+    if (document.getElementById('blog-posts-container')) { try { await import('/js/modules/blog.js'); } catch {} }
+    if (document.getElementById('blog-post-content')) { try { await import('/js/modules/blog-post.js'); } catch {} }
+    if (document.getElementById('testimonials-container') || document.getElementById('homepage-testimonials-container') || has('.testimonials-slider')) { try { await import('/js/modules/testimonials.js'); } catch {} }
     if (document.getElementById('equipment-list')) {
       try {
         await import('/js/modules/equipment.js');
         if (typeof window.loadEquipment === 'function') window.loadEquipment();
-      } catch (e) {}
+      } catch {}
     }
     if (document.getElementById('packages-body') || document.getElementById('ala-carte-body')) {
       try {
         const mod = await import('/js/modules/pricing.js');
         if (mod && typeof mod.loadPricing === 'function') mod.loadPricing();
-      } catch (e) {}
+      } catch {}
     }
-    if (document.getElementById('contact-form')) { try { await import('/js/modules/contact.js'); } catch (e) {} }
-    if (document.getElementById('other-services-container')) { try { await import('/js/modules/other-services.js'); } catch (e) {} }
-    if (document.getElementById('services-toggle') && document.getElementById('services-nav')) { try { await import('/js/modules/services-nav.js'); } catch (e) {} }
-    if (has('.filter-buttons')) { try { await import('/js/modules/portfolio.js'); } catch (e) {} }
+    if (document.getElementById('contact-form')) { try { await import('/js/modules/contact.js'); } catch {} }
+    if (document.getElementById('other-services-container')) { try { await import('/js/modules/other-services.js'); } catch {} }
+    if (document.getElementById('services-toggle') && document.getElementById('services-nav')) { try { await import('/js/modules/services-nav.js'); } catch {} }
+    if (has('.filter-buttons')) { try { await import('/js/modules/portfolio.js'); } catch {} }
   }
 
   function initSkipLink() {
-    // If thereâ€™s no #main, but #homepage exists, alias it
+    // If there’s no #main, but #homepage exists, alias it
     if (!$("#main") && $("#homepage")) {
       $("#homepage").setAttribute("id", "main");
     }
@@ -139,15 +151,21 @@
 
   async function start() {
     initSkipLink();
+
+    // Make sure containers exist even if the page markup forgot them
+    ensureContainer('header-container', 'start');
+    ensureContainer('footer-container', 'end');
+
+    // FIX: use correct, root-relative URLs (no stray version tokens)
     await Promise.all([
-      loadPartial("=202509071829", "#header-container"),
-      loadPartial("=202509071829", "#footer-container")
+      loadPartial("/header.html", "#header-container"),
+      loadPartial("/footer.html", "#footer-container")
     ]);
 
     // Initialize mobile navigation right after header/footer injection
     try {
       await import('/js/modules/navigation.js');
-      if (window.NSM && window.NSM.navigation && typeof window.NSM.navigation.init === 'function') {
+      if (window.NSM?.navigation && typeof window.NSM.navigation.init === 'function') {
         // IMPORTANT: turn off backdrop so it can't block link taps.
         // Also cover both possible menu containers across pages.
         window.NSM.navigation.init({
@@ -167,9 +185,8 @@
 
   // Run on DOM ready (defer is set in HTML)
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", start);
+    document.addEventListener("DOMContentLoaded", start, { once: true });
   } else {
     start();
   }
 })();
-
