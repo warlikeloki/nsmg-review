@@ -40,6 +40,6 @@
     { "id": 32, "service": "Voice-Over Recording",                  "description": "Finished audio minute",                                                  "price": 50,   "unit": "per minute",     "isPackage": false, "isVisible": true },
     { "id": 35, "service": "Officiant Rehearsal",                   "description": "Rehearsal attendance",                                                   "price": 100,  "unit": "per hour",       "isPackage": false, "isVisible": true },
     { "id": 36, "service": "Notary Act",                            "description": "Per signature/act (VA only)",                                            "price": 10,   "unit": "per act",        "isPackage": false, "isVisible": true },
-    { "id": 37, "service": "Notary Travel Fee",                     "description": "Beyond 10-mile radius",                                                  "price": 30,   "unit": "per mile",       "isPackage": false, "isVisible": true }
+    { "id": 37, "service": "Notary Travel Fee",                     "description": "Beyond 10-mile radius",                                                  "price": 0.30,   "unit": "per mile",       "isPackage": false, "isVisible": true }
   ]
 }

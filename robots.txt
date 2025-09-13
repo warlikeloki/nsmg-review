@@ -1,5 +1,15 @@
-
+﻿
 User-agent: *
+Disallow: /admin/
+Disallow: /php/
+Disallow: /includes/
+Disallow: /tests/
+Disallow: /scripts/
+Disallow: /docs/
+Disallow: /vendor/
+Disallow: /node_modules/
+Disallow: /*.bak$
+Disallow: /*.old$
 Allow: /
 
 # The line below is kept up-to-date by Generate-Sitemap.ps1

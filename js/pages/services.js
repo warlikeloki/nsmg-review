@@ -1,70 +1,146 @@
-// /js/pages/services.js
-document.addEventListener('DOMContentLoaded', () => {
-  const listEl = document.getElementById('services-list');
-  const filterEl = document.getElementById('services-filter');   // select: all|packages|alacarte
-  const searchEl = document.getElementById('services-search');   // input[type=text]
-  const countEl = document.getElementById('services-count');
+/**
+ * Services page loader (replaces old inline script).
+ * - Adds behavior for left-nav buttons (including new "Pricing").
+ * - Loads fragments into #services-content.
+ * - Removes versioned querystrings from module loaders.
+ * - Hides right sidebar when viewing Pricing; shows for others.
+ * - Provides basic mobile toggle for the left nav.
+ */
 
-  if (!listEl) return;
+(function () {
+  const content = document.getElementById('services-content');
+  const leftNav = document.getElementById('services-nav');
+  const rightSidebar = document.querySelector('.right-sidebar');
+  const navButtons = leftNav ? leftNav.querySelectorAll('.admin-button') : [];
 
-  const qs = new URLSearchParams(location.search);
-  if (filterEl && qs.get('type')) filterEl.value = qs.get('type'); // optional deep-link
-
-  const fetchServices = async (opts = {}) => {
-    const p = new URLSearchParams();
-    if (opts.is_package === 0 || opts.is_package === 1) p.set('is_package', String(opts.is_package));
-    if (opts.q) p.set('q', opts.q);
-    const url = '/php/get_services.php' + (p.toString() ? `?${p.toString()}` : '');
-    const res = await fetch(url);
-    return res.json();
-  };
-
-  const fmtPrice = v => (v == null ? '' : `$${Number(v).toFixed(2)}`);
-
-  const render = (rows) => {
-    if (countEl) countEl.textContent = `${rows.length} service${rows.length === 1 ? '' : 's'}`;
-    if (!rows.length) {
-      listEl.innerHTML = '<p>No services found.</p>';
-      return;
-    }
-    listEl.innerHTML = rows.map(s => `
-      <article class="service-card">
-        <h3>${s.name}</h3>
-        ${s.description ? `<p>${s.description}</p>` : ''}
-        <p class="meta">
-          ${fmtPrice(s.price)} ${s.unit ? `<span class="unit">${s.unit}</span>` : ''}
-          ${s.is_package ? '<span class="badge">Package</span>' : ''}
-        </p>
-      </article>
-    `).join('');
-  };
-
-  const load = async () => {
-    listEl.innerHTML = '<p>Loading services…</p>';
-    try {
-      const filter = filterEl ? filterEl.value : 'all';
-      const q = (searchEl && searchEl.value || '').trim();
-      const is_package =
-        filter === 'packages' ? 1 :
-        filter === 'alacarte' ? 0 :
-        undefined;
-
-      const { success, data, error } = await fetchServices({ is_package, q });
-      if (!success || !Array.isArray(data)) throw new Error(error || 'Bad response');
-      render(data);
-    } catch (e) {
-      console.error(e);
-      listEl.innerHTML = '<p class="error">Unable to load services.</p>';
-    }
-  };
-
-  if (filterEl) filterEl.addEventListener('change', load);
-  if (searchEl) {
-    searchEl.addEventListener('input', () => {
-      clearTimeout(searchEl.__t);
-      searchEl.__t = setTimeout(load, 300);
-    });
+  // A11y live region (for announcements like "Pricing loaded")
+  let live = document.getElementById('sr-live');
+  if (!live) {
+    live = document.createElement('div');
+    live.id = 'sr-live';
+    live.setAttribute('aria-live', 'polite');
+    live.setAttribute('aria-atomic', 'true');
+    live.style.position = 'absolute';
+    live.style.width = '1px';
+    live.style.height = '1px';
+    live.style.padding = '0';
+    live.style.margin = '-1px';
+    live.style.overflow = 'hidden';
+    live.style.clip = 'rect(0,0,0,0)';
+    live.style.whiteSpace = 'nowrap';
+    live.style.border = '0';
+    document.body.appendChild(live);
   }
 
-  load();
-});
+  function ensureModule(src) {
+    // Strip any accidental versioning to avoid VS Code preview "not found"
+    const cleanSrc = src.split('?')[0];
+
+    // Already loaded?
+    const found = [...document.scripts].some(s => (s.getAttribute('src') || '') === cleanSrc);
+    if (found) return;
+
+    const s = document.createElement('script');
+    s.src = cleanSrc;
+    // not using type="module" here to remain compatible with existing non-module scripts
+    s.defer = true;
+    document.body.appendChild(s);
+  }
+
+  function setRightSidebarVisible(visible) {
+    if (!rightSidebar) return;
+    rightSidebar.hidden = !visible;
+    rightSidebar.style.display = visible ? '' : 'none';
+    rightSidebar.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  }
+
+  function injectHtmlIntoContent(html) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const main = doc.querySelector('main');
+    content.innerHTML = main ? main.innerHTML : '<p>Unable to load content.</p>';
+  }
+
+  async function safeFetch(url) {
+    // Root-relative first
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      return await res.text();
+    } catch (e1) {
+      // Fallback: relative path (helps some VS Code preview setups)
+      try {
+        const relative = url.startsWith('/') ? url.slice(1) : url;
+        const res2 = await fetch(relative, { cache: 'no-store' });
+        if (!res2.ok) throw new Error(`${res2.status} ${res2.statusText}`);
+        return await res2.text();
+      } catch (e2) {
+        throw new Error(`Content not found: ${url}`);
+      }
+    }
+  }
+
+  async function loadService(service) {
+    // Determine URL
+    let url;
+    if (service === 'request-form') {
+      url = '/services/request-form.html';
+    } else if (service === 'pricing') {
+      url = '/services/pricing.html';
+    } else {
+      url = `/services/${service}.html`;
+    }
+
+    try {
+      const html = await safeFetch(url);
+      injectHtmlIntoContent(html);
+
+      // Hydrate modules for specific fragments (no versioned querystrings)
+      if (content.querySelector('#equipment-list')) {
+        ensureModule('/js/modules/equipment.js');
+        if (typeof window.loadEquipment === 'function') window.loadEquipment();
+      }
+      if (content.querySelector('#other-services-container')) {
+        ensureModule('/js/modules/other-services.js');
+      }
+      if (service === 'request-form') {
+        ensureModule('/js/modules/service-request.js');
+      }
+
+      // Show/hide right sidebar
+      setRightSidebarVisible(service !== 'pricing');
+
+      // Announce for screen readers
+      const label = service === 'pricing' ? 'Pricing loaded.' : 'Content loaded.';
+      live.textContent = label;
+
+      // Scroll to top of content on small screens
+      content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (err) {
+      console.error(err);
+      content.innerHTML = `<p>Error loading content: ${err.message}</p>`;
+      setRightSidebarVisible(true);
+    }
+  }
+
+  // Wire up left-nav buttons
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      navButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const service = btn.getAttribute('data-service');
+      loadService(service);
+    });
+  });
+
+  // Mobile left-nav toggle
+  const toggleBtn = document.getElementById('services-toggle');
+  if (toggleBtn && leftNav) {
+    toggleBtn.addEventListener('click', () => {
+      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      const next = !expanded;
+      toggleBtn.setAttribute('aria-expanded', String(next));
+      leftNav.style.display = next ? '' : 'none';
+    });
+  }
+})();
