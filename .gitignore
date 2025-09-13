@@ -86,8 +86,8 @@ _backup_untracked_*/
 # -------------------------------------------------------
 # Misc from your list
 # -------------------------------------------------------
-scripts/Build-IssuesFromApi.ps1
-tools/generate_hash.php
+scripts/
+tools/
 
 # -------------------------------------------------------
 # Keep SQL tracked (INTENTIONAL)

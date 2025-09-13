@@ -87,3 +87,6 @@
     font-size: 0.85rem;
   }
 }
+
+.badge-hidden { display:inline-block; padding:2px 6px; font-size:.75rem; border:1px solid currentColor; border-radius:4px; opacity:.7; }
+.is-hidden { opacity:.6; }
