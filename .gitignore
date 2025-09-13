@@ -1,16 +1,59 @@
+# -------------------------------------------------------
+# Project/workspace
+# -------------------------------------------------------
 NeilSmith.code-workspace
-# dependencies
+
+# -------------------------------------------------------
+# OS / Editor cruft
+# -------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+Icon?
+*.swp
+*.swo
+*.orig
+*.tmp
+*~
+.vscode/
+.idea/
+
+# -------------------------------------------------------
+# Node / tooling / test scaffolding
+# -------------------------------------------------------
 node_modules/
-priceListing.md
 cypress/
-templates/
 cypress.config.js
+templates/
+dist/
+build/
+
+# -------------------------------------------------------
+# One-off local docs/data you listed
+# -------------------------------------------------------
+priceListing.md
 issues.tsv
 nsmg_db.sql
 github_issues.csv
 jira_issues_ready.csv
-config/config.php
-/sql/*.sql
+
+# -------------------------------------------------------
+# Logs & runtime storage (keep .htaccess placeholders)
+# -------------------------------------------------------
+/php/logs/*
+!/php/logs/.htaccess
+/php/storage/*
+!/php/storage/.htaccess
+
+# -------------------------------------------------------
+# Reports & audit outputs (script-generated)
+# -------------------------------------------------------
+/reports/**
+
+# -------------------------------------------------------
+# Secrets / machine-specific config
+# -------------------------------------------------------
 .env
 .env.*
 **/*.key
@@ -18,13 +61,36 @@ config/config.php
 **/*id_rsa*
 **/secrets/**
 **/private/**
-node_modules/
+
+# Web app config (track the sample, ignore real)
+config/config.php
+secure-config/config.php
+
+# Admin auth helper (comment back in if it ever holds secrets)
+# admin/_auth.php
+
+# -------------------------------------------------------
+# Vendor (prefer installing on deploy/CI)
+# -------------------------------------------------------
 vendor/
-dist/
-build/
-*.log
+
+# -------------------------------------------------------
+# Backups & time-stamped copies
+# -------------------------------------------------------
+*.bak
+*.bak-*
+*_backup*
+*_backup_*/
+_backup_untracked_*/
+
+# -------------------------------------------------------
+# Misc from your list
+# -------------------------------------------------------
 scripts/Build-IssuesFromApi.ps1
-# Admin auth config (keep out of git)
-php/includes/admin_auth_config.php
 tools/generate_hash.php
-reports/
+
+# -------------------------------------------------------
+# Keep SQL tracked (INTENTIONAL)
+# (Removed your old `/sql/*.sql` ignore so schema/data files stay in Git)
+# -------------------------------------------------------
+# (no ignore here on purpose)
