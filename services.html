@@ -4,11 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Services - Neil Smith Media Group</title>
+
   <!-- SEO Meta Description -->
   <meta
     name="description"
     content="Explore Neil Smith Media Group's services: event photography, videography, editing, and other creative services tailored to your project needs."
   />
+
   <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/layout.css" />
@@ -44,6 +46,8 @@
         <button class="admin-button" data-service="videography">Videography</button>
         <button class="admin-button" data-service="editing">Editing</button>
         <button class="admin-button" data-service="other-services">Other Services</button>
+        <!-- NEW: Pricing button (same styling/class as others) -->
+        <button class="admin-button" data-service="pricing">Pricing</button>
         <button class="admin-button" data-service="request-form">Request a Service</button>
       </div>
     </aside>
@@ -52,7 +56,7 @@
     <main class="main-content" id="services-content">
       <!-- NSM-85: mobile services toggle -->
       <button id="services-toggle" class="btn services-toggle" aria-expanded="false" aria-controls="services-nav">
-      Services â˜°
+        Services ☰
       </button>
       <div id="service-placeholder">
         <h1>Our Services</h1>
@@ -60,7 +64,7 @@
       </div>
     </main>
 
-    <!-- Right Sidebar: Equipment List -->
+    <!-- Right Sidebar (present but empty by default) -->
     <aside class="sidebar right-sidebar"></aside>
   </div>
 
@@ -72,64 +76,7 @@
       .then(html => document.getElementById('footer-container').innerHTML = html);
   </script>
 
-  <!-- Page-specific loader -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const navButtons = document.querySelectorAll("#services-nav .admin-button");
-      const content = document.getElementById("services-content");
-
-      function ensureModule(src) {
-        if ([...document.scripts].some(s => s.getAttribute('src') === src)) return;
-        const s = document.createElement('script');
-        s.src = src;
-        s.defer = true;
-        document.body.appendChild(s);
-      }
-
-      function hydrateInjectedContent(service) {
-        if (content.querySelector('#equipment-list')) {
-          ensureModule('/js/modules/equipment.js?v=2025-08-23.1');
-          if (typeof window.loadEquipment === 'function') window.loadEquipment();
-        }
-        if (content.querySelector('#other-services-container')) {
-          ensureModule('/js/modules/other-services.js?v=2025-08-23.1');
-        }
-        if (service === 'request-form') {
-          ensureModule('/js/modules/service-request.js?v=2025-08-23.1');
-        }
-      }
-
-      navButtons.forEach(button => {
-        button.addEventListener("click", () => {
-          navButtons.forEach(btn => btn.classList.remove("active"));
-          button.classList.add("active");
-
-          const service = button.getAttribute("data-service");
-          const url = service === 'request-form'
-            ? '/services/request-form.html'
-            : `/services/${service}.html`;
-
-          fetch(url, { cache: 'no-store' })
-            .then(res => {
-              if (!res.ok) throw new Error(`Content not found: ${url}`);
-              return res.text();
-            })
-            .then(html => {
-              const parser = new DOMParser();
-              const doc = parser.parseFromString(html, 'text/html');
-              const main = doc.querySelector('main');
-              content.innerHTML = main ? main.innerHTML : '<p>Unable to load content.</p>';
-              hydrateInjectedContent(service);
-            })
-            .catch(err => {
-              console.error(err);
-              content.innerHTML = `<p>Error loading content: ${err.message}</p>`;
-            });
-        });
-      });
-    });
-  </script>
+  <!-- Page-specific JS (migrated out of inline script) -->
+  <script type="module" src="/js/pages/services.js" defer></script>
 </body>
 </html>
-
-

@@ -1,13 +1,7 @@
-
 <#
-  Generate-Sitemap.ps1 — NSM-121
-  Scans the repo for .html pages, builds sitemap.xml with canonical HTTPS URLs and <lastmod>,
-  and ensures robots.txt contains a "Sitemap: <base>/sitemap.xml" line.
-
-  Usage (repo root):
-    pwsh ./scripts/Generate-Sitemap.ps1
-    # (Optional) override base URL:
-    pwsh ./scripts/Generate-Sitemap.ps1 -BaseUrl "https://example.com"
+  Generate-Sitemap.ps1 — NSM-121 (hardened)
+  - Uses `git ls-files -co --exclude-standard` so .gitignore is respected
+  - Excludes backup/old HTML and non-public dirs
 #>
 
 [CmdletBinding()]
@@ -21,7 +15,6 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-
 function Info($m){ Write-Host "[info] $m" -ForegroundColor Cyan }
 function Fail($m){ Write-Host "[error] $m" -ForegroundColor Red; exit 1 }
 
@@ -29,26 +22,69 @@ function Fail($m){ Write-Host "[error] $m" -ForegroundColor Red; exit 1 }
 $BaseUrl = $BaseUrl.TrimEnd('/')
 
 # Resolve root
-try {
-  $Root = (Resolve-Path $RootPath).Path
-} catch {
-  Fail "RootPath '$RootPath' not found."
+try { $Root = (Resolve-Path $RootPath).Path } catch { Fail "RootPath '$RootPath' not found." }
+
+# Helpers
+function MatchesAny([string]$s, [string[]]$globs){
+  foreach($g in $globs){ if($s -like $g){ return $true } }
+  return $false
 }
 
-# Collect .html files (exclude shared partials and server-only dirs)
+# Exclusions
 $excludeFileNames = @('header.html','footer.html','404.html','500.html')
-$excludeDirsLike  = @('/admin/','\admin\','/php/','\php\','/includes/','\includes\')
+$excludeDirGlobs  = @(
+  '*/admin/*','*\admin\*',
+  '*/php/*','*\php\*',
+  '*/includes/*','*\includes\*',
+  '*/vendor/*','*\vendor\*',
+  '*/node_modules/*','*\node_modules\*',
+  '*/.git/*','*\.git\*',
+  '*/.github/*','*\.github\*',
+  '*/tests/*','*\tests\*',
+  '*/scripts/*','*\scripts\*',
+  '*/docs/*','*\docs\*'
+)
+# Backup/old file name patterns (catch both positions of ".bak" and timestamp suffixes)
+$excludeNameGlobs = @(
+  '*.html.bak','*.html.bak-*','*.html.old','*.html.old-*',
+  '*.bak.html','*.bak-*.html','*.old.html','*.old-*.html',
+  '*~','*.tmp','*.swp'
+)
 
-$files = Get-ChildItem -Path $Root -Recurse -File -Filter *.html | Where-Object {
+# Gather candidate HTML files, preferring git (respects .gitignore)
+$files = @()
+$useGit = $true
+try {
+  $gitTop = (git -C $Root rev-parse --show-toplevel 2>$null).Trim()
+  if (-not $gitTop) { $useGit = $false }
+} catch { $useGit = $false }
+
+if ($useGit) {
+  Info "Using git index (respects .gitignore)..."
+  $relPaths = (git -C $Root ls-files -co --exclude-standard --full-name) `
+              | Where-Object { $_ -like '*.html' }
+  foreach($rp in $relPaths){
+    $full = Join-Path $Root $rp
+    if (Test-Path -LiteralPath $full) { $files += (Get-Item -LiteralPath $full) }
+  }
+} else {
+  Info "git not available; falling back to filesystem scan (won't consult .gitignore)."
+  $files = Get-ChildItem -Path $Root -Recurse -File -Filter *.html
+}
+
+# Filter out non-public, backups/olds, and named exclusions
+$files = $files | Where-Object {
   $rel = $_.FullName.Substring($Root.Length).TrimStart('\','/')
-  $name = [IO.Path]::GetFileName($rel).ToLowerInvariant()
-  if ($excludeFileNames -contains $name) { return $false }
   $relLower = $rel.ToLowerInvariant()
-  foreach ($seg in $excludeDirsLike) { if ($relLower -like "*$seg*") { return $false } }
+  $name = [IO.Path]::GetFileName($relLower)
+
+  if ($excludeFileNames -contains $name) { return $false }
+  if (MatchesAny $relLower $excludeDirGlobs) { return $false }
+  if (MatchesAny $relLower $excludeNameGlobs) { return $false }
   return $true
 }
 
-if (-not $files) { Fail "No .html files found to include in sitemap." }
+if (-not $files) { Fail "No .html files found to include in sitemap after filtering." }
 
 # Map file path -> URL path
 function Get-UrlPath([string]$rel){
@@ -100,11 +136,8 @@ if (Test-Path $robotsFile) {
 } else {
   $lines = @("User-agent: *","Allow: /")
 }
-
-# Remove any existing 'Sitemap:' lines (case-insensitive), then append canonical one
 $lines = $lines | Where-Object { $_ -notmatch '^\s*Sitemap\s*:' }
 $lines += "Sitemap: $BaseUrl/sitemap.xml"
-
 $lines | Set-Content -Path $robotsFile -Encoding UTF8
 Info "Updated $RobotsPath with sitemap reference."
 
