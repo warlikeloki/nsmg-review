@@ -32,7 +32,7 @@
   );
   const rightSidebar = document.querySelector(
     '.right-sidebar, #right-sidebar, aside.right-sidebar'
-  ); // may be null (thatâ€™s OK)
+  ); // may be null (that's OK)
 
   if (!leftNav || !main) {
     // Can't initialize without a left nav and a main content container
