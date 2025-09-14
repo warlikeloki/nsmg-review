@@ -1,13 +1,10 @@
 /**
  * Services page loader
- * - Left-nav buttons (incl. "Pricing") load fragments into #services-content.
- * - Primary path for Pricing is /services/pricing.html; fallback to /pricing.html.
- * - After injecting a fragment, execute any <script> tags contained in it (so its own JS runs).
- * - Resolves relative <script src> against the fragment's URL (so pricing.js loads correctly).
- * - If Pricing scripts still don't populate, try a JSON/PHP fallback renderer.
- * - Removes versioned querystrings when dynamically loading helper scripts.
- * - Hides right sidebar when viewing Pricing; shows it for other sections.
- * - Mobile toggle for the left nav.
+ * - Left-nav buttons load fragments into #services-content (Photography, Videography, Editing, Other, Request).
+ * - Pricing loads as an iframe of /services/pricing.html to ensure the same SQL-backed behavior as the standalone page.
+ * - Hides right sidebar while Pricing is visible; restores for other sections.
+ * - Removes versioned querystrings when loading helper scripts (VS Code preview safe).
+ * - Mobile toggle for left nav.
  */
 
 (function () {
@@ -45,7 +42,7 @@
     if (found) return;
     const tag = document.createElement('script');
     tag.src = cleanSrc;
-    tag.defer = true; // compatible with existing helpers
+    tag.defer = true; // keep compatible with existing helpers
     document.body.appendChild(tag);
   }
 
@@ -56,225 +53,35 @@
     rightSidebar.setAttribute('aria-hidden', visible ? 'false' : 'true');
   }
 
-  function resolveAgainst(baseUrl, maybeRelative) {
-    try {
-      return new URL(maybeRelative, baseUrl).toString();
-    } catch {
-      return maybeRelative; // best effort
-    }
-  }
-
-  function runScriptsFromDoc(doc, baseUrl) {
-    const loadedSrcs = new Set(
-      [...document.querySelectorAll('script[src]')].map(s => stripVersion(s.getAttribute('src')))
-    );
-
-    const fragmentScripts = [...doc.querySelectorAll('script')];
-    fragmentScripts.forEach(srcScript => {
-      const newScript = document.createElement('script');
-
-      // Keep type/module flags
-      if (srcScript.type) newScript.type = srcScript.type;
-      if (srcScript.noModule) newScript.noModule = true;
-      if (srcScript.async) newScript.async = false; // preserve exec order
-      if (srcScript.defer) newScript.defer = false;
-
-      const srcAttr = srcScript.getAttribute('src');
-      if (srcAttr) {
-        // Resolve relative to the fragment's URL
-        const abs = resolveAgainst(baseUrl, stripVersion(srcAttr));
-
-        // Avoid duplicate loads
-        if (loadedSrcs.has(abs) || document.querySelector(`script[data-injected-src="${CSS.escape(abs)}"]`)) {
-          return;
-        }
-
-        newScript.src = abs;
-        newScript.dataset.injectedSrc = abs;
-      } else {
-        // Inline script
-        newScript.textContent = srcScript.textContent || '';
-      }
-
-      // Append after content so code can find injected nodes
-      content.appendChild(newScript);
-    });
-  }
-
-  function injectHtmlIntoContentAndRunScripts(html, baseUrl) {
+  function injectFragment(html) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     const main = doc.querySelector('main');
-    content.innerHTML = main ? main.innerHTML : html;
-    runScriptsFromDoc(doc, baseUrl);
+    content.innerHTML = main ? main.innerHTML : '<p>Unable to load content.</p>';
   }
 
-  async function fetchTextWithBase(url) {
-    // Attempt root-relative first
+  async function fetchText(url) {
     try {
       const res = await fetch(url, { cache: 'no-store' });
       if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-      const text = await res.text();
-      const baseUrl = new URL(url, window.location.origin).toString();
-      return { text, baseUrl };
+      return await res.text();
     } catch {
-      // Fallback: relative path (helps VSCode preview / local file servers)
       try {
-        const relative = url.startsWith('/') ? url.slice(1) : url;
-        const res2 = await fetch(relative, { cache: 'no-store' });
+        const rel = url.startsWith('/') ? url.slice(1) : url;
+        const res2 = await fetch(rel, { cache: 'no-store' });
         if (!res2.ok) throw new Error(`${res2.status} ${res2.statusText}`);
-        const text2 = await res2.text();
-        const baseUrl2 = new URL(relative, window.location.href).toString();
-        return { text: text2, baseUrl: baseUrl2 };
+        return await res2.text();
       } catch (e2) {
         throw new Error(`Content not found: ${url}`);
       }
     }
   }
 
-  async function tryJson(url) {
-    const res = await fetch(url, { cache: 'no-store' });
-    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-    return await res.json();
-  }
-
-  function detectPricingRoot() {
-    return (
-      content.querySelector('#pricing-root') ||
-      content.querySelector('#pricing-container') ||
-      content.querySelector('[data-pricing-root]') ||
-      content // last resort
-    );
-  }
-
-  function renderPricingFromJson(root, data) {
-    let byCat = {};
-    if (Array.isArray(data)) {
-      data.forEach(item => {
-        const cat = (item.category || 'General').toString();
-        (byCat[cat] ||= []).push(item);
-      });
-    } else if (data && typeof data === 'object') {
-      Object.keys(data).forEach(cat => {
-        const arr = Array.isArray(data[cat]) ? data[cat] : [data[cat]];
-        byCat[cat] = arr;
-      });
-    } else {
-      root.innerHTML = '<p>Unable to display pricing data.</p>';
-      return;
-    }
-
-    const frag = document.createDocumentFragment();
-    Object.keys(byCat).sort().forEach(cat => {
-      const section = document.createElement('section');
-      section.className = 'pricing-section';
-
-      const h3 = document.createElement('h3');
-      h3.textContent = cat;
-      section.appendChild(h3);
-
-      const table = document.createElement('table');
-      table.className = 'pricing-table';
-      const thead = document.createElement('thead');
-      thead.innerHTML = '<tr><th>Service</th><th>Description</th><th>Price</th></tr>';
-      table.appendChild(thead);
-      const tbody = document.createElement('tbody');
-
-      byCat[cat]
-        .filter(item => item.visible !== false && item.hidden !== true)
-        .forEach(item => {
-          const tr = document.createElement('tr');
-          const svc = document.createElement('td');
-          svc.textContent = item.title || item.name || '—';
-          const desc = document.createElement('td');
-          desc.textContent = item.description || '';
-          const price = document.createElement('td');
-          price.textContent = item.price_display || item.price || '';
-          tr.appendChild(svc);
-          tr.appendChild(desc);
-          tr.appendChild(price);
-          tbody.appendChild(tr);
-        });
-
-      table.appendChild(tbody);
-      section.appendChild(table);
-      frag.appendChild(section);
-    });
-
-    root.innerHTML = '';
-    root.appendChild(frag);
-  }
-
-  async function tryPricingFallback() {
-    const root = detectPricingRoot();
-    const candidates = [
-      '/php/get_pricing.php?format=json',
-      '/php/get_pricing.php',
-      '/json/pricing.json'
-    ];
-
-    for (const url of candidates) {
-      try {
-        let data;
-        if (url.endsWith('.json') || url.includes('format=json')) {
-          data = await tryJson(url);
-        } else {
-          const { text } = await fetchTextWithBase(url);
-          try {
-            data = JSON.parse(text);
-          } catch {
-            // If endpoint returns HTML, inject it directly as a last resort
-            root.innerHTML = text;
-            return true;
-          }
-        }
-        renderPricingFromJson(root, data);
-        return true;
-      } catch {
-        // try next
-      }
-    }
-    return false;
-  }
-
-  async function loadPricing() {
-    setRightSidebarVisible(false);
-
-    // Load the pricing fragment and run its own scripts (so SQL-backed PHP path runs)
-    let loaded = false;
-    try {
-      const { text, baseUrl } = await fetchTextWithBase('/services/pricing.html');
-      injectHtmlIntoContentAndRunScripts(text, baseUrl);
-      loaded = true;
-    } catch {
-      const { text, baseUrl } = await fetchTextWithBase('/pricing.html');
-      injectHtmlIntoContentAndRunScripts(text, baseUrl);
-      loaded = true;
-    }
-
-    // If fragment scripts didn't populate yet, try fallback after a short delay
-    setTimeout(async () => {
-      const hasPopulatedPricing =
-        content.querySelector('.pricing-table, table.pricing-table, [data-populated="pricing"]');
-      if (!hasPopulatedPricing) {
-        await tryPricingFallback();
-      }
-      live.textContent = 'Pricing loaded.';
-      content.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 400);
-  }
-
   async function loadGenericService(service) {
     const url = service === 'request-form' ? '/services/request-form.html' : `/services/${service}.html`;
     try {
-      const { text, baseUrl } = await fetchTextWithBase(url);
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(text, 'text/html');
-      const main = doc.querySelector('main');
-      content.innerHTML = main ? main.innerHTML : '<p>Unable to load content.</p>';
-
-      // Execute any fragment scripts for non-pricing pages too (keeps behavior consistent)
-      runScriptsFromDoc(doc, baseUrl);
+      const html = await fetchText(url);
+      injectFragment(html);
 
       // Hydrate helpers (no versioned querystrings)
       if (content.querySelector('#equipment-list')) {
@@ -296,6 +103,78 @@
       content.innerHTML = `<p>Error loading content: ${err.message}</p>`;
       setRightSidebarVisible(true);
     }
+  }
+
+  // -------- Pricing via iframe (SQL-backed parity with standalone page) --------
+  function autoResizeAndStrip(iframe) {
+    function resize() {
+      try {
+        const doc = iframe.contentDocument;
+        if (!doc) return;
+
+        // Remove header/footer inside the iframe to avoid nested chrome
+        const header = doc.querySelector('#header-container, header');
+        const footer = doc.querySelector('#footer-container, footer');
+        if (header) header.style.display = 'none';
+        if (footer) footer.style.display = 'none';
+
+        // Resize to content height
+        const body = doc.body, html = doc.documentElement;
+        const h = Math.max(
+          body.scrollHeight, body.offsetHeight,
+          html.clientHeight, html.scrollHeight, html.offsetHeight
+        );
+        iframe.style.height = (h + 20) + 'px';
+      } catch {
+        /* ignore cross-origin (should be same-origin) */
+      }
+    }
+
+    iframe.addEventListener('load', () => {
+      resize();
+      // In case assets load later
+      setTimeout(resize, 400);
+      setTimeout(resize, 1000);
+    });
+  }
+
+  function mountPricingIframe(src) {
+    // Clear and mount
+    content.innerHTML = '';
+    const region = document.createElement('section');
+    region.setAttribute('role', 'region');
+    region.setAttribute('aria-label', 'Pricing');
+
+    const iframe = document.createElement('iframe');
+    iframe.title = 'Pricing';
+    iframe.src = src;
+    iframe.style.width = '100%';
+    iframe.style.border = '0';
+    iframe.setAttribute('loading', 'eager'); // this is the main content
+
+    region.appendChild(iframe);
+    content.appendChild(region);
+
+    autoResizeAndStrip(iframe);
+    setRightSidebarVisible(false);
+
+    // Fallback: if /services/pricing.html fails to load, swap to /pricing.html
+    iframe.addEventListener('error', () => {
+      if (iframe.src.endsWith('/services/pricing.html')) {
+        iframe.src = '/pricing.html';
+      }
+    });
+
+    // Accessibility cue
+    iframe.addEventListener('load', () => {
+      live.textContent = 'Pricing loaded.';
+      content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  async function loadPricing() {
+    // Prefer the services-fragment page first
+    mountPricingIframe('/services/pricing.html');
   }
 
   async function loadService(service) {
