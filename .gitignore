@@ -37,6 +37,9 @@ issues.tsv
 nsmg_db.sql
 github_issues.csv
 jira_issues_ready.csv
+# Local planning/Jira drafts
+.local/pm/jira-drafts/
+
 
 # -------------------------------------------------------
 # Logs & runtime storage (keep .htaccess placeholders)
