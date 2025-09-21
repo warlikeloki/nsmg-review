@@ -73,6 +73,8 @@
     `;
     document.body.prepend(banner);
     banner.style.display = 'block';
+    // NEW: tell layout code that the banner is shown
+    window.dispatchEvent(new Event('nsmg:wip:shown'));
 
     // Badge
     const badge = el('div', { id: 'nsmg-wip-badge', title: 'Site work-in-progress — click for details', tabIndex: 0 });
@@ -125,17 +127,23 @@
       // quick dismiss with short snooze (1 hour)
       localStorage.setItem(SNOOZE_KEY, String(Date.now() + 3600 * 1000));
       banner.style.display = 'none';
+      // NEW: notify layout that banner is gone
+      window.dispatchEvent(new Event('nsmg:wip:hidden'));
     });
     document.getElementById('wip-close').addEventListener('click', hideModal);
     document.getElementById('wip-snooze').addEventListener('click', () => {
       localStorage.setItem(SNOOZE_KEY, String(Date.now() + (cfg.snoozeHours * 3600 * 1000)));
       hideModal();
       banner.style.display = 'none';
+      // NEW: notify layout that banner is gone
+      window.dispatchEvent(new Event('nsmg:wip:hidden'));
     });
     document.getElementById('wip-hide').addEventListener('click', () => {
       localStorage.setItem(HIDE_KEY, '1');
       hideModal();
       banner.style.display = 'none';
+      // NEW: notify layout that banner is gone
+      window.dispatchEvent(new Event('nsmg:wip:hidden'));
       badge.style.display = 'none';
     });
     backdrop.addEventListener('click', hideModal);

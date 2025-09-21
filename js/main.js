@@ -157,6 +157,12 @@
       console.error('Failed to init navigation module:', e);
     }
 
+    // NEW: WIP banner offset -> sets --wip-h and .wip-on if banner is visible
+    try { await import('/js/modules/wip-offset.js'); } catch {}
+
+    // Sticky header spacer auto-measure (loop-free version you adopted)
+    try { await import('/js/modules/sticky-header.js'); } catch {}
+
     // NEW: initialize site settings (renders service region + JSON-LD)
     try {
       const mod = await import('/js/modules/site-settings.js');
