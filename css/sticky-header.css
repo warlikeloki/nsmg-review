@@ -1,8 +1,49 @@
-/* Minimal, neutral sticky header for desktop only */
-@media (min-width: 1024px) {
-  header, .site-header, header[role="banner"], #header-container > *:first-child {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-  }
+/* /css/sticky-header.css
+   NSM-180 — Fixed header & spacer, no color overrides.
+   Also offsets the header’s content when a WIP banner is present.
+*/
+
+/* Tune if you want a small extra gap below the banner */
+:root {
+  --wip-h: 0px;          /* set by wip-offset.js when banner is visible */
+  --wip-gap: 8px;        /* tiny breathing room below banner */
+}
+
+/* Make header fixed at the very top (colors come from your existing theme CSS) */
+#site-header.nav-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;        /* stay above content; keep below any modal/WIP overlay if needed */
+}
+
+/* Base header row layout */
+#site-header .container {
+  min-height: 72px;     /* baseline height; real height comes from content */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* When WIP banner is present, push nav/logo down INSIDE the header */
+.wip-on #site-header .container {
+  padding-top: calc(var(--wip-h) + var(--wip-gap));
+}
+
+/* Spacer keeps page content from sitting under the fixed header */
+#header-spacer {
+  height: 72px;         /* initial; sticky-header.js will update this to exact header height */
+  width: 100%;
+}
+
+/* Helpful for in-page anchors: prevents anchors from hiding under the fixed header */
+main, section, [id] {
+  scroll-margin-top: 72px;
+}
+
+/* Defensive: avoid accidental horizontal scrollbars */
+html, body {
+  overflow-x: hidden;
 }
