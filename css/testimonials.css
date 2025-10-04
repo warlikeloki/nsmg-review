@@ -1,148 +1,62 @@
-/* Shared Section Styling */
-.testimonials-section {
-    padding: 60px 20px;
-    background-color: var(--background-main, #f9f9f9);
-    border-top: 1px solid var(--border-color, #ddd);
-    border-bottom: 1px solid var(--border-color, #ddd);
-    text-align: center;
+/* /css/testimonials.css
+   Layout + modest card styling. Theme colors remain under your CSS.
+*/
+
+:root {
+  --ts-gap: 16px;
+  --ts-btn-size: 36px;
+  --ts-btn-bg: rgba(0,0,0,0.5);
+  --ts-btn-color: #fff;
+  --ts-btn-radius: 999px;
 }
 
-.testimonials-section h2 {
-    font-size: 2.5rem;
-    color: var(--primary-color);
-    margin-bottom: 40px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
+.testimonials-slider { position: relative; overflow: hidden; }
+.testimonials-slider .ts-track { display: flex; transition: transform 400ms ease; }
+@media (prefers-reduced-motion: reduce) { .testimonials-slider .ts-track { transition: none; } }
+
+.testimonials-slider .ts-slide { flex: 0 0 100%; padding: var(--ts-gap); outline: none; }
+.testimonials-slider .ts-empty { padding: var(--ts-gap); opacity: .7; }
+
+.ts-card { margin: 0; display: grid; gap: 8px; align-items: start; }
+.ts-avatar { width: 48px; height: 48px; border-radius: 999px; object-fit: cover; }
+.ts-quote { margin: 0; font-style: italic; line-height: 1.5; }
+.ts-meta { font-weight: 600; opacity: .9; }
+.ts-role { font-weight: 400; opacity: .8; margin-left: 4px; }
+.ts-rating { font-size: 14px; letter-spacing: 1px; opacity: .85; }
+
+.testimonials-slider .ts-prev,
+.testimonials-slider .ts-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--ts-btn-size); height: var(--ts-btn-size);
+  display: grid; place-items: center;
+  border: none; border-radius: var(--ts-btn-radius);
+  background: var(--ts-btn-bg); color: var(--ts-btn-color);
+  cursor: pointer;
+}
+.testimonials-slider .ts-prev { left: 8px; }
+.testimonials-slider .ts-next { right: 8px; }
+.testimonials-slider .ts-prev:focus,
+.testimonials-slider .ts-next:focus { outline: 2px solid #fff; outline-offset: 2px; }
+
+.testimonials-slider .ts-status {
+  position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+  font-size: 12px; opacity: 0.75; pointer-events: none;
 }
 
-/* ================================
-   HOMEPAGE SLIDESHOW (SCOPED ONLY)
-   ================================ */
-#homepage-testimonials .testimonial-slider {
-    position: relative;
-    max-width: 600px;
-    margin: 0 auto;
-    overflow: hidden;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Optional: visible diagnostics in preview */
+.ts-diag {
+  font-size: 12px;
+  margin: 8px;
+  padding: 8px;
+  background: #fff7d6;
+  border: 1px solid #f0d575;
+  border-radius: 6px;
+  color: #5b4a00;
 }
-
-#homepage-testimonials .testimonial-slide-wrapper {
-    width: 100%;
-}
-
-#homepage-testimonials .testimonial-slide {
-    display: none;
-    background-color: var(--background-card, #ffffff);
-    border-radius: var(--border-radius, 10px);
-    box-shadow: 0 4px 20px rgba(var(--shadow-color, 0,0,0), 0.05);
-    padding: 25px;
-    text-align: left;
-    transition: all 0.3s ease;
-    margin: 0 auto;
-}
-
-#homepage-testimonials .testimonial-slide:first-child {
-    display: block;
-}
-
-#homepage-testimonials .testimonial-slide.view-all {
-    background-color: var(--primary-color);
-    color: var(--text-light, #ffffff);
-    text-align: center;
-}
-
-#homepage-testimonials .view-all-link {
-    color: var(--text-light, #ffffff);
-    text-decoration: none;
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
-#homepage-testimonials .testimonial-nav {
-    background-color: var(--primary-color);
-    color: var(--text-light, #ffffff);
-    border: none;
-    padding: 10px 15px;
-    border-radius: var(--border-radius, 5px);
-    font-size: 1.5rem;
-    cursor: pointer;
-    margin: 0 10px;
-}
-
-#homepage-testimonials .testimonial-nav:hover {
-    background-color: var(--accent-hover-color, #005bb5);
-}
-
-#homepage-testimonials .testimonial-message {
-    font-style: italic;
-    color: var(--text-secondary, #555);
-    margin-bottom: 15px;
-    line-height: 1.6;
-}
-
-#homepage-testimonials .testimonial-name {
-    font-weight: bold;
-    color: var(--primary-color);
-    font-size: 1rem;
-}
-
-/* ===============================
-   FULL PAGE TESTIMONIAL CARDS
-   (Unchanged Styles Preserved)
-   =============================== */
-.testimonials-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
-    padding: 20px;
-}
-
-.testimonial-card {
-    background-color: var(--background-card, #ffffff);
-    border-radius: var(--border-radius, 10px);
-    box-shadow: 0 4px 20px rgba(var(--shadow-color, 0,0,0), 0.05);
-    max-width: 300px;
-    padding: 25px;
-    text-align: left;
-    transition: transform 0.3s, box-shadow 0.3s;
-    position: relative;
-}
-
-.testimonial-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 30px rgba(var(--shadow-color, 0,0,0), 0.1);
-}
-
-.testimonial-message {
-    font-style: italic;
-    color: var(--text-secondary, #555);
-    margin-bottom: 20px;
-    line-height: 1.6;
-}
-
-.testimonial-name {
-    font-weight: bold;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    margin-top: 15px;
-}
-
-.read-more {
-    background-color: var(--primary-color);
-    color: var(--text-light, #ffffff);
-    border: none;
-    padding: 8px 16px;
-    border-radius: var(--border-radius, 5px);
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.3s;
-    margin-top: 10px;
-}
-
-.read-more:hover {
-    background-color: var(--accent-hover-color, #005bb5);
-}
+.ts-diag .ok { color: #0a6a0a; margin-top: 4px; }
+.ts-diag .warn { color: #8a2c0a; margin-top: 4px; }
+.ts-diag code { background: rgba(0,0,0,.06); padding: 0 3px; border-radius: 3px; }
+.ts-diag ul { margin: 6px 0 0 18px; }
+.ts-diag .hint { margin-top: 6px; opacity: .8; }
