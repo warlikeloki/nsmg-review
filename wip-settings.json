@@ -2,9 +2,9 @@
   "enabled": true,
   "message": "Thank you for visiting! This site is still in development/under construction.",
   "details": "We're actively polishing layout, content, and performance. There may be broken or missing links, incomplete pages, and other issues. Do not rely on any information here being accurate or up to date. Please check back later.",
-  "windowText": "Current window: Aug 30 - Oct 31.",
+  "windowText": "Current window: Aug 30 - Dec 31.",
   "showModalOnFirstVisit": true,
   "snoozeHours": 4,
   "startDate": "2025-08-30T00:00:00-04:00",
-  "endDate": "2025-10-31T23:59:59-04:00"
+  "endDate": "2025-12-31T23:59:59-04:00"
 }
