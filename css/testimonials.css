@@ -8,41 +8,151 @@
   --ts-btn-bg: rgba(0,0,0,0.5);
   --ts-btn-color: #fff;
   --ts-btn-radius: 999px;
+
+  /* Optional theming hooks */
+  --ts-card-bg: #fff;
+  --ts-card-border: #ddd;
+  --ts-text: #333;
+  --ts-quote: #222;
+  --ts-accent: #444;
+  --ts-star: #f5b301;
 }
 
-.testimonials-slider { position: relative; overflow: hidden; }
-.testimonials-slider .ts-track { display: flex; transition: transform 400ms ease; }
-@media (prefers-reduced-motion: reduce) { .testimonials-slider .ts-track { transition: none; } }
+/* === Containers (added) === */
+#homepage-testimonials-container,
+#testimonials-container,
+.testimonials-slider {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  overflow: hidden;
+  padding: 1rem 0 2rem 0; /* space for arrows/status */
+}
 
-.testimonials-slider .ts-slide { flex: 0 0 100%; padding: var(--ts-gap); outline: none; }
-.testimonials-slider .ts-empty { padding: var(--ts-gap); opacity: .7; }
+/* Track (slides wrapper) */
+.testimonials-slider .ts-track {
+  display: flex;
+  transition: transform 400ms ease;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .testimonials-slider .ts-track { transition: none; }
+}
 
-.ts-card { margin: 0; display: grid; gap: 8px; align-items: start; }
-.ts-avatar { width: 48px; height: 48px; border-radius: 999px; object-fit: cover; }
-.ts-quote { margin: 0; font-style: italic; line-height: 1.5; }
-.ts-meta { font-weight: 600; opacity: .9; }
-.ts-role { font-weight: 400; opacity: .8; margin-left: 4px; }
-.ts-rating { font-size: 14px; letter-spacing: 1px; opacity: .85; }
+/* Each slide */
+.testimonials-slider .ts-slide {
+  flex: 0 0 100%;
+  padding: var(--ts-gap);
+  outline: none;
+  box-sizing: border-box;
 
+  /* Center card nicely */
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+/* Empty state */
+.testimonials-slider .ts-empty {
+  padding: var(--ts-gap);
+  opacity: .7;
+  text-align: center;
+}
+
+/* Card inside slide */
+.ts-card {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  align-items: start;
+  max-width: 650px;
+  width: 100%;
+
+  background: var(--ts-card-bg);
+  border: 1px solid var(--ts-card-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  color: var(--ts-text);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Optional avatar support */
+.ts-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  object-fit: cover;
+  justify-self: center;
+}
+
+/* Quote + meta */
+.ts-quote {
+  margin: 0;
+  font-style: italic;
+  line-height: 1.5;
+  font-size: 1.1rem;
+  color: var(--ts-quote);
+}
+.ts-meta {
+  font-weight: 600;
+  opacity: .9;
+  color: var(--ts-accent);
+}
+.ts-role {
+  font-weight: 400;
+  opacity: .8;
+  margin-left: 4px;
+}
+
+/* Rating stars */
+.ts-rating {
+  font-size: 14px;
+  letter-spacing: 1px;
+  opacity: .85;
+  color: var(--ts-star);
+  justify-self: center;
+}
+
+/* Prev / Next buttons */
 .testimonials-slider .ts-prev,
 .testimonials-slider .ts-next {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: var(--ts-btn-size); height: var(--ts-btn-size);
-  display: grid; place-items: center;
-  border: none; border-radius: var(--ts-btn-radius);
-  background: var(--ts-btn-bg); color: var(--ts-btn-color);
+  width: var(--ts-btn-size);
+  height: var(--ts-btn-size);
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: var(--ts-btn-radius);
+  background: var(--ts-btn-bg);
+  color: var(--ts-btn-color);
   cursor: pointer;
+  z-index: 2;
+  transition: filter .2s ease;
+}
+.testimonials-slider .ts-prev:hover,
+.testimonials-slider .ts-next:hover {
+  filter: brightness(1.1);
 }
 .testimonials-slider .ts-prev { left: 8px; }
 .testimonials-slider .ts-next { right: 8px; }
 .testimonials-slider .ts-prev:focus,
-.testimonials-slider .ts-next:focus { outline: 2px solid #fff; outline-offset: 2px; }
+.testimonials-slider .ts-next:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
 
+/* Live region for a11y */
 .testimonials-slider .ts-status {
-  position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
-  font-size: 12px; opacity: 0.75; pointer-events: none;
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  opacity: 0.75;
+  pointer-events: none;
 }
 
 /* Optional: visible diagnostics in preview */
@@ -60,3 +170,20 @@
 .ts-diag code { background: rgba(0,0,0,.06); padding: 0 3px; border-radius: 3px; }
 .ts-diag ul { margin: 6px 0 0 18px; }
 .ts-diag .hint { margin-top: 6px; opacity: .8; }
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  #homepage-testimonials-container,
+  #testimonials-container,
+  .testimonials-slider { padding: .5rem 0 1.5rem 0; }
+
+  .ts-card { padding: 1rem; }
+  .ts-quote { font-size: 1rem; }
+  .testimonials-slider .ts-prev,
+  .testimonials-slider .ts-next {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+}
+
