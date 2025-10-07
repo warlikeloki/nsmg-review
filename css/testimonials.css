@@ -1,189 +1,159 @@
 /* /css/testimonials.css
-   Layout + modest card styling. Theme colors remain under your CSS.
+   Homepage testimonials carousel — clean, roomy cards + small, centered nav.
+   Namespaced to avoid global style collisions.
 */
 
 :root {
-  --ts-gap: 16px;
-  --ts-btn-size: 36px;
-  --ts-btn-bg: rgba(0,0,0,0.5);
+  --ts-gap: 18px;
+  --ts-btn-size: 34px;
+  --ts-btn-bg: rgba(0,0,0,0.55);
   --ts-btn-color: #fff;
   --ts-btn-radius: 999px;
 
-  /* Optional theming hooks */
+  --ts-dot-size: 8px;          /* small status dots */
+  --ts-dot-color: #bbb;
+  --ts-dot-active: #333;
+
   --ts-card-bg: #fff;
-  --ts-card-border: #ddd;
-  --ts-text: #333;
-  --ts-quote: #222;
-  --ts-accent: #444;
-  --ts-star: #f5b301;
+  --ts-card-border: #e9e9e9;
+  --ts-card-radius: 12px;
+  --ts-card-shadow: 0 8px 24px rgba(0,0,0,.07);
+
+  --ts-maxw: 1040px;            /* wider overall column */
+  --ts-card-pad: 20px;          /* roomier card padding */
+  --ts-quote-size: 1.05rem;     /* larger quote */
+  --ts-meta-size: .95rem;       /* slightly larger meta */
 }
 
-/* === Containers (added) === */
-#homepage-testimonials-container,
-#testimonials-container,
+/* Container */
 .testimonials-slider {
   position: relative;
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
   overflow: hidden;
-  padding: 1rem 0 2rem 0; /* space for arrows/status */
+  margin-inline: auto;
+  max-width: var(--ts-maxw);
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+  padding-bottom: 26px; /* space for dots under the slider */
 }
 
-/* Track (slides wrapper) */
+/* Viewport/Track */
+.testimonials-slider .ts-viewport { overflow: hidden; }
 .testimonials-slider .ts-track {
   display: flex;
-  transition: transform 400ms ease;
   will-change: transform;
+  transition: transform 400ms ease;
 }
 @media (prefers-reduced-motion: reduce) {
   .testimonials-slider .ts-track { transition: none; }
 }
 
-/* Each slide */
+/* Slides */
 .testimonials-slider .ts-slide {
   flex: 0 0 100%;
   padding: var(--ts-gap);
   outline: none;
-  box-sizing: border-box;
-
-  /* Center card nicely */
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
 }
-
-/* Empty state */
 .testimonials-slider .ts-empty {
   padding: var(--ts-gap);
-  opacity: .7;
+  opacity: .85;
   text-align: center;
 }
 
-/* Card inside slide */
+/* Card */
 .ts-card {
   margin: 0;
   display: grid;
-  gap: 8px;
+  grid-template-columns: 64px 1fr;
+  gap: 12px 16px;
   align-items: start;
-  max-width: 650px;
-  width: 100%;
 
   background: var(--ts-card-bg);
   border: 1px solid var(--ts-card-border);
-  border-radius: 12px;
-  padding: 1.5rem;
-  color: var(--ts-text);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  border-radius: var(--ts-card-radius);
+  box-shadow: var(--ts-card-shadow);
+  padding: var(--ts-card-pad);
 }
 
-/* Optional avatar support */
 .ts-avatar {
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
   border-radius: 999px;
   object-fit: cover;
-  justify-self: center;
+  grid-row: span 2;
 }
 
-/* Quote + meta */
 .ts-quote {
   margin: 0;
-  font-style: italic;
-  line-height: 1.5;
-  font-size: 1.1rem;
-  color: var(--ts-quote);
+  font-size: var(--ts-quote-size);
+  line-height: 1.55;
 }
+
 .ts-meta {
-  font-weight: 600;
-  opacity: .9;
-  color: var(--ts-accent);
-}
-.ts-role {
-  font-weight: 400;
-  opacity: .8;
-  margin-left: 4px;
+  display: flex;
+  gap: 8px;
+  font-size: var(--ts-meta-size);
+  color: #555;
 }
 
-/* Rating stars */
-.ts-rating {
-  font-size: 14px;
-  letter-spacing: 1px;
-  opacity: .85;
-  color: var(--ts-star);
-  justify-self: center;
-}
-
-/* Prev / Next buttons */
-.testimonials-slider .ts-prev,
-.testimonials-slider .ts-next {
+/* Nav arrows — ensure they don't inherit huge fonts from globals */
+.ts-prev,
+.ts-next {
+  all: unset;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   width: var(--ts-btn-size);
   height: var(--ts-btn-size);
-  display: grid;
-  place-items: center;
-  border: none;
   border-radius: var(--ts-btn-radius);
   background: var(--ts-btn-bg);
   color: var(--ts-btn-color);
+  display: grid;
+  place-items: center;
   cursor: pointer;
+  line-height: 1;
+  font-size: 18px;     /* smaller icon size */
+  font-weight: 600;
   z-index: 2;
-  transition: filter .2s ease;
 }
-.testimonials-slider .ts-prev:hover,
-.testimonials-slider .ts-next:hover {
-  filter: brightness(1.1);
-}
-.testimonials-slider .ts-prev { left: 8px; }
-.testimonials-slider .ts-next { right: 8px; }
-.testimonials-slider .ts-prev:focus,
-.testimonials-slider .ts-next:focus {
-  outline: 2px solid #fff;
+.ts-prev { left: 8px; }
+.ts-next { right: 8px; }
+.ts-prev:focus-visible,
+.ts-next:focus-visible {
+  outline: 2px solid #000;
   outline-offset: 2px;
 }
 
-/* Live region for a11y */
-.testimonials-slider .ts-status {
+/* Dots — small, centered, BELOW the slider */
+.ts-dots {
+  /* strip any global nav styles */
+  all: unset;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
   position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 12px;
-  opacity: 0.75;
-  pointer-events: none;
+  left: 0;
+  right: 0;
+  bottom: 4px;        /* sits under content */
+  padding: 6px 0;
 }
 
-/* Optional: visible diagnostics in preview */
-.ts-diag {
-  font-size: 12px;
-  margin: 8px;
-  padding: 8px;
-  background: #fff7d6;
-  border: 1px solid #f0d575;
-  border-radius: 6px;
-  color: #5b4a00;
+.ts-dot {
+  /* reset to avoid giant icons from global CSS */
+  all: unset;
+  width: var(--ts-dot-size);
+  height: var(--ts-dot-size);
+  border-radius: 999px;
+  background: var(--ts-dot-color);
+  cursor: pointer;
 }
-.ts-diag .ok { color: #0a6a0a; margin-top: 4px; }
-.ts-diag .warn { color: #8a2c0a; margin-top: 4px; }
-.ts-diag code { background: rgba(0,0,0,.06); padding: 0 3px; border-radius: 3px; }
-.ts-diag ul { margin: 6px 0 0 18px; }
-.ts-diag .hint { margin-top: 6px; opacity: .8; }
+.ts-dot[aria-current="true"] { background: var(--ts-dot-active); }
 
-/* Responsive tweaks */
-@media (max-width: 600px) {
-  #homepage-testimonials-container,
-  #testimonials-container,
-  .testimonials-slider { padding: .5rem 0 1.5rem 0; }
-
-  .ts-card { padding: 1rem; }
-  .ts-quote { font-size: 1rem; }
-  .testimonials-slider .ts-prev,
-  .testimonials-slider .ts-next {
-    width: 30px;
-    height: 30px;
-    font-size: 1rem;
-  }
+/* Very small screens — hide arrows if they crowd the card */
+@media (max-width: 420px) {
+  .ts-prev, .ts-next { display: none; }
 }
 
+/* Hydration helper */
+.testimonials-slider[data-hydrated="false"] .ts-track { transition: none; }

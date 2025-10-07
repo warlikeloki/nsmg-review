@@ -1,199 +1,216 @@
 // /js/modules/testimonials.js
-// Fetches from /php/get_testimonials.php (SQL). In non-HTTP preview, falls back to data-src or inline JSON.
+// Homepage testimonials carousel (looping version)
+// Supports author/role/location/short/full/rating/photo keys.
 
-(() => {
-  const SELECTORS = ['#homepage-testimonials-container', '#testimonials-container', '.testimonials-slider'];
-  const qs  = (sel, root = document) => root.querySelector(sel);
-  const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+(function(){
+  const SLIDER_SEL = '[data-module="home-testimonials"]';
+  const JSON_URL   = '/json/testimonials.json';
 
-  const isHttpLike = () => location.protocol === 'http:' || location.protocol === 'https:';
-  const pageDir = () => {
-    const p = location.pathname || '/';
-    return p.endsWith('/') ? p : p.slice(0, p.lastIndexOf('/') + 1);
-  };
-
-  function escHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-  function escAttr(s){return escHTML(s).replace(/"/g,'&quot;');}
-
-  function normalize(items){
-    return items.map((it, idx)=>({
-      id: it.id ?? idx,
-      quote: it.quote ?? it.content ?? it.text ?? '',
-      author: it.author ?? it.name ?? 'Anonymous',
-      rating: Number(it.rating ?? it.stars ?? 0) || 0,
-      created_at: it.created_at ?? it.date ?? ''
-    })).filter(t => t.quote.trim().length);
+  function ready(fn){
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', fn, { once: true });
+    } else { fn(); }
   }
 
-  async function fetchJson(url){
-    const res = await fetch(url, { cache:'no-store', credentials:'same-origin' });
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+  async function fetchTestimonials() {
+    try {
+      const res = await fetch(JSON_URL, { headers: { 'Accept':'application/json' }});
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      return Array.isArray(json) ? json : (json.testimonials ?? []);
+    } catch (err) {
+      console.error('[testimonials] fetch error:', err);
+      return [];
+    }
   }
 
-  function readInlineScript(){
-    const el = document.getElementById('testimonials-json');
-    if(!el) return null;
-    try{
-      const data = JSON.parse(el.textContent || '[]');
-      return Array.isArray(data) ? data : (Array.isArray(data.testimonials)? data.testimonials : (Array.isArray(data.items)? data.items : null));
-    }catch{return null;}
+  function createEl(tag, attrs={}, html='') {
+    const el = document.createElement(tag);
+    for (const [k,v] of Object.entries(attrs)) if (v!=null) el.setAttribute(k,v);
+    if (html) el.innerHTML = html;
+    return el;
   }
 
-  async function getTestimonials(root){
-    const diag = { ok:'', notes:[] };
-    const phpRel = 'php/get_testimonials.php?limit=8&order=newest';
-    const phpAbs = '/php/get_testimonials.php?limit=8&order=newest';
-    const override = root.getAttribute('data-src') || '';
-    const rel1 = override || 'json/testimonials.json';
-    const rel2 = './json/testimonials.json';
-    const rel3 = pageDir() + 'json/testimonials.json';
-    const abs1 = '/json/testimonials.json';
+  function renderSkeleton(container){
+    container.innerHTML = `
+      <div class="ts-viewport" aria-live="polite">
+        <div class="ts-track" role="list"></div>
+      </div>
+      <button type="button" class="ts-prev" aria-label="Previous testimonial">&#10094;</button>
+      <button type="button" class="ts-next" aria-label="Next testimonial">&#10095;</button>
+      <div class="ts-dots" role="tablist" aria-label="Testimonials"></div>
+    `;
+    container.dataset.hydrated = 'false';
+  }
 
-    const candidates = isHttpLike()
-      ? [phpRel, phpAbs, rel1, rel2, rel3, abs1]
-      : [rel1, rel2, rel3, abs1]; // VS Code preview (no PHP)
+  function escapeHtml(s){
+    return String(s ?? '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+  }
 
-    for (const url of Array.from(new Set(candidates))) {
-      try{
-        const data = await fetchJson(url);
-        const arr = Array.isArray(data) ? data
-                  : Array.isArray(data.data) ? data.data
-                  : Array.isArray(data.items) ? data.items
-                  : null;
-        if (arr && arr.length) {
-          diag.ok = `Loaded ${arr.length} item(s) from ${url}`;
-          return { list: normalize(arr), diag };
-        } else {
-          diag.notes.push(`No items in ${url} (empty or unexpected shape).`);
-        }
-      }catch(e){
-        diag.notes.push(`Failed: ${url} — ${e.message}`);
-      }
+  function formatMeta(t){
+    const parts = [];
+    if (t.role) parts.push(t.role);
+    if (t.location) parts.push(t.location);
+    return parts.join(' • ');
+  }
+
+  function pickQuote(t){ return t.short || t.quote || t.text || t.full || ''; }
+
+  function renderSlides(track, data){
+    if (!data?.length) {
+      const empty = createEl('div', { class: 'ts-empty ts-slide', role: 'listitem' },
+        `<em>No testimonials are available yet.</em>`);
+      track.appendChild(empty);
+      return 0;
     }
 
-    // Inline fallback (preview)
-    const inline = readInlineScript();
-    if(inline && inline.length){
-      diag.ok = `Loaded ${inline.length} item(s) from inline <script>`;
-      return { list: normalize(inline), diag };
-    }
+    data.forEach((t,i)=>{
+      const avatar = (t.photo||'').trim() || '/media/photos/default-avatar.jpg';
+      const name   = t.author || t.name || 'Anonymous';
+      const meta   = formatMeta(t);
+      const quote  = pickQuote(t);
+      const rating = Number.isFinite(t.rating)?Math.min(5,Math.max(0,Math.round(t.rating))):null;
 
-    return { list: [], diag };
-  }
-
-  function ensureStructure(root){
-    let track = qs('.ts-track', root);
-    if (!track){ track = document.createElement('div'); track.className='ts-track'; root.appendChild(track); }
-    return track;
-  }
-
-  function renderSlides(track, list){
-    track.innerHTML = '';
-    const frag = document.createDocumentFragment();
-    for(const t of list){
-      const el = document.createElement('article');
-      el.className = 'ts-slide';
-      el.setAttribute('tabindex','-1');
-      el.innerHTML = `
+      const slide = createEl('article',{
+        class:'ts-slide',role:'listitem',tabindex:'-1',
+        'aria-roledescription':'slide','aria-label':`Testimonial ${i+1} of ${data.length}`
+      },`
         <figure class="ts-card">
-          <blockquote class="ts-quote">“${escHTML(t.quote)}”</blockquote>
+          <img class="ts-avatar" src="${avatar}" alt="${escapeHtml(name)}">
+          <blockquote class="ts-quote">“${escapeHtml(quote)}”</blockquote>
           <figcaption class="ts-meta">
-            <span class="ts-author">${escHTML(t.author)}</span>
+            <strong>${escapeHtml(name)}</strong>${meta?` <span>• ${escapeHtml(meta)}</span>`:''}
+            ${rating!==null?`<span class="sr-only"> — Rating ${rating}/5</span>`:''}
           </figcaption>
-          ${renderRating(t.rating)}
-        </figure>`;
-      frag.appendChild(el);
+        </figure>`);
+      track.appendChild(slide);
+    });
+    return data.length;
+  }
+
+  function renderDots(dotsEl,count){
+    dotsEl.innerHTML='';
+    for(let i=0;i<count;i++){
+      dotsEl.appendChild(createEl('button',{
+        class:'ts-dot',type:'button',role:'tab',
+        'aria-selected':i===0?'true':'false',
+        'aria-current':i===0?'true':'false',
+        'aria-label':`Go to testimonial ${i+1}`,
+        'data-idx':String(i)
+      }));
     }
-    track.appendChild(frag);
   }
 
-  function renderRating(r){
-    const rating = Math.max(0, Math.min(5, Math.round(r)));
-    if(!rating) return '';
-    return `<div class="ts-rating" aria-label="${rating} out of 5">${'★'.repeat(rating)}${'☆'.repeat(5-rating)}</div>`;
-  }
+  function initCarousel(root,count){
+    const viewport=root.querySelector('.ts-viewport');
+    const track=root.querySelector('.ts-track');
+    const prevBtn=root.querySelector('.ts-prev');
+    const nextBtn=root.querySelector('.ts-next');
+    const dots=root.querySelector('.ts-dots');
+    const slides=[...track.children];
+    const prefersReduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let idx=0,x0=0,xf=0,drag=false;
 
-  function initCarousel(root){
-    const slider = root;
-    const track  = qs('.ts-track', slider);
-    const slides = qsa('.ts-slide', track);
-    if(!slides.length) return;
+    function go(to,focus=false){
+      const len=slides.length;
+      if(len===0) return;
+      // wrap index
+      if(to<0) idx=len-1;
+      else if(to>=len) idx=0;
+      else idx=to;
 
-    let prev = qs('.ts-prev', slider) || mkBtn('ts-prev','Previous testimonial','‹', slider);
-    let next = qs('.ts-next', slider) || mkBtn('ts-next','Next testimonial','›', slider);
-    let stat = qs('.ts-status',slider) || mkStatus(slider);
+      const offset=-idx*viewport.clientWidth;
+      if(prefersReduced) track.style.transition='none';
+      track.style.transform=`translateX(${offset}px)`;
+      updateDots();
+      if(focus){
+        slides[idx].setAttribute('tabindex','0');
+        slides[idx].focus({preventScroll:true});
+        slides.forEach((s,i)=>{if(i!==idx)s.setAttribute('tabindex','-1');});
+      }
+      if(prefersReduced) requestAnimationFrame(()=>track.style.removeProperty('transition'));
+    }
+    const next=()=>go(idx+1);
+    const prev=()=>go(idx-1);
 
-    slider.setAttribute('role','region');
-    slider.setAttribute('aria-label','Testimonials');
-    track.setAttribute('role','list');
-    slides.forEach((s,i)=>{ s.setAttribute('role','listitem'); s.setAttribute('aria-hidden', i===0 ? 'false':'true'); });
+    function updateDots(){
+      dots.querySelectorAll('.ts-dot').forEach((d,i)=>{
+        const sel=i===idx;
+        d.setAttribute('aria-selected',sel);
+        d.setAttribute('aria-current',sel);
+      });
+    }
 
-    let idx=0, timer=null, paused=false;
-    const autoplayMs = Number(slider.getAttribute('data-autoplay')||'5000');
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const canAuto = autoplayMs>0 && !reduce;
+    const ro=new ResizeObserver(()=>go(idx));
+    ro.observe(viewport);
 
-    const announce = ()=> stat.textContent = `Testimonial ${idx+1} of ${slides.length}`;
-    const go = (i, focus=false)=>{
-      idx = (i + slides.length) % slides.length;
-      track.style.transform = `translateX(${-idx*100}%)`;
-      slides.forEach((s,si)=>{ const on = si===idx; s.classList.toggle('is-active', on); s.setAttribute('aria-hidden', on?'false':'true'); if(on&&focus) s.focus(); });
-      announce();
-    };
-    const nextF = ()=> go(idx+1);
-    const prevF = ()=> go(idx-1);
-    const start = ()=> { if(!canAuto || paused) return; stop(); timer=setInterval(nextF, autoplayMs); };
-    const stop  = ()=> { if(timer) { clearInterval(timer); timer=null; } };
-
-    next.addEventListener('click', ()=>{ stop(); nextF(); start(); });
-    prev.addEventListener('click', ()=>{ stop(); prevF(); start(); });
-
-    slider.addEventListener('mouseenter', ()=>{ paused=true; stop(); });
-    slider.addEventListener('mouseleave', ()=>{ paused=false; start(); });
-    slider.addEventListener('focusin',  ()=>{ paused=true; stop(); });
-    slider.addEventListener('focusout', ()=>{ paused=false; start(); });
-
-    slider.addEventListener('keydown', (e)=>{
-      if(e.key==='ArrowRight'){ e.preventDefault(); stop(); nextF(); start(); }
-      if(e.key==='ArrowLeft'){  e.preventDefault(); stop(); prevF(); start(); }
-      if(e.key==='Home'){       e.preventDefault(); stop(); go(0,true); }
-      if(e.key==='End'){        e.preventDefault(); stop(); go(slides.length-1,true); }
+    prevBtn.addEventListener('click',prev);
+    nextBtn.addEventListener('click',next);
+    dots.addEventListener('click',e=>{
+      const b=e.target.closest('.ts-dot');
+      if(!b)return;
+      const n=parseInt(b.dataset.idx,10);
+      if(Number.isFinite(n))go(n,true);
     });
 
-    track.style.willChange = 'transform';
-    go(0); start();
+    root.addEventListener('keydown',e=>{
+      if(e.key==='ArrowLeft'){e.preventDefault();prev();}
+      if(e.key==='ArrowRight'){e.preventDefault();next();}
+    });
+
+    // swipe
+    const start=x=>{drag=true;x0=xf=x;};
+    const move=x=>{
+      if(!drag)return;
+      xf=x;
+      const dx=xf-x0;
+      track.style.transition='none';
+      track.style.transform=`translateX(${-idx*viewport.clientWidth+dx}px)`;
+    };
+    const end=()=>{
+      if(!drag)return;
+      drag=false;
+      const dx=xf-x0;
+      track.style.removeProperty('transition');
+      const thresh=viewport.clientWidth*0.2;
+      if(dx>thresh)prev(); else if(dx<-thresh)next(); else go(idx);
+    };
+
+    viewport.addEventListener('pointerdown',e=>{
+      e.preventDefault();
+      viewport.setPointerCapture(e.pointerId);
+      start(e.clientX);
+    });
+    viewport.addEventListener('pointermove',e=>move(e.clientX));
+    viewport.addEventListener('pointerup',()=>end());
+    viewport.addEventListener('pointercancel',()=>end());
+
+    root.dataset.hydrated='true';
+    go(0);
   }
 
-  function mkBtn(cls,label,text,root){
-    const b=document.createElement('button'); b.className=cls; b.type='button'; b.setAttribute('aria-label',label); b.textContent=text; root.appendChild(b); return b;
-  }
-  function mkStatus(root){
-    const s=document.createElement('div'); s.className='ts-status'; s.setAttribute('aria-live','polite'); s.setAttribute('aria-atomic','true'); root.appendChild(s); return s;
-  }
-
-  function diagBox(root, msg, notes){
-    if (isHttpLike() && msg) return; // quiet in prod if it worked
-    let box = qs('.ts-diag', root);
-    if (!box) { box = document.createElement('div'); box.className='ts-diag'; root.appendChild(box); }
-    const list = (notes||[]).map(n=>`<li>${escHTML(n)}</li>`).join('');
-    box.innerHTML = `<div class="ts-diag-inner"><strong>Testimonials debug:</strong><div>${escHTML(msg||'No data')}</div>${list?`<ul>${list}</ul>`:''}</div>`;
-  }
-
-  async function initAll(){
-    const roots = new Set(); SELECTORS.forEach(s => qsa(s).forEach(el => roots.add(el)));
-    if(!roots.size) return;
-    for (const root of roots) {
-      const track = ensureStructure(root);
-      const { list, diag } = await getTestimonials(root);
-      if (list.length) { renderSlides(track, list); initCarousel(root); }
-      else if (!track.children.length) { track.innerHTML = '<div class="ts-empty">Testimonials will appear here.</div>'; }
-      diagBox(root, diag.ok, diag.notes);
+  async function hydrate(container){
+    renderSkeleton(container);
+    const track=container.querySelector('.ts-track');
+    const dots=container.querySelector('.ts-dots');
+    const data=await fetchTestimonials();
+    const count=renderSlides(track,data);
+    if(count<=1){
+      container.querySelector('.ts-prev').style.display='none';
+      container.querySelector('.ts-next').style.display='none';
+      dots.style.display='none';
+      container.dataset.hydrated='true';
+      return;
     }
+    renderDots(dots,count);
+    initCarousel(container,count);
   }
 
-  function ensureStructure(root){ let t=qs('.ts-track',root); if(!t){t=document.createElement('div'); t.className='ts-track'; root.appendChild(t);} return t; }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAll, { once:true });
-  else initAll();
+  ready(()=>{
+    const el=document.querySelector(SLIDER_SEL);
+    if(el) hydrate(el);
+  });
 })();
