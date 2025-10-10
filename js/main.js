@@ -102,10 +102,27 @@
 
   async function autoInitModules() {
     const has = sel => !!document.querySelector(sel);
-    if (document.getElementById('homepage')) { try { await import('/js/modules/homepage.js'); } catch {} }
-    if (document.getElementById('blog-posts-container')) { try { await import('/js/modules/blog.js'); } catch {} }
-    if (document.getElementById('blog-post-content')) { try { await import('/js/modules/blog-post.js'); } catch {} }
-    if (document.getElementById('testimonials-container') || document.getElementById('homepage-testimonials-container') || has('.testimonials-slider')) { try { await import('/js/modules/testimonials.js'); } catch {} }
+
+    if (document.getElementById('homepage')) {
+      try { await import('/js/modules/homepage.js'); } catch {}
+    }
+    if (document.getElementById('blog-posts-container')) {
+      try { await import('/js/modules/blog.js'); } catch {}
+    }
+    if (document.getElementById('blog-post-content')) {
+      try { await import('/js/modules/blog-post.js'); } catch {}
+    }
+
+    // ✅ Added #testimonials-page so the module loads on the testimonials page
+    if (
+      document.getElementById('testimonials-container') ||
+      document.getElementById('homepage-testimonials-container') ||
+      has('.testimonials-slider') ||
+      document.getElementById('testimonials-page') // <— new
+    ) {
+      try { await import('/js/modules/testimonials.js'); } catch {}
+    }
+
     if (document.getElementById('equipment-list')) {
       try {
         await import('/js/modules/equipment.js');
