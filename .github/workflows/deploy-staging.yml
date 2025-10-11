@@ -9,21 +9,27 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # Place build/minify steps here if you add them later
+      # Sanity: show the directory that will be uploaded
+      - name: List workspace root
+        run: |
+          pwd
+          ls -la
 
-      - name: Upload to STAGING via FTP
+      # IMPORTANT: local-dir MUST end with a slash
+      - name: Deploy via FTP to staging
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
           port: ${{ secrets.FTP_PORT }}
-          local-dir: .
+          protocol: ftp
+          local-dir: ./               # <— note the trailing slash required by the action
           server-dir: ${{ secrets.FTP_PATH_STAGING }}/
           exclude: |
             **/.git*
