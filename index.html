@@ -39,12 +39,14 @@
   <link rel="stylesheet" href="/css/homepage.css" />
   <link rel="stylesheet" href="/css/a11y.css" />
   <link rel="stylesheet" href="/css/wip.css" />
-
+  <link rel="stylesheet" href="/css/flickr-gallery.css">
 
   <!-- JS -->
   <script type="module" src="/js/main.js" defer></script>
   <script type="module" src="/js/wip.js" defer></script>
   <script type="module" src="/js/modules/site-settings.js"></script>
+  <script type="module" src="/js/modules/flickr.js" defer></script>
+  <script type="module" src="/js/modules/home-gallery-preview.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
@@ -156,10 +158,12 @@
 
 
       <!-- PORTFOLIO PREVIEW -->
-      <section id="portfolio-preview" class="homepage-section">
-        <h2>Featured Work</h2>
-        <div id="portfolio-grid" class="portfolio-thumbnails"><!-- injected by JS --></div>
-        <a href="/portfolio.html" class="portfolio-link">See More Work</a>
+      <section aria-labelledby="galleryPreviewHeading">
+        <div class="section-header">
+          <h2 id="galleryPreviewHeading">Latest from the Portfolio</h2>
+          <p class="muted">A quick peek — see the full <a href="/portfolio.html">Portfolio</a>.</p>
+        </div>
+        <div id="home-gallery-preview" aria-live="polite"></div>
       </section>
 
       <!-- BLOG TEASER -->

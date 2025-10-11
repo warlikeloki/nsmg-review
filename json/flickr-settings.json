@@ -1,0 +1,25 @@
+{
+  "enabled": true,
+  "api_base": "/php/flickr_proxy.php",
+  "user_id": "195173487@N07",
+  "default_per_page": 60,
+  "albums": [
+    {
+      "title": "All Public Photos",
+      "type": "public",
+      "id": ""
+    },
+    {
+      "title": "Saratoga State Park",
+      "type": "photoset",
+      "id": "72177720327181991"
+    }
+  ],
+  "homepage_preview": {
+    "enabled": true,
+    "count": 8,
+    "source": "photoset",
+    "photoset_id": "72177720327181991"
+  }
+}
+

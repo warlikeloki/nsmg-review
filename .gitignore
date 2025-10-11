@@ -64,6 +64,7 @@ jira_issues_ready.csv
 **/*id_rsa*
 **/secrets/**
 **/private/**
+/php/secrets.php
 
 # Web app config (track the sample, ignore real)
 config/config.php
