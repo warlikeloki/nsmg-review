@@ -1,0 +1,25 @@
+/* Scoped to avoid conflicts with existing gallery.css */
+.flickr-toolbar { display:flex; gap:12px; align-items:center; margin:12px 0 16px; }
+.flickr-grid { --gap:12px; display:grid; grid-template-columns:repeat(4,1fr); gap:var(--gap); }
+.flickr-card { position:relative; overflow:hidden; border-radius:10px; background:#111; }
+.flickr-card img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .25s ease; }
+.flickr-card:hover img { transform:scale(1.04); }
+@media (max-width:1200px){ .flickr-grid{ grid-template-columns:repeat(3,1fr);} }
+@media (max-width:900px){ .flickr-grid{ grid-template-columns:repeat(2,1fr);} }
+@media (max-width:560px){ .flickr-grid{ grid-template-columns:1fr;} }
+
+/* Lightbox (scoped) */
+#flickr-lightbox { position:fixed; inset:0; display:grid; place-items:center; background:rgba(0,0,0,.9); z-index:9999; padding:20px; }
+#flickr-lightbox[hidden]{ display:none; }
+#flickr-lightbox img { max-width:95vw; max-height:80vh; object-fit:contain; border-radius:8px; }
+#flickr-close { position:absolute; top:12px; right:16px; font-size:36px; background:transparent; color:#fff; border:none; cursor:pointer; }
+#flickr-lightbox-cap { color:#ddd; margin-top:10px; text-align:center; max-width:90ch; }
+.flickr-nav { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,.1); color:#fff; border:none; font-size:28px; width:44px; height:44px; border-radius:50%; cursor:pointer; }
+.flickr-nav:hover { background:rgba(255,255,255,.2); }
+#flickr-prev { left:20px; } #flickr-next { right:20px; }
+
+/* Homepage strip (scoped) */
+#home-gallery-preview { margin-block:16px 24px; }
+#home-gallery-preview .flickr-home-strip { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(120px,1fr); gap:8px; overflow-x:auto; padding:0; margin:0; list-style:none; scroll-snap-type:x mandatory; }
+#home-gallery-preview .flickr-home-strip li { scroll-snap-align:start; border-radius:8px; overflow:hidden; }
+#home-gallery-preview img { width:100%; height:100%; object-fit:cover; display:block; }

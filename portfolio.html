@@ -7,7 +7,7 @@
   <!-- SEO Meta Description -->
   <meta
     name="description"
-    content="	Browse Neil Smith Media Group's portfolio showcasing professional photography and videography from events, portraits, and commercial projects."
+    content="Browse Neil Smith Media Group's portfolio showcasing professional photography and videography from events, portraits, and commercial projects."
   />
   <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/global.css">
@@ -18,17 +18,27 @@
   <link rel="stylesheet" href="/css/footer.css">
   <link rel="stylesheet" href="/css/forms.css">
   <link rel="stylesheet" href="/css/mobile.css">
+
+  <!-- Your existing portfolio styles -->
   <link rel="stylesheet" href="/css/portfolio.css">
+
+  <!-- Flickr (scoped) styles so they don't conflict with your existing CSS -->
+  <link rel="stylesheet" href="/css/flickr-gallery.css">
+
+  <!-- WIP banner (unchanged) -->
   <link rel="stylesheet" href="/css/wip.css" />
   <script type="module" src="/js/wip.js" defer></script>
+
+  <!-- Site settings (unchanged) -->
   <script type="module" src="/js/modules/site-settings.js"></script>
 </head>
 <body>
+  <!-- Header injected -->
   <div id="header-container"></div>
 
   <div class="page-container">
     <!-- Left Sidebar -->
-    <aside class="sidebar left-sidebar"></aside>
+    <aside class="sidebar left-sidebar" aria-label="Left sidebar"></aside>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -43,8 +53,25 @@
         <button data-filter="events">Events</button>
       </div>
 
-      <div class="portfolio-grid" id="portfolio-grid">
-        <!-- Placeholder Items -->
+      <!-- Flickr toolbar + mount (scoped classes/IDs) -->
+      <div class="flickr-toolbar">
+        <label for="flickr-album-select" class="visually-hidden">Album</label>
+        <select id="flickr-album-select" aria-label="Album"></select>
+      </div>
+
+      <section id="portfolio-flickr-root" aria-live="polite"></section>
+
+      <!-- Lightweight lightbox markup (scoped ids) -->
+      <div id="flickr-lightbox" hidden>
+        <button id="flickr-close" aria-label="Close">&times;</button>
+        <img id="flickr-lightbox-img" alt="">
+        <div id="flickr-lightbox-cap"></div>
+        <button id="flickr-prev" class="flickr-nav" aria-label="Previous">&#10094;</button>
+        <button id="flickr-next" class="flickr-nav" aria-label="Next">&#10095;</button>
+      </div>
+
+      <!--
+        Placeholder Items (kept commented so they don't interfere with Flickr grid)
         <div class="portfolio-item photography">
           <img src="https://via.placeholder.com/300x200" alt="Photography Sample" />
           <h3>Portrait Shoot</h3>
@@ -65,16 +92,17 @@
           <img src="https://via.placeholder.com/300x200" alt="Photo Sample" />
           <h3>Product Photography</h3>
         </div>
-      </div>
+      -->
     </main>
 
     <!-- Right Sidebar -->
-    <aside class="sidebar right-sidebar"></aside>
+    <aside class="sidebar right-sidebar" aria-label="Right sidebar"></aside>
   </div>
 
+  <!-- Footer injected -->
   <div id="footer-container"></div>
 
-  <!-- Scripts -->
+  <!-- Header/Footer injection (unchanged) -->
   <script>
     fetch('/header.html')
       .then(res => res.text())
@@ -83,12 +111,10 @@
     fetch('/footer.html')
       .then(res => res.text())
       .then(html => document.getElementById('footer-container').innerHTML = html);
-
   </script>
-  <script type="module" src="" defer></script>
 
-
+  <!-- Flickr modules -->
+  <script type="module" src="/js/modules/flickr.js" defer></script>
+  <script type="module" src="/js/modules/gallery-flickr.js" defer></script>
 </body>
 </html>
-
-
