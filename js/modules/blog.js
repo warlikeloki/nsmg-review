@@ -1,16 +1,18 @@
 // /js/modules/blog.js
-// Purpose: Renders the Blog Teaser on the homepage and (optionally) a list on /blog.html.
-// Fixes:
-//  - Ensures teaser image uses the SAME field as blog post pages (featuredImage) with sensible fallbacks.
-//  - Ensures "Read More" links include a valid slug query parameter so blog-post.html can load the correct post.
+// Builds homepage teaser and optional blog list.
+// Now generates Read More links that work with either ?id= or ?slug=.
+// Default post page target can be .php or .html via POST_PAGE.
 
 (function () {
-  const BLOG_JSON_FALLBACK = "/json/posts.json"; // fallback if PHP endpoint is unavailable
-  const BLOG_PHP_ENDPOINT = "/php/get_posts.php"; // optional backend (supports ?limit=, ?slug=)
+  // ===== CONFIG =====
+  // If your staging uses PHP, keep .php; switch to .html if desired:
+  const POST_PAGE = "/blog-post.php"; // or "/blog-post.html"
+
+  const BLOG_JSON_FALLBACK = "/json/posts.json";
+  const BLOG_PHP_ENDPOINT = "/php/get_posts.php"; // optional backend
 
   // ---------- Utilities ----------
-  function qs(sel, root = document) { return root.querySelector(sel); }
-  function qsa(sel, root = document) { return [...root.querySelectorAll(sel)]; }
+  const $ = (sel, root = document) => root.querySelector(sel);
 
   async function fetchJson(url) {
     const r = await fetch(url, { headers: { "Accept": "application/json" } });
@@ -18,70 +20,42 @@
     return r.json();
   }
 
-  // Try PHP first (if present), then JSON fallback.
+  // Try PHP first; then JSON fallback
   async function getLatestPosts(limit = 1) {
     try {
       const url = `${BLOG_PHP_ENDPOINT}?limit=${encodeURIComponent(limit)}`;
-      return await fetchJson(url);
+      const data = await fetchJson(url);
+      return Array.isArray(data) ? data : (data?.posts || []);
     } catch {
-      const all = await fetchJson(BLOG_JSON_FALLBACK);
-      // Expecting array of posts sorted newest-first; if not, sort by date desc if present
-      const posts = Array.isArray(all) ? all : (all?.posts || []);
+      const payload = await fetchJson(BLOG_JSON_FALLBACK);
+      const posts = Array.isArray(payload) ? payload : (payload?.posts || []);
       return posts
-        .slice() // copy
-        .sort((a, b) => (new Date(b.date || 0)) - (new Date(a.date || 0)))
+        .slice()
+        .sort((a, b) => (new Date(b?.date || 0)) - (new Date(a?.date || 0)))
         .slice(0, limit);
     }
   }
 
   function resolveFeaturedImage(post) {
-    // Align image choice with blog post page logic:
-    // primary: post.featuredImage (string or {src,alt})
-    // fallbacks: post.coverImage, post.images?.featured, then first of post.images?.all
     const p = post || {};
-    const maybe = [
+    const candidates = [
       p.featuredImage,
       p.coverImage,
       p?.images?.featured,
       Array.isArray(p?.images?.all) ? p.images.all[0] : null
     ].filter(Boolean);
 
-    const first = maybe[0];
+    const first = candidates[0];
     if (!first) return null;
 
-    if (typeof first === "string") return { src: first, alt: post?.title || "Blog image" };
+    if (typeof first === "string") return { src: first, alt: p?.title || "Blog image" };
     if (typeof first === "object") {
       return {
         src: first.src || first.url || first.path || "",
-        alt: first.alt || post?.title || "Blog image"
+        alt: first.alt || p?.title || "Blog image"
       };
     }
     return null;
-    }
-
-  function buildTeaserHTML(post) {
-    const image = resolveFeaturedImage(post);
-    const title = post?.title || "Untitled Post";
-    const excerpt = (post?.excerpt || post?.summary || "").toString().trim();
-    const slug = post?.slug ? String(post.slug) : "";
-
-    const imgHTML = image?.src
-      ? `<img class="blog-teaser-image" src="${image.src}" alt="${escapeHtml(image.alt)}" loading="lazy">`
-      : "";
-
-    // IMPORTANT: we now always pass slug in query string.
-    const readMoreHref = slug ? `/blog-post.html?slug=${encodeURIComponent(slug)}` : `/blog.html`;
-
-    return `
-      <article class="blog-teaser-card">
-        ${imgHTML}
-        <div class="blog-teaser-content">
-          <h3 class="blog-teaser-title">${escapeHtml(title)}</h3>
-          ${excerpt ? `<p class="blog-teaser-excerpt">${escapeHtml(excerpt)}</p>` : ""}
-          <a class="btn read-more" href="${readMoreHref}" aria-label="Read more: ${escapeHtml(title)}">Read More</a>
-        </div>
-      </article>
-    `;
   }
 
   function escapeHtml(str) {
@@ -90,40 +64,38 @@
     }[s]));
   }
 
-  // ---------- Teaser (homepage) ----------
-  async function renderHomepageTeaser() {
-    const container = qs("#blog-teaser .blog-post-preview");
-    if (!container) return;
-
-    try {
-      const [post] = await getLatestPosts(1);
-      if (!post) {
-        container.innerHTML = `<p class="muted">No blog posts found.</p>`;
-        return;
-      }
-      container.innerHTML = buildTeaserHTML(post);
-    } catch (err) {
-      console.error("[blog.js] Failed to load blog teaser:", err);
-      container.innerHTML = `<p class="error">Unable to load the latest blog post right now.</p>`;
+  function choosePostUrl(post) {
+    // Prefer ID when available (matches your staging URL pattern)
+    if (post?.id) {
+      return `${POST_PAGE}?id=${encodeURIComponent(String(post.id))}`;
     }
+    if (post?.slug) {
+      return `${POST_PAGE}?slug=${encodeURIComponent(String(post.slug))}`;
+    }
+    // No id or slug -> graceful fallback
+    return "/blog.html";
   }
 
-  // ---------- Optional: Blog list on /blog.html ----------
-  async function renderBlogListIfPresent() {
-    const listContainer = qs("[data-blog-list]");
-    if (!listContainer) return;
+  function buildTeaserHTML(post) {
+    const image = resolveFeaturedImage(post);
+    const title = post?.title || "Untitled Post";
+    const excerpt = (post?.excerpt || post?.summary || "").toString().trim();
+    const href = choosePostUrl(post);
 
-    try {
-      const posts = await getLatestPosts(20);
-      if (!posts.length) {
-        listContainer.innerHTML = `<p class="muted">No posts yet—check back soon.</p>`;
-        return;
-      }
-      listContainer.innerHTML = posts.map(buildListItemHTML).join("");
-    } catch (err) {
-      console.error("[blog.js] Failed to load blog list:", err);
-      listContainer.innerHTML = `<p class="error">Unable to load blog posts right now.</p>`;
-    }
+    const imgHTML = image?.src
+      ? `<img class="blog-teaser-image" src="${image.src}" alt="${escapeHtml(image.alt)}" loading="lazy">`
+      : "";
+
+    return `
+      <article class="blog-teaser-card">
+        ${imgHTML}
+        <div class="blog-teaser-content">
+          <h3 class="blog-teaser-title">${escapeHtml(title)}</h3>
+          ${excerpt ? `<p class="blog-teaser-excerpt">${escapeHtml(excerpt)}</p>` : ""}
+          <a class="btn read-more" href="${href}" aria-label="Read more: ${escapeHtml(title)}">Read More</a>
+        </div>
+      </article>
+    `;
   }
 
   function buildListItemHTML(post) {
@@ -131,13 +103,11 @@
     const title = post?.title || "Untitled Post";
     const date = post?.date ? new Date(post.date).toLocaleDateString() : "";
     const excerpt = (post?.excerpt || post?.summary || "").toString().trim();
-    const slug = post?.slug ? String(post.slug) : "";
+    const href = choosePostUrl(post);
 
     const imgHTML = image?.src
       ? `<img class="blog-list-thumb" src="${image.src}" alt="${escapeHtml(image.alt)}" loading="lazy">`
       : "";
-
-    const href = slug ? `/blog-post.html?slug=${encodeURIComponent(slug)}` : `/blog.html`;
 
     return `
       <article class="blog-list-item">
@@ -152,7 +122,40 @@
     `;
   }
 
-  // ---------- init ----------
+  // ---------- Renderers ----------
+  async function renderHomepageTeaser() {
+    const container = $("#blog-teaser .blog-post-preview");
+    if (!container) return;
+    try {
+      const [post] = await getLatestPosts(1);
+      if (!post) {
+        container.innerHTML = `<p class="muted">No blog posts found.</p>`;
+        return;
+      }
+      container.innerHTML = buildTeaserHTML(post);
+    } catch (err) {
+      console.error("[blog.js] Failed to load blog teaser:", err);
+      container.innerHTML = `<p class="error">Unable to load the latest blog post right now.</p>`;
+    }
+  }
+
+  async function renderBlogListIfPresent() {
+    const listContainer = document.querySelector("[data-blog-list]");
+    if (!listContainer) return;
+    try {
+      const posts = await getLatestPosts(20);
+      if (!posts.length) {
+        listContainer.innerHTML = `<p class="muted">No posts yet—check back soon.</p>`;
+        return;
+      }
+      listContainer.innerHTML = posts.map(buildListItemHTML).join("");
+    } catch (err) {
+      console.error("[blog.js] Failed to load blog list:", err);
+      listContainer.innerHTML = `<p class="error">Unable to load blog posts right now.</p>`;
+    }
+  }
+
+  // ---------- Init ----------
   document.addEventListener("DOMContentLoaded", () => {
     renderHomepageTeaser();
     renderBlogListIfPresent();
