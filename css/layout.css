@@ -1,3 +1,9 @@
+/* =========================================
+   layout.css — FULL FILE (simplified for NSM-184)
+   - Fix: Equal left/right sidebar widths on Home
+   - No global :root variables (handled in global.css)
+   ========================================= */
+
 /* Basic Section Styles */
 section {
   padding: 2rem 1rem;
@@ -58,27 +64,69 @@ section a:hover {
   }
 }
 
+/* =========================================
+   NSM-184: Home page container & sidebars
+   ========================================= */
+
 .page-container {
   display: flex;
-  justify-content: space-between;
+  align-items: flex-start;
+  justify-content: center;              /* center the 3-column layout */
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
   gap: 20px;
+  box-sizing: border-box;
 }
 
+/* Equal sidebar widths */
 .sidebar {
-  flex: 1;
-  min-width: 150px;
-  max-width: 200px;
+  box-sizing: border-box;
+  width: clamp(200px, 18vw, 280px);
+  min-width: clamp(200px, 18vw, 280px);
+  max-width: clamp(200px, 18vw, 280px);
+  flex: 0 0 clamp(200px, 18vw, 280px);  /* lock widths equally */
 }
 
+/* Flexible main content */
 .main-content {
-  flex: 3;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-width: 0;                         /* prevents overflow */
   max-width: 100%;
 }
 
-/* Services Dashboard nav (desktop & admin) */
+/* Slightly narrow sidebars on tablets */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: clamp(180px, 22vw, 240px);
+    min-width: clamp(180px, 22vw, 240px);
+    max-width: clamp(180px, 22vw, 240px);
+    flex: 0 0 clamp(180px, 22vw, 240px);
+  }
+}
+
+/* Mobile stack */
+@media (max-width: 600px) {
+  .page-container {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+
+  .sidebar,
+  .main-content {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    flex: 1 1 auto;
+  }
+}
+
+/* =========================================
+   Services Dashboard nav (desktop & admin)
+   ========================================= */
+
 #services-nav {
   display: flex;
   flex-direction: column;
@@ -109,7 +157,9 @@ section a:hover {
   font-weight: bold;
 }
 
-/* other-services.css */
+/* =========================================
+   Other Services & Accordion sections
+   ========================================= */
 
 /* Container around the entire services list */
 #other-services-section {
@@ -152,7 +202,6 @@ section a:hover {
 }
 
 /* Inline accordion for Our Services */
-/* Ensure the service cards render in a 2×2 grid on desktop */
 .services-accordion {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
