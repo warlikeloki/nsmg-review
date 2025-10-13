@@ -1,171 +1,202 @@
 // /js/modules/blog-post.js
-// Detail page loader with resilient sources and safe rendering.
-// Order: php/get_post.php?slug=... → php/get_posts.php (filter) → json/posts.json (filter)
-// Works on HTTP(S) and falls back to JSON when opened via file:// in VSCode preview.
+// Renders a single blog post on /blog-post.html (and can also work with blog-post.php if it has the same DOM).
+// Fixes:
+//  - Friendly handling when the slug is missing.
+//  - Uses the same image resolution order as the homepage teaser for visual consistency.
+//  - Updates document.title and fills your exact DOM nodes (#post-status, .post-hero, .post-title, .post-meta, .post-content).
 
 (function () {
-  const root = document.getElementById('blog-post-page') || document.body;
+  // Adjust these if your paths differ
+  const BLOG_JSON_FALLBACK = "/json/posts.json";
+  const BLOG_PHP_ENDPOINT = "/php/get_posts.php"; // Optional backend (supports ?slug=)
 
-  // Targets (create if missing)
-  const titleEl = document.querySelector('.post-title') || (() => {
-    const h1 = document.createElement('h1');
-    h1.className = 'post-title';
-    root.appendChild(h1);
-    return h1;
-  })();
+  // ---------- DOM helpers ----------
+  const $ = (sel, root = document) => root.querySelector(sel);
 
-  const metaEl = document.querySelector('.post-meta') || (() => {
-    const div = document.createElement('div');
-    div.className = 'post-meta';
-    titleEl.insertAdjacentElement('afterend', div);
-    return div;
-  })();
-
-  const heroWrap = document.querySelector('.post-hero') || (() => {
-    const div = document.createElement('div');
-    div.className = 'post-hero';
-    root.insertBefore(div, titleEl);
-    return div;
-  })();
-
-  const contentEl = document.querySelector('.post-content') || (() => {
-    const article = document.createElement('article');
-    article.className = 'post-content';
-    metaEl.insertAdjacentElement('afterend', article);
-    return article;
-  })();
-
-  const statusEl = document.getElementById('post-status') || (() => {
-    const p = document.createElement('p');
-    p.id = 'post-status';
-    p.className = 'status-note';
-    root.insertBefore(p, heroWrap);
-    return p;
-  })();
-
-  // Helpers
-  function getParam(name) {
-    const u = new URL(location.href);
-    return u.searchParams.get(name) || '';
-  }
-  const slug = getParam('slug') || location.hash.replace(/^#/, '');
-
-  const isFile = location.protocol === 'file:';
-  async function fetchJSON(url) {
-    const res = await fetch(url, { cache: 'no-store' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
+  // ---------- Networking ----------
+  async function fetchJson(url) {
+    const r = await fetch(url, { headers: { "Accept": "application/json" } });
+    if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
+    return r.json();
   }
 
-  async function trySources(slug) {
-    const sources = isFile
-      ? ['json/posts.json', './json/posts.json']
-      : [
-          `/php/get_post.php?slug=${encodeURIComponent(slug)}`,
-          './php/get_post.php?slug=' + encodeURIComponent(slug),
-          '/php/get_posts.php',
-          './php/get_posts.php',
-          '/json/posts.json',
-          './json/posts.json'
-        ];
+  function getSlugFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("slug");
+    return slug && slug.trim() ? slug.trim() : null;
+  }
 
-    for (const url of sources) {
-      try {
-        const data = await fetchJSON(url);
-        // If we hit get_post.php, data *should* be a single object
-        if (data && !Array.isArray(data) && (data.slug || data.title)) {
-          return data;
-        }
-        // Otherwise, try to find in list
-        const list = Array.isArray(data) ? data : data?.posts;
-        if (Array.isArray(list)) {
-          const match = list.find(p => (p.slug || '').toLowerCase() === slug.toLowerCase());
-          if (match) return match;
-        }
-      } catch (_) { /* try next */ }
+  async function getPostBySlug(slug) {
+    // Try PHP endpoint first (if available)
+    try {
+      const url = `${BLOG_PHP_ENDPOINT}?slug=${encodeURIComponent(slug)}`;
+      const data = await fetchJson(url);
+      return Array.isArray(data) ? data[0] : data;
+    } catch {
+      // Fallback to static JSON
+      const payload = await fetchJson(BLOG_JSON_FALLBACK);
+      const posts = Array.isArray(payload) ? payload : (payload?.posts || []);
+      return posts.find(p => String(p.slug) === String(slug));
+    }
+  }
+
+  // ---------- Utilities ----------
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, s => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[s]));
+  }
+
+  function resolveFeaturedImage(post) {
+    // Shared logic with teaser: prefer featuredImage, then coverImage, then images.featured, then first of images.all
+    const p = post || {};
+    const candidates = [
+      p.featuredImage,
+      p.coverImage,
+      p?.images?.featured,
+      Array.isArray(p?.images?.all) ? p.images.all[0] : null
+    ].filter(Boolean);
+
+    const first = candidates[0];
+    if (!first) return null;
+
+    if (typeof first === "string") {
+      return { src: first, alt: p?.title || "Blog image" };
+    }
+    if (typeof first === "object") {
+      return {
+        src: first.src || first.url || first.path || "",
+        alt: first.alt || p?.title || "Blog image"
+      };
     }
     return null;
   }
 
-  function normalize(post) {
-    const cleanSlug = (post.slug || (post.title || '')
-      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''));
-
-    const hero = post.hero_image || post.image || '/media/logos/nsmg-logo.png';
-    const excerpt = post.excerpt || post.summary || '';
-    const content = post.content_html || post.content || '';
-    const dateStr = post.date || post.updated_at || '';
-    const dateNice = dateStr ? new Date(dateStr).toLocaleDateString() : '';
-    const author = post.author || '';
-
-    return {
-      id: post.id || cleanSlug,
-      slug: cleanSlug,
-      title: post.title || 'Untitled',
-      dateStr,
-      dateNice,
-      author,
-      excerpt,
-      content,
-      hero,
-      tags: post.tags || [],
-      sample: !!post.sample
-    };
+  function formatDate(iso) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleDateString(undefined, {
+      year: "numeric", month: "long", day: "numeric"
+    });
   }
 
-  function setHero(src, alt) {
-    heroWrap.innerHTML = `
-      <div class="post-hero__inner">
-        <img src="${src}" alt="${alt ? alt.replace(/"/g, '&quot;') : ''}"
-             width="1280" height="720" loading="eager" decoding="async">
-      </div>
-    `;
+  // ---------- Rendering ----------
+  function setStatus(msg, type = "info") {
+    const note = $("#post-status");
+    if (!note) return;
+    note.textContent = msg || "";
+    note.classList.remove("is-error", "is-info");
+    note.classList.add(type === "error" ? "is-error" : "is-info");
   }
 
-  function renderTextContent(target, text) {
-    // If content looks like HTML, use it as-is (trusted internal source).
-    if (/<[a-z][\s\S]*>/i.test(text)) {
-      target.innerHTML = text;
+  function renderPost(post) {
+    const hero = $(".post-hero");
+    const titleEl = $(".post-title");
+    const meta = $(".post-meta");
+    const content = $(".post-content");
+
+    if (!hero || !titleEl || !meta || !content) {
+      console.warn("[blog-post.js] Required DOM nodes not found on the page.");
       return;
     }
-    // Otherwise, render plaintext: split on blank lines into paragraphs.
-    const parts = String(text).split(/\n{2,}/);
-    target.innerHTML = parts.map(p =>
-      `<p>${p.trim().replace(/\n/g, '<br>')}</p>`
-    ).join('\n');
+
+    if (!post) {
+      setStatus("", "info");
+      titleEl.textContent = "That post couldn’t be found";
+      meta.innerHTML = "";
+      hero.innerHTML = "";
+      content.innerHTML = `
+        <p>The link might be out of date or the post was moved. You can browse the <a href="/blog.html">blog index</a> instead.</p>
+      `;
+      document.title = "Post Not Found — Neil Smith Media Group";
+      return;
+    }
+
+    const img = resolveFeaturedImage(post);
+    hero.innerHTML = img?.src
+      ? `<img src="${img.src}" alt="${escapeHtml(img.alt)}" loading="eager">`
+      : "";
+
+    const title = post.title || "Untitled Post";
+    titleEl.textContent = title;
+
+    const dateHtml = post.date
+      ? `<time datetime="${escapeHtml(post.date)}">${escapeHtml(formatDate(post.date))}</time>`
+      : "";
+
+    // Optional author/category lines if present
+    const authorHtml = post.author ? `<span class="post-author">${escapeHtml(post.author)}</span>` : "";
+    const catHtml = Array.isArray(post.categories) && post.categories.length
+      ? `<span class="post-categories">${post.categories.map(c => `<span class="cat">${escapeHtml(c)}</span>`).join(" ")}</span>`
+      : "";
+
+    meta.innerHTML = [dateHtml, authorHtml, catHtml].filter(Boolean).join(" • ");
+
+    // Prefer HTML provided by CMS; otherwise show text content
+    if (post.html && typeof post.html === "string") {
+      content.innerHTML = post.html; // Assuming trusted content from your backend
+    } else if (post.content) {
+      content.innerHTML = `<p>${escapeHtml(String(post.content))}</p>`;
+    } else if (post.excerpt) {
+      content.innerHTML = `<p>${escapeHtml(String(post.excerpt))}</p>`;
+    } else {
+      content.innerHTML = `<p></p>`;
+    }
+
+    document.title = `${title} — Neil Smith Media Group`;
+    setStatus("", "info");
   }
 
-  async function load() {
+  // ---------- Init ----------
+  async function init() {
+    const slug = getSlugFromUrl();
+
     if (!slug) {
-      statusEl.textContent = 'Missing post slug.';
+      // Friendly missing-slug state that matches your page’s structure
+      renderPost(null);
+      const titleEl = $(".post-title");
+      const meta = $(".post-meta");
+      const content = $(".post-content");
+      const hero = $(".post-hero");
+
+      if (titleEl) titleEl.textContent = "Post not specified";
+      if (meta) meta.innerHTML = "";
+      if (hero) hero.innerHTML = "";
+      if (content) {
+        content.innerHTML = `
+          <p>We need a post link with a valid slug to load it. Try starting from the <a href="/blog.html">blog page</a>.</p>
+        `;
+      }
+      setStatus("Missing slug parameter.", "error");
+      document.title = "Post not specified — Neil Smith Media Group";
       return;
     }
-    statusEl.textContent = 'Loading post…';
 
-    const raw = await trySources(slug);
-    if (!raw) {
-      statusEl.textContent = 'Post not found.';
-      return;
+    try {
+      setStatus("Loading post…", "info");
+      const post = await getPostBySlug(slug);
+      renderPost(post || null);
+    } catch (err) {
+      console.error("[blog-post.js] Failed to load post:", err);
+      // Graceful error fallback reusing the same render slots
+      const titleEl = $(".post-title");
+      const meta = $(".post-meta");
+      const content = $(".post-content");
+      const hero = $(".post-hero");
+
+      if (titleEl) titleEl.textContent = "Something went wrong";
+      if (meta) meta.innerHTML = "";
+      if (hero) hero.innerHTML = "";
+      if (content) {
+        content.innerHTML = `
+          <p>We couldn’t load this post right now. Please try again later, or visit the <a href="/blog.html">blog index</a>.</p>
+        `;
+      }
+      setStatus("Error loading post.", "error");
+      document.title = "Error — Neil Smith Media Group";
     }
-
-    const post = normalize(raw);
-
-    // Title + <title>
-    titleEl.textContent = post.title + (post.sample ? ' (SAMPLE)' : '');
-    try { document.title = `${post.title} - Neil Smith Media Group`; } catch {}
-
-    // Meta
-    metaEl.textContent = [post.dateNice, post.author].filter(Boolean).join(' • ');
-
-    // Hero
-    setHero(post.hero, post.title);
-
-    // Content
-    renderTextContent(contentEl, post.content || post.excerpt || '');
-
-    // Done
-    statusEl.textContent = '';
   }
 
-  load();
+  document.addEventListener("DOMContentLoaded", init);
 })();
