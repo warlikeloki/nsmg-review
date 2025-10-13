@@ -1,0 +1,30 @@
+/* NSM-171: Styles for CTA email icon (kept separate to avoid touching homepage.css) */
+
+.cta-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;           /* prevents layout jump when icon appears */
+  text-decoration: none; /* respect existing button/link styles */
+}
+
+.cta-with-icon .icon-email {
+  display: inline-block;
+  /* Use currentColor so icon inherits button/link color & hover states */
+  fill: currentColor;
+  flex: 0 0 auto;
+  /* Align better with cap height */
+  transform: translateY(1px);
+}
+
+/* Respect hover/focus from your existing theme;
+   if you have specific button classes, the icon inherits color automatically. */
+
+/* Optional: a reusable screen-reader only class if you need it (not used by default)
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border: 0;
+}
+*/
