@@ -2,35 +2,36 @@ name: Deploy to Staging (develop → staging.neilsmith.org)
 
 on:
   push:
-    branches:
-      - develop
+    branches: [develop]
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # Sanity: show the directory that will be uploaded
-      - name: List workspace root
+      - name: Verify required secrets exist
         run: |
-          pwd
-          ls -la
+          for k in FTP_HOST FTP_USERNAME FTP_PASSWORD FTP_PORT; do
+            [ -z "${{ secrets.FTP_HOST }}" ] && [ "$k" = "FTP_HOST" ] && echo "::error ::Missing $k" && exit 1
+            [ -z "${{ secrets.FTP_USERNAME }}" ] && [ "$k" = "FTP_USERNAME" ] && echo "::error ::Missing $k" && exit 1
+            [ -z "${{ secrets.FTP_PASSWORD }}" ] && [ "$k" = "FTP_PASSWORD" ] && echo "::error ::Missing $k" && exit 1
+            [ -z "${{ secrets.FTP_PORT }}" ] && [ "$k" = "FTP_PORT" ] && echo "::error ::Missing $k" && exit 1
+          done
+          echo "Secrets present"
 
-      # IMPORTANT: local-dir MUST end with a slash
-      - name: Deploy via FTP to staging
+      - name: Deploy via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ secrets.FTP_PORT }}
-          protocol: ftp
-          local-dir: ./               # <— note the trailing slash required by the action
-          server-dir: ${{ secrets.FTP_PATH_STAGING }}/
+          protocol: ftps
+          local-dir: ./                  # must end with /
+          server-dir: ./                 # 👈 IMPORTANT: deploy to FTP HOME (/public_html/staging)
           exclude: |
             **/.git*
             **/.github/**
