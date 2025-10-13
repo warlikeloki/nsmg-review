@@ -1,0 +1,74 @@
+/* NSM-24 (blog portion): Styles for homepage blog teaser + skeleton */
+
+/* Layout */
+.blog-teaser-root .blog-teaser {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.blog-featured-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+.blog-content .blog-title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+.blog-content .blog-excerpt {
+  margin: 0 0 0.5rem 0;
+}
+
+.blog-readmore {
+  display: inline-block;
+}
+
+/* Stack on smaller screens */
+@media (max-width: 768px) {
+  .blog-teaser-root .blog-teaser {
+    grid-template-columns: 1fr;
+  }
+  .blog-featured-image {
+    height: 200px;
+  }
+}
+
+/* Skeletons */
+.skeleton {
+  background: linear-gradient(90deg, #eee, #f7f7f7, #eee);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.2s infinite;
+  width: 100%;
+  border-radius: 8px;
+  height: 180px;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  margin: 8px 0;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 2-line clamp */
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
