@@ -1,11 +1,11 @@
 // /js/modules/blog-post.js
-// Works on /blog-post.html and /blog-post.php.
-// Accepts either ?id=<postId> or ?slug=<postSlug>.
-// Keeps image selection consistent with teaser.
+// Works on /blog-post.php and /blog-post.html.
+// Accepts ?id= or ?slug=. Uses hero_image → image → featuredImage → coverImage.
+// Renders date, author, category, and tags (array).
 
 (function () {
   const BLOG_JSON_FALLBACK = "/json/posts.json";
-  const BLOG_PHP_ENDPOINT = "/php/get_posts.php"; // if present
+  const BLOG_PHP_ENDPOINT = "/php/get_posts.php"; // optional backend
 
   const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -17,33 +17,37 @@
 
   function getParams() {
     const p = new URLSearchParams(location.search);
-    const slug = (p.get("slug") || "").trim() || null;
-    const id = (p.get("id") || "").trim() || null;
+    let slug = (p.get("slug") || "").trim() || null;
+    let id   = (p.get("id")   || "").trim() || null;
+
+    // Optional: allow PHP to pass params inline if query is stripped
+    if ((!slug && !id) && typeof window.__BLOG_POST_PARAMS__ === "object") {
+      const s = (window.__BLOG_POST_PARAMS__.slug || "").trim();
+      const i = (window.__BLOG_POST_PARAMS__.id   || "").trim();
+      if (s) slug = s;
+      if (i) id   = i;
+    }
     return { slug, id };
   }
 
   async function getPost({ slug, id }) {
-    // Prefer the parameter that exists
     const query = slug ? `slug=${encodeURIComponent(slug)}` :
                   id   ? `id=${encodeURIComponent(id)}`     : "";
 
-    // Try backend first with whichever param we have
     if (query) {
       try {
         const data = await fetchJson(`${BLOG_PHP_ENDPOINT}?${query}`);
-        // Backend might return a single object or an array
         return Array.isArray(data) ? data[0] : data;
       } catch {
         // fall through to JSON
       }
     }
 
-    // Fallback to static JSON
     const payload = await fetchJson(BLOG_JSON_FALLBACK);
     const posts = Array.isArray(payload) ? payload : (payload?.posts || []);
 
-    if (slug) return posts.find(p => String(p.slug) === String(slug));
     if (id)   return posts.find(p => String(p.id)   === String(id));
+    if (slug) return posts.find(p => String(p.slug) === String(slug));
     return null;
   }
 
@@ -56,7 +60,9 @@
   function resolveFeaturedImage(post) {
     const p = post || {};
     const candidates = [
-      p.featuredImage,
+      p.hero_image,           // your primary
+      p.image,                // your secondary
+      p.featuredImage,        // future-proof
       p.coverImage,
       p?.images?.featured,
       Array.isArray(p?.images?.all) ? p.images.all[0] : null
@@ -122,19 +128,17 @@
     const title = post.title || "Untitled Post";
     titleEl.textContent = title;
 
-    const dateHtml = post.date
-      ? `<time datetime="${escapeHtml(post.date)}">${escapeHtml(formatDate(post.date))}</time>`
-      : "";
-
-    const authorHtml = post.author ? `<span class="post-author">${escapeHtml(post.author)}</span>` : "";
-    const catHtml = Array.isArray(post.categories) && post.categories.length
-      ? `<span class="post-categories">${post.categories.map(c => `<span class="cat">${escapeHtml(c)}</span>`).join(" ")}</span>`
-      : "";
-
-    meta.innerHTML = [dateHtml, authorHtml, catHtml].filter(Boolean).join(" • ");
+    const bits = [];
+    if (post.date) bits.push(`<time datetime="${escapeHtml(post.date)}">${escapeHtml(formatDate(post.date))}</time>`);
+    if (post.author) bits.push(`<span class="post-author">${escapeHtml(post.author)}</span>`);
+    if (post.category) bits.push(`<span class="post-category">${escapeHtml(post.category)}</span>`);
+    if (Array.isArray(post.tags) && post.tags.length) {
+      bits.push(`<span class="post-tags">${post.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join(" ")}</span>`);
+    }
+    meta.innerHTML = bits.join(" • ");
 
     if (post.html && typeof post.html === "string") {
-      content.innerHTML = post.html; // trusted backend HTML
+      content.innerHTML = post.html; // trusted
     } else if (post.content) {
       content.innerHTML = `<p>${escapeHtml(String(post.content))}</p>`;
     } else if (post.excerpt) {
@@ -151,12 +155,10 @@
     const params = getParams();
 
     if (!params.slug && !params.id) {
-      // Friendly missing param message
       const titleEl = $(".post-title");
       const meta = $(".post-meta");
       const content = $(".post-content");
       const hero = $(".post-hero");
-
       if (titleEl) titleEl.textContent = "Post not specified";
       if (meta) meta.innerHTML = "";
       if (hero) hero.innerHTML = "";

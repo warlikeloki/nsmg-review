@@ -1,17 +1,14 @@
 // /js/modules/blog.js
-// Builds homepage teaser and optional blog list.
-// Now generates Read More links that work with either ?id= or ?slug=.
-// Default post page target can be .php or .html via POST_PAGE.
+// Homepage teaser + optional blog list, tailored to your JSON schema.
+// Uses hero_image → image → featuredImage → coverImage fallback.
+// "Read More" links point to /blog-post.php?id=<postId>.
 
 (function () {
   // ===== CONFIG =====
-  // If your staging uses PHP, keep .php; switch to .html if desired:
-  const POST_PAGE = "/blog-post.php"; // or "/blog-post.html"
-
+  const POST_PAGE = "/blog-post.php"; // stays PHP to match your staging
   const BLOG_JSON_FALLBACK = "/json/posts.json";
-  const BLOG_PHP_ENDPOINT = "/php/get_posts.php"; // optional backend
+  const BLOG_PHP_ENDPOINT = "/php/get_posts.php"; // optional backend; JSON fallback works fine
 
-  // ---------- Utilities ----------
   const $ = (sel, root = document) => root.querySelector(sel);
 
   async function fetchJson(url) {
@@ -20,12 +17,13 @@
     return r.json();
   }
 
-  // Try PHP first; then JSON fallback
+  // Prefer PHP if present (limit supported); else JSON
   async function getLatestPosts(limit = 1) {
     try {
       const url = `${BLOG_PHP_ENDPOINT}?limit=${encodeURIComponent(limit)}`;
       const data = await fetchJson(url);
-      return Array.isArray(data) ? data : (data?.posts || []);
+      const arr = Array.isArray(data) ? data : (data?.posts || []);
+      return arr;
     } catch {
       const payload = await fetchJson(BLOG_JSON_FALLBACK);
       const posts = Array.isArray(payload) ? payload : (payload?.posts || []);
@@ -37,9 +35,12 @@
   }
 
   function resolveFeaturedImage(post) {
+    // Your schema: hero_image, image
     const p = post || {};
     const candidates = [
-      p.featuredImage,
+      p.hero_image,
+      p.image,
+      p.featuredImage,       // future-proof
       p.coverImage,
       p?.images?.featured,
       Array.isArray(p?.images?.all) ? p.images.all[0] : null
@@ -65,14 +66,8 @@
   }
 
   function choosePostUrl(post) {
-    // Prefer ID when available (matches your staging URL pattern)
-    if (post?.id) {
-      return `${POST_PAGE}?id=${encodeURIComponent(String(post.id))}`;
-    }
-    if (post?.slug) {
-      return `${POST_PAGE}?slug=${encodeURIComponent(String(post.slug))}`;
-    }
-    // No id or slug -> graceful fallback
+    if (post?.id)   return `${POST_PAGE}?id=${encodeURIComponent(String(post.id))}`;
+    if (post?.slug) return `${POST_PAGE}?slug=${encodeURIComponent(String(post.slug))}`;
     return "/blog.html";
   }
 
@@ -122,7 +117,6 @@
     `;
   }
 
-  // ---------- Renderers ----------
   async function renderHomepageTeaser() {
     const container = $("#blog-teaser .blog-post-preview");
     if (!container) return;
@@ -155,7 +149,6 @@
     }
   }
 
-  // ---------- Init ----------
   document.addEventListener("DOMContentLoaded", () => {
     renderHomepageTeaser();
     renderBlogListIfPresent();
