@@ -4,6 +4,11 @@
    - Enable/disable via /wip-settings.json
    - Hide for yourself: add ?nsmgdev=1 to any URL (sets a cookie for 7 days). Use ?nsmgdev=0 to clear.
    - Dismiss (snooze) stores a TTL in localStorage.
+
+   NSM-187 enhancements:
+   - Toggles body.has-wip-banner when the banner is visible.
+   - Sets CSS variable --wip-banner-height to actual banner height in px.
+   - Recomputes on resize and when banner display/class changes.
 */
 (() => {
   const SETTINGS_URL = '/wip-settings.json';
@@ -31,7 +36,6 @@
       delCookie(DEV_COOKIE);
       console.info('[NSMG] Dev cookie cleared.');
     }
-    // Optional: clean URL param (no reload to avoid disrupting form posts)
     history.replaceState({}, '', location.pathname + location.hash);
   }
 
@@ -54,6 +58,18 @@
     snoozeHours: 4
   };
 
+  // --- NSM-187 helpers ---
+  function setBannerState(visible, bannerEl) {
+    document.body.classList.toggle('has-wip-banner', !!visible);
+    const h = (visible && bannerEl) ? (bannerEl.offsetHeight || 52) : 0;
+    document.documentElement.style.setProperty('--wip-banner-height', (h || 52) + 'px');
+  }
+  function isVisible(el) {
+    if (!el) return false;
+    const style = getComputedStyle(el);
+    return style.display !== 'none' && style.visibility !== 'hidden' && el.offsetHeight > 0;
+  }
+
   const enableUI = (cfg) => {
     // Banner
     const banner = el('div', { id: 'nsmg-wip-banner', role: 'region', 'aria-label': 'Site status notice' });
@@ -73,7 +89,12 @@
     `;
     document.body.prepend(banner);
     banner.style.display = 'block';
-    // NEW: tell layout code that the banner is shown
+
+    // NSM-187: update banner state now and on changes
+    const applyState = () => setBannerState(isVisible(banner), banner);
+    // initial
+    applyState();
+    // announce (kept for backward compatibility with any listeners)
     window.dispatchEvent(new Event('nsmg:wip:shown'));
 
     // Badge
@@ -81,7 +102,8 @@
     badge.innerHTML = `<span class="dot"></span> Work in progress`;
     document.body.appendChild(badge);
     badge.style.display = 'inline-flex';
-    badge.addEventListener('click', () => showModal());
+    const showModal = () => { backdrop.style.display = 'block'; modal.style.display = 'grid'; };
+    badge.addEventListener('click', showModal);
     badge.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showModal(); }});
 
     // Modal + backdrop
@@ -113,21 +135,13 @@
     `;
     document.body.append(backdrop, modal);
 
-    const showModal = () => {
-      backdrop.style.display = 'block';
-      modal.style.display = 'grid';
-    };
-    const hideModal = () => {
-      backdrop.style.display = 'none';
-      modal.style.display = 'none';
-    };
-
-    document.getElementById('wip-learn').addEventListener('click', showModal);
+    const hideModal = () => { backdrop.style.display = 'none'; modal.style.display = 'none'; };
+    document.getElementById('wip-learn').addEventListener('click', () => { backdrop.style.display = 'block'; modal.style.display = 'grid'; });
     document.getElementById('wip-dismiss').addEventListener('click', () => {
-      // quick dismiss with short snooze (1 hour)
+      // short snooze (1 hour)
       localStorage.setItem(SNOOZE_KEY, String(Date.now() + 3600 * 1000));
       banner.style.display = 'none';
-      // NEW: notify layout that banner is gone
+      applyState();
       window.dispatchEvent(new Event('nsmg:wip:hidden'));
     });
     document.getElementById('wip-close').addEventListener('click', hideModal);
@@ -135,24 +149,34 @@
       localStorage.setItem(SNOOZE_KEY, String(Date.now() + (cfg.snoozeHours * 3600 * 1000)));
       hideModal();
       banner.style.display = 'none';
-      // NEW: notify layout that banner is gone
+      applyState();
       window.dispatchEvent(new Event('nsmg:wip:hidden'));
     });
     document.getElementById('wip-hide').addEventListener('click', () => {
       localStorage.setItem(HIDE_KEY, '1');
       hideModal();
       banner.style.display = 'none';
-      // NEW: notify layout that banner is gone
+      applyState();
       window.dispatchEvent(new Event('nsmg:wip:hidden'));
       badge.style.display = 'none';
     });
     backdrop.addEventListener('click', hideModal);
 
-    // Optionally open modal on first visit during this window
     if (cfg.showModalOnFirstVisit && !sessionStorage.getItem('nsmg_wip_seen')) {
       sessionStorage.setItem('nsmg_wip_seen', '1');
       showModal();
     }
+
+    // Recalculate height on resize/wrap changes
+    window.addEventListener('resize', () => requestAnimationFrame(applyState));
+
+    // Watch for style/class changes on the banner that could affect visibility/height
+    const mo = new MutationObserver(() => requestAnimationFrame(applyState));
+    mo.observe(banner, { attributes: true, attributeFilter: ['style', 'class'] });
+
+    // Back-compat: if anyone listens for our custom events, also mirror state
+    window.addEventListener('nsmg:wip:shown', applyState);
+    window.addEventListener('nsmg:wip:hidden', applyState);
   };
 
   const withinWindow = (start, end) => {
@@ -173,12 +197,11 @@
       if (!withinWindow(cfg.startDate, cfg.endDate)) return;
       enableUI({ ...fallback, ...cfg });
     } catch {
-      // Fallback config if no settings file exists
+      // Fallback if no settings file exists
       enableUI(fallback);
     }
   };
 
-  // Kick off after DOM is ready enough to prepend banner
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot, { once: true });
   } else {
