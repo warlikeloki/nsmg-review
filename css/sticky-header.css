@@ -1,74 +1,288 @@
-/* /css/sticky-header.css
-   NSM-180 — Fixed header & spacer, no color overrides.
-   Also offsets the header’s content when a WIP banner is present.
-*/
+/* =========================================================
+   sticky-header.css — FULL FILE (for header.html provided)
+   ========================================================= */
 
-/* Tune if you want a small extra gap below the banner */
-:root {
-  --wip-h: 0px;          /* set by wip-offset.js when banner is visible */
-  --wip-gap: 8px;        /* tiny breathing room below banner */
+/* ------------------------------
+   Sizing tokens (fallbacks)
+   ------------------------------ */
+:root{
+  --header-height: clamp(56px, 6vw, 84px);
+  --header-bg: var(--background-card, #ffffff);
+  --header-text: var(--text-main, #111);
+  --header-shadow: 0 4px 16px rgba(0,0,0,.06);
+  --nav-link: var(--text-main, #111);
+  --nav-link-hover: var(--link-color, #0056b3);
+  --nav-active: var(--primary-color, #0073e6);
+  --nav-gap: 22px;
+  --container-max: 1200px;
+
+  /* WIP banner integration; wip.js sets this when shown */
+  --wip-banner-height: 0px;
 }
 
-/* Make header fixed at the very top (colors come from your existing theme CSS) */
-#site-header.nav-container {
-  position: fixed;
+/* =========================================================
+   Header shell
+   ========================================================= */
+#site-header.nav-container{
+  position: sticky;          /* sticky avoids content “jumping” and spacer hacks */
   top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;        /* stay above content; keep below any modal/WIP overlay if needed */
-}
-
-/* Base header row layout */
-#site-header .container {
-  min-height: 72px;     /* baseline height; real height comes from content */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-/* When WIP banner is present, push nav/logo down INSIDE the header */
-.wip-on #site-header .container {
-  padding-top: calc(var(--wip-h) + var(--wip-gap));
-}
-
-/* Spacer keeps page content from sitting under the fixed header */
-#header-spacer {
-  height: 72px;         /* initial; sticky-header.js will update this to exact header height */
+  z-index: 1020;             /* below the WIP banner; high enough above content */
+  background: var(--header-bg);
+  color: var(--header-text);
+  box-shadow: var(--header-shadow);
   width: 100%;
 }
 
-/* Helpful for in-page anchors: prevents anchors from hiding under the fixed header */
-main, section, [id] {
-  scroll-margin-top: 72px;
-}
-
-/* Defensive: avoid accidental horizontal scrollbars */
-html, body {
-  overflow-x: hidden;
-}
-
-/* NSM-187 — keep primary header below the WIP banner on ALL pages */
-body.has-wip-banner :is(
-  header,
-  .site-header,
-  #site-header,
-  .primary-header,
-  .sticky-header,
-  #header
-) {
-  /* Only has an effect if the header is position: sticky|fixed */
+/* When the WIP banner is visible, nudge the header below it */
+body.has-wip-banner #site-header.nav-container{
   top: var(--wip-banner-height, 52px);
-  z-index: calc(var(--wip-z) - 2); /* below banner, above content */
+  background-clip: padding-box; /* ensure the area is painted (no see-through) */
 }
 
-/* Smooth anchor jumps and sticky sections accounting for banner */
-body.has-wip-banner {
-  scroll-padding-top: var(--wip-banner-height, 52px);
+/* Container inside header */
+#site-header .container{
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 16px;
+  min-height: var(--header-height);
+  display: grid;
+  grid-template-columns: auto 1fr; /* logo | nav */
+  align-items: center;
+  gap: 16px;
 }
 
-/* Portfolio-specific nav (keeps your earlier intent) */
-body.has-wip-banner :is(.portfolio-nav, #portfolio-nav) {
+/* =========================================================
+   Logo
+   ========================================================= */
+.nav-logo{
+  display: flex;
+  align-items: center;
+}
+.site-logo{
+  display: block;
+  height: calc(var(--header-height) - 20px);
+  max-height: 64px;
+  width: auto;
+}
+
+/* =========================================================
+   Primary nav (desktop)
+   ========================================================= */
+#site-header nav{
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: end;
+  align-items: center;
+  gap: 12px;
+}
+
+/* The UL of links */
+#site-header .nav-menu{
+  display: flex;
+  align-items: center;
+  gap: var(--nav-gap);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Top-level items */
+#site-header .nav-menu > li{
+  position: relative; /* for dropdown positioning */
+}
+
+/* Links */
+#site-header .nav-menu a{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0;
+  color: var(--nav-link);
+  text-decoration: none;
+  line-height: 1;
+  font-weight: 500;
+}
+#site-header .nav-menu a:hover,
+#site-header .nav-menu a:focus{
+  color: var(--nav-link-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Active link hint (optional) */
+#site-header .nav-menu a[aria-current="page"]{
+  color: var(--nav-active);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* =========================================================
+   Dropdowns (desktop hover/focus)
+   ========================================================= */
+#site-header .dropdown{
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  min-width: 220px;
+  padding: 10px 0;
+  margin: 0;
+  list-style: none;
+  background: var(--header-bg);
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.10);
+  display: none;             /* hidden until hover/focus */
+  z-index: 1030;             /* above header shell */
+}
+#site-header .dropdown li{
+  padding: 0;
+}
+#site-header .dropdown a{
+  display: block;
+  padding: 10px 14px;
+  width: 100%;
+  color: var(--nav-link);
+  text-decoration: none;
+}
+#site-header .dropdown a:hover,
+#site-header .dropdown a:focus{
+  background: rgba(0,0,0,.04);
+  color: var(--nav-link-hover);
+}
+
+/* Reveal on hover/focus (desktop) */
+#site-header .nav-menu > li:hover > .dropdown,
+#site-header .nav-menu > li:focus-within > .dropdown{
+  display: block;
+}
+
+/* =========================================================
+   Hamburger (mobile trigger)
+   ========================================================= */
+.hamburger{
+  --bar-h: 2px;
+  --bar-g: 5px;
+  width: 42px;
+  height: 32px;
+  position: relative;
+  display: none;            /* hidden on desktop */
+  justify-self: end;
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+.hamburger span{
+  position: absolute;
+  left: 9px;
+  right: 9px;
+  height: var(--bar-h);
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform .2s ease, opacity .2s ease;
+}
+.hamburger span:nth-child(1){ top: 9px; }
+.hamburger span:nth-child(2){ top: calc(9px + var(--bar-h) + var(--bar-g)); }
+.hamburger span:nth-child(3){ top: calc(9px + 2*(var(--bar-h) + var(--bar-g))); }
+
+/* Expanded state (if your JS toggles aria-expanded) */
+.hamburger[aria-expanded="true"] span:nth-child(1){
+  transform: translateY(7px) rotate(45deg);
+}
+.hamburger[aria-expanded="true"] span:nth-child(2){
+  opacity: 0;
+}
+.hamburger[aria-expanded="true"] span:nth-child(3){
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* =========================================================
+   Mobile layout
+   - We show the hamburger and convert the menu to a panel.
+   - Because the button follows the UL in the DOM, we support
+     common open classes the site may toggle (.nav-open).
+   ========================================================= */
+@media (max-width: 900px){
+  /* Show hamburger, collapse menu */
+  .hamburger{ display: inline-flex; align-items: center; justify-content: center; }
+
+  #site-header .nav-menu{
+    position: fixed;
+    top: calc(var(--wip-banner-height, 0px) + var(--header-height));
+    /* If header height varies with breakpoints, JS can set a CSS var for exact height */
+    right: 12px;
+    left: 12px;
+    display: none; /* hidden until opened */
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--header-bg);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    box-shadow: 0 14px 36px rgba(0,0,0,.14);
+    padding: 8px;
+    z-index: 1040;
+  }
+
+  /* Make top-level links larger touch targets */
+  #site-header .nav-menu > li > a{
+    padding: 12px 10px;
+  }
+
+  /* Mobile dropdowns simply flow as nested lists */
+  #site-header .dropdown{
+    position: static;
+    display: block;
+    box-shadow: none;
+    border: 0;
+    padding: 0 0 8px;
+    margin: 0 0 8px;
+  }
+  #site-header .dropdown li a{
+    padding: 8px 12px 8px 18px;
+  }
+
+  /* Open states supported:
+     - body.nav-open (common pattern)
+     - .nav-container.nav-open
+     - data-open="true" on #nav-menu
+     - [data-menu-open="true"] on body
+  */
+  body.nav-open #site-header .nav-menu,
+  .nav-container.nav-open .nav-menu,
+  #nav-menu[data-open="true"]{
+    display: flex;
+  }
+}
+
+/* =========================================================
+   Header spacer (optional helper)
+   - With a sticky header, you do NOT need this spacer; hide it.
+   - If you switch to a fixed header, add .use-fixed-header on <body>
+     to re-enable spacing and prevent content jump.
+   ========================================================= */
+#header-spacer{ display: none; height: 0; }
+
+body.use-fixed-header #site-header.nav-container{
+  position: fixed;
+  top: 0;
+}
+body.use-fixed-header.has-wip-banner #site-header.nav-container{
   top: var(--wip-banner-height, 52px);
-  z-index: calc(var(--wip-z) - 3);
+}
+body.use-fixed-header #header-spacer{
+  display: block;
+  /* Default spacer equals header height; with banner, add its height */
+  height: var(--header-height);
+}
+body.use-fixed-header.has-wip-banner #header-spacer{
+  height: calc(var(--header-height) + var(--wip-banner-height, 52px));
+}
+
+/* =========================================================
+   Small polish
+   ========================================================= */
+#site-header .nav-menu > li > a:focus-visible{
+  outline: 2px solid var(--nav-active);
+  outline-offset: 2px;
 }
