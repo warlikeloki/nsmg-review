@@ -1,0 +1,118 @@
+/* /css/home-services.css
+   NSM-130 — Home Services cards
+   Uses existing design tokens from global.css (fallbacks included).
+*/
+
+#home-services {
+  background: var(--background-section, #f8f8f8);
+  border-radius: var(--border-radius, 8px);
+  box-shadow: 0 2px 8px rgba(var(--shadow-color, 0,0,0), 0.08);
+  padding: 2rem 1rem;
+}
+
+#home-services .section-header {
+  max-width: 1200px;
+  margin: 0 auto 1rem;
+  padding: 0 0.25rem;
+}
+
+#home-services h2 {
+  margin: 0 0 0.25rem;
+  color: var(--text-main, #333);
+}
+
+#home-services .section-intro {
+  margin: 0;
+  color: var(--text-secondary, #555);
+}
+
+/* Responsive grid */
+#home-services .services-grid {
+  max-width: 1200px;
+  margin: 1rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 1100px) {
+  #home-services .services-grid {
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  #home-services .services-grid {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  #home-services .services-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card */
+.service-card {
+  background: var(--background-card, #fff);
+  border: 1px solid var(--border-color, #e6e6e6);
+  border-radius: var(--border-radius, 8px);
+  display: flex;
+  flex-direction: column;
+  min-height: 160px;
+  box-shadow: 0 1px 4px rgba(var(--shadow-color,0,0,0), 0.06);
+}
+
+.service-card-body {
+  padding: 16px 16px 8px;
+}
+
+.service-card-title {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.service-card-link {
+  color: var(--text-main, #222);
+  text-decoration: none;
+}
+
+.service-card-link:hover,
+.service-card-link:focus {
+  text-decoration: underline;
+  color: var(--link-color, #0056b3);
+}
+
+.service-card-summary {
+  margin: 0;
+  color: var(--text-secondary, #555);
+}
+
+/* CTA row sticks to bottom for even heights */
+.service-card-actions {
+  margin-top: auto;
+  padding: 8px 16px 16px;
+}
+
+.service-card-cta {
+  display: inline-block;
+  background: var(--primary-color, #0073e6);
+  color: var(--text-light, #fff);
+  border: 1px solid var(--primary-color, #0073e6);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: background-color .2s ease, transform .06s ease;
+}
+
+.service-card-cta:hover {
+  background: var(--link-hover-color, #003366);
+  color: var(--text-light, #fff);
+}
+
+.service-card-cta:active {
+  transform: translateY(1px);
+}
