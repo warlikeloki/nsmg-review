@@ -1,4 +1,8 @@
-/* Work-In-Progress (WIP) notice styles */
+/* ============================================================
+   Work-In-Progress (WIP) notice styles
+   (Cleaned + NSM-187 additions)
+   ============================================================ */
+
 :root {
   --wip-bg: #111827;            /* slate-900 */
   --wip-fg: #ffffff;
@@ -8,8 +12,14 @@
   --wip-radius: 14px;
   --wip-z: 2147483000;          /* above most things */
   --wip-font: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+
+  /* NSM-187: default height (updated at runtime by JS) */
+  --wip-banner-height: 52px;
 }
 
+/* ------------------------------------------------------------
+   Primary banner (sticky; shown at top when enabled by JS)
+   ------------------------------------------------------------ */
 #nsmg-wip-banner {
   position: sticky;
   top: 0;
@@ -48,6 +58,7 @@
   margin-left: 8px;
 }
 
+/* Buttons */
 .nsmg-wip-btn {
   appearance: none;
   border: 1px solid rgba(255,255,255,.18);
@@ -66,9 +77,11 @@
   border-color: var(--wip-accent);
 }
 
+/* ------------------------------------------------------------
+   Modal (backdrop + card)
+   ------------------------------------------------------------ */
 #nsmg-wip-modal-backdrop {
   position: fixed;
-  /* inset: 0; */           /* replaced for broader Safari support */
   top: 0; right: 0; bottom: 0; left: 0;
   background: rgba(0,0,0,.5);
   z-index: calc(var(--wip-z) + 1);
@@ -77,7 +90,6 @@
 
 #nsmg-wip-modal {
   position: fixed;
-  /* inset: 0; */           /* replaced for broader Safari support */
   top: 0; right: 0; bottom: 0; left: 0;
   display: none;
   place-items: center;
@@ -118,6 +130,9 @@
   border-top: 1px solid rgba(255,255,255,.08);
 }
 
+/* ------------------------------------------------------------
+   Floating badge (launcher)
+   ------------------------------------------------------------ */
 #nsmg-wip-badge {
   position: fixed;
   bottom: 18px;
@@ -133,7 +148,7 @@
   display: none; /* shown by JS */
   cursor: pointer;
 
-  /* Prevent text selection across browsers (Safari requires prefix) */
+  /* Prevent text selection across browsers */
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -149,21 +164,26 @@
   height: 8px;
   border-radius: 999px;
   background: var(--wip-accent-2);
-  margin-right: 8px;/* NSM-143: Responsive WIP banner (safe selectors, no page inflation)
-   - Targets ONLY #wip, #wip-banner, or [data-wip-overlay]
-   - Caps banner height so it never blocks the page
-   - Keeps text compact and wraps long content
-   - iOS safe-area aware; Safari user-select fix
-*/
+  margin-right: 8px;
+  animation: nsmgPulse 2.5s infinite ease-in-out;
+}
 
-/* === Overlay container (top-fixed, non-blocking) === */
+@keyframes nsmgPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,.65); }
+  50%      { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
+}
+
+/* ------------------------------------------------------------
+   NSM-143 block (overlay-style WIP) — CLEANED
+   (These selectors are separate from #nsmg-wip-banner and are kept intact)
+   ------------------------------------------------------------ */
+
+/* Overlay containers (top-fixed, non-blocking) */
 #wip,
 #wip-banner,
 [data-wip-overlay] {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
 
   display: flex;
   justify-content: center;
@@ -172,13 +192,11 @@
   z-index: 9999;
 
   background: transparent;
-  -webkit-user-select: none;      /* Safari warning fix */
+  -webkit-user-select: none;      /* Safari */
   user-select: none;
-
-  /* Do NOT set font-size on the container — avoids page-wide inflation */
 }
 
-/* === Inner card (if your script creates a child wrapper) === */
+/* Inner card */
 #wip .wip-card,
 #wip-banner .wip-card,
 [data-wip-overlay] .wip-card {
@@ -201,7 +219,7 @@
   white-space: normal;
 }
 
-/* === Fallback: if no .wip-card exists, style direct children safely === */
+/* Fallback if no .wip-card child is used */
 #wip > *,
 #wip-banner > *,
 [data-wip-overlay] > * {
@@ -224,7 +242,7 @@
   white-space: normal;
 }
 
-/* === Headline emphasis inside the card === */
+/* Emphasis */
 #wip strong,
 #wip-banner strong,
 [data-wip-overlay] strong,
@@ -235,7 +253,7 @@
   font-size: clamp(1rem, 1.6vw + 0.15rem, 1.15rem);
 }
 
-/* === Close/dismiss button (any of these are supported) === */
+/* Close/dismiss button */
 #wip .wip-close,
 #wip-banner .wip-close,
 [data-wip-overlay] .wip-close,
@@ -260,7 +278,7 @@
   cursor: pointer;
 }
 
-/* === Links inside the banner === */
+/* Links inside overlay */
 #wip a, #wip-banner a, [data-wip-overlay] a,
 #wip .wip-card a, #wip-banner .wip-card a, [data-wip-overlay] .wip-card a {
   color: #93c5fd; /* sky-300 */
@@ -271,7 +289,7 @@
   text-decoration-thickness: 2px;
 }
 
-/* === Reduced motion respect (if your JS animates) === */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   #wip, #wip-banner, [data-wip-overlay] {
     transition: none !important;
@@ -279,14 +297,9 @@
   }
 }
 
-  animation: nsmgPulse 2.5s infinite ease-in-out;
-}
-
-@keyframes nsmgPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,.65); }
-  50%      { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
-}
-
+/* ------------------------------------------------------------
+   Mobile tweaks for the primary sticky banner
+   ------------------------------------------------------------ */
 @media (max-width: 640px) {
   #nsmg-wip-banner .wip-inner {
     grid-template-columns: 22px 1fr auto;
@@ -294,4 +307,24 @@
   #nsmg-wip-banner .wip-actions .hide-on-mobile {
     display: none;
   }
+}
+
+/* ============================================================
+   NSM-187 — Prevent overlap on pages with sticky nav (Portfolio)
+   Usage: when banner is shown, JS adds .has-wip-banner on <body>
+   and updates --wip-banner-height to the measured banner height.
+   ============================================================ */
+
+/* Example: sticky portfolio nav should sit below the banner */
+body.has-wip-banner .portfolio-nav,
+body.has-wip-banner #portfolio-nav {
+  position: sticky;
+  top: var(--wip-banner-height, 52px);
+  z-index: calc(var(--wip-z) - 1); /* below banner, above content */
+}
+
+/* Optional: if the whole page section needs spacing instead of just the nav */
+body.has-wip-banner #portfolio,
+body.has-wip-banner .portfolio-page {
+  scroll-margin-top: var(--wip-banner-height, 52px);
 }
