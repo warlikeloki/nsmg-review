@@ -266,3 +266,25 @@
   }
 }
 
+/* NSM-170 — Center section headings on Home */
+
+body.home section h2,
+body.home section .section-header {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body.home section .section-intro {
+  text-align: center;
+  max-width: 800px;
+  margin: 0.5rem auto 1.5rem;
+  color: var(--text-secondary, #555);
+}
+
+/* Keep responsive margins consistent */
+@media (max-width: 768px) {
+  body.home section .section-intro {
+    margin-bottom: 1rem;
+  }
+}
