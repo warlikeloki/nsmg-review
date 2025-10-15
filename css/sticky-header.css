@@ -47,3 +47,28 @@ main, section, [id] {
 html, body {
   overflow-x: hidden;
 }
+
+/* NSM-187 — keep primary header below the WIP banner on ALL pages */
+body.has-wip-banner :is(
+  header,
+  .site-header,
+  #site-header,
+  .primary-header,
+  .sticky-header,
+  #header
+) {
+  /* Only has an effect if the header is position: sticky|fixed */
+  top: var(--wip-banner-height, 52px);
+  z-index: calc(var(--wip-z) - 2); /* below banner, above content */
+}
+
+/* Smooth anchor jumps and sticky sections accounting for banner */
+body.has-wip-banner {
+  scroll-padding-top: var(--wip-banner-height, 52px);
+}
+
+/* Portfolio-specific nav (keeps your earlier intent) */
+body.has-wip-banner :is(.portfolio-nav, #portfolio-nav) {
+  top: var(--wip-banner-height, 52px);
+  z-index: calc(var(--wip-z) - 3);
+}
