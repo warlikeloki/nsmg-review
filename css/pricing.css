@@ -90,3 +90,32 @@
 
 .badge-hidden { display:inline-block; padding:2px 6px; font-size:.75rem; border:1px solid currentColor; border-radius:4px; opacity:.7; }
 .is-hidden { opacity:.6; }
+
+/* NSM-176 — Embed mode layout cleanup */
+body.embed header,
+body.embed footer,
+body.embed .sidebar,
+body.embed .left-sidebar,
+body.embed .right-sidebar,
+body.embed #sidebar,
+body.embed aside.sidebar,
+body.embed #header-container,
+body.embed #footer-container {
+  display: none !important;
+}
+
+/* Ensure main content fills iframe cleanly */
+body.embed main,
+body.embed .page-container,
+body.embed #pricing-container {
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: 100% !important;
+  width: 100%;
+}
+
+/* Remove any iframe-specific overflow */
+body.embed {
+  overflow-x: hidden;
+  background: transparent;
+}
