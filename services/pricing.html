@@ -65,7 +65,7 @@
     })();
   </script>
 
-  <!-- Pricing logic (kept unchanged) -->
-  <script src="/js/modules/pricing.js" defer></script>
+  <!-- Pricing logic MUST be a module (pricing.js uses "export") -->
+  <script type="module" src="/js/modules/pricing.js"></script>
 </body>
 </html>
