@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pricing – Neil Smith Media Group</title>
 
-  <!-- Resolve all relative URLs from site root (fixes pricing.js fetch paths) -->
+  <!-- Ensure relative URLs resolve from site root (so pricing.js fetches /get_pricing.php etc.) -->
   <base href="/" />
 
-  <!-- Global site styles -->
+  <!-- Styles (unchanged look comes from your existing CSS) -->
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/header.css" />
@@ -21,7 +21,7 @@
 </head>
 
 <body>
-  <!-- Add .embed when ?embed=1 -->
+  <!-- Enable embed mode when ?embed=1 -->
   <script>
     (function () {
       const params = new URLSearchParams(location.search);
@@ -29,43 +29,67 @@
     })();
   </script>
 
-  <!-- Header include (hidden automatically in embed mode via pricing.css) -->
+  <!-- Header include (hidden in .embed via pricing.css) -->
   <div id="header-container"></div>
 
   <main id="pricing-main" role="main">
-    <section id="pricing-section">
-      <h1>Service Pricing</h1>
+    <section id="pricing-section" aria-labelledby="pricing-title">
+      <h1 id="pricing-title">Service Pricing</h1>
       <p class="intro">
         Below are our current base packages and à la carte rates. Contact us for a custom quote.
       </p>
 
-      <!-- Dynamic pricing content -->
-      <div id="pricing-container">
-        <noscript>
-          <p>Enable JavaScript to view live pricing information.</p>
-        </noscript>
-      </div>
+      <!-- ========= RESTORED STRUCTURE PRICING.JS EXPECTS ========= -->
+
+      <section id="packages-section">
+        <h2>Packages</h2>
+        <table class="pricing-table" id="packages-table" aria-describedby="pricing-title">
+          <thead>
+            <tr><th scope="col">Service</th><th scope="col">Description</th><th scope="col">Price</th></tr>
+          </thead>
+          <tbody id="packages-body">
+            <tr><td colspan="3">Loading prices...</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="ala-carte-section">
+        <h2>À La Carte</h2>
+        <table class="pricing-table" id="ala-carte-table" aria-describedby="pricing-title">
+          <thead>
+            <tr><th scope="col">Service</th><th scope="col">Description</th><th scope="col">Price</th></tr>
+          </thead>
+          <tbody id="ala-carte-body">
+            <tr><td colspan="3">Loading prices...</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ========================================================= -->
+
+      <div id="pricing-container" hidden></div>
+      <noscript><p>Enable JavaScript to view live pricing information.</p></noscript>
     </section>
   </main>
 
-  <!-- Footer include (hidden automatically in embed mode via pricing.css) -->
+  <!-- Footer include (hidden in .embed via pricing.css) -->
   <div id="footer-container"></div>
 
   <!-- Header/Footer injection -->
   <script>
     (function () {
-      fetch("/header.html")
-        .then((r) => r.text())
-        .then((html) => { document.getElementById("header-container").innerHTML = html; })
-        .catch(() => {});
-      fetch("/footer.html")
-        .then((r) => r.text())
-        .then((html) => { document.getElementById("footer-container").innerHTML = html; })
-        .catch(() => {});
+      fetch("/header.html").then(r => r.text()).then(html => {
+        const hc = document.getElementById("header-container");
+        if (hc) hc.innerHTML = html;
+      }).catch(()=>{});
+      fetch("/footer.html").then(r => r.text()).then(html => {
+        const fc = document.getElementById("footer-container");
+        if (fc) fc.innerHTML = html;
+      }).catch(()=>{});
     })();
   </script>
 
-  <!-- Pricing logic MUST be a module (pricing.js uses "export") -->
+  <!-- pricing.js uses ES modules; load accordingly -->
   <script type="module" src="/js/modules/pricing.js"></script>
 </body>
 </html>
