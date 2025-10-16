@@ -1,7 +1,7 @@
 /**
  * Services page loader
  * - Left-nav buttons load fragments into #services-content (Photography, Videography, Editing, Other, Request).
- * - Pricing loads as an iframe of /services/pricing.html to ensure the same SQL-backed behavior as the standalone page.
+ * - Pricing loads as an iframe of /services/pricing-dashboard.html to ensure the same SQL-backed behavior as the standalone page without sidebars
  * - Hides right sidebar while Pricing is visible; restores for other sections.
  * - Removes versioned querystrings when loading helper scripts (VS Code preview safe).
  * - Mobile toggle for left nav.
@@ -174,7 +174,7 @@
 
   async function loadPricing() {
     // Prefer the services-fragment page first
-    mountPricingIframe('/services/pricing.html');
+    mountPricingIframe('/services/pricing-dashboard.html');
   }
 
   async function loadService(service) {
