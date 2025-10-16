@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pricing – Neil Smith Media Group</title>
 
-  <!-- Ensure relative URLs resolve from site root (so pricing.js fetches /get_pricing.php etc.) -->
+  <!-- Ensure any relative URLs (e.g., fetch('get_pricing.php')) resolve from site root -->
   <base href="/" />
 
-  <!-- Styles (unchanged look comes from your existing CSS) -->
+  <!-- Site styles -->
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/header.css" />
@@ -21,7 +21,7 @@
 </head>
 
 <body>
-  <!-- Enable embed mode when ?embed=1 -->
+  <!-- Enable embed mode when ?embed=1 (used by Services dashboard iframe) -->
   <script>
     (function () {
       const params = new URLSearchParams(location.search);
@@ -29,53 +29,68 @@
     })();
   </script>
 
-  <!-- Header include (hidden in .embed via pricing.css) -->
+  <!-- Shared header (hidden automatically in .embed mode via pricing.css) -->
   <div id="header-container"></div>
 
-  <main id="pricing-main" role="main">
-    <section id="pricing-section" aria-labelledby="pricing-title">
-      <h1 id="pricing-title">Service Pricing</h1>
-      <p class="intro">
-        Below are our current base packages and à la carte rates. Contact us for a custom quote.
-      </p>
+  <!--
+    Standalone layout: left + main + right sidebars (uses site-wide .page-container rules)
+    In .embed mode, sidebars are hidden via pricing.css so only core pricing shows in the iframe.
+  -->
+  <div class="page-container" id="pricing-page">
+    <aside class="sidebar left-sidebar" id="left-sidebar">
+      <!-- Optional: include or generate your Services nav here if desired -->
+    </aside>
 
-      <!-- ========= RESTORED STRUCTURE PRICING.JS EXPECTS ========= -->
+    <main class="main-content" id="pricing-main" role="main">
+      <section id="pricing-section" aria-labelledby="pricing-title">
+        <h1 id="pricing-title">Service Pricing</h1>
+        <p class="intro">
+          Below are our current base packages and à la carte rates. Contact us for a custom quote.
+        </p>
 
-      <section id="packages-section">
-        <h2>Packages</h2>
-        <table class="pricing-table" id="packages-table" aria-describedby="pricing-title">
-          <thead>
-            <tr><th scope="col">Service</th><th scope="col">Description</th><th scope="col">Price</th></tr>
-          </thead>
-          <tbody id="packages-body">
-            <tr><td colspan="3">Loading prices...</td></tr>
-          </tbody>
-        </table>
+        <!-- === Restored hooks that pricing.js expects === -->
+        <section id="packages-section">
+          <h2>Packages</h2>
+          <table class="pricing-table" id="packages-table" aria-describedby="pricing-title">
+            <thead>
+              <tr><th scope="col">Service</th><th scope="col">Description</th><th scope="col">Price</th></tr>
+            </thead>
+            <tbody id="packages-body">
+              <tr><td colspan="3">Loading prices...</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ala-carte-section">
+          <h2>À La Carte</h2>
+          <table class="pricing-table" id="ala-carte-table" aria-describedby="pricing-title">
+            <thead>
+              <tr><th scope="col">Service</th><th scope="col">Description</th><th scope="col">Price</th></tr>
+            </thead>
+            <tbody id="ala-carte-body">
+              <tr><td colspan="3">Loading prices...</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Optional extra container if your loader uses it -->
+        <div id="pricing-container" hidden></div>
+
+        <noscript>
+          <p>Enable JavaScript to view live pricing information.</p>
+        </noscript>
       </section>
+    </main>
 
-      <section id="ala-carte-section">
-        <h2>À La Carte</h2>
-        <table class="pricing-table" id="ala-carte-table" aria-describedby="pricing-title">
-          <thead>
-            <tr><th scope="col">Service</th><th scope="col">Description</th><th scope="col">Price</th></tr>
-          </thead>
-          <tbody id="ala-carte-body">
-            <tr><td colspan="3">Loading prices...</td></tr>
-          </tbody>
-        </table>
-      </section>
+    <aside class="sidebar right-sidebar" id="right-sidebar">
+      <!-- Optional: promos, contact, etc. -->
+    </aside>
+  </div>
 
-      <!-- ========================================================= -->
-
-      <div id="pricing-container" hidden></div>
-      <noscript><p>Enable JavaScript to view live pricing information.</p></noscript>
-    </section>
-  </main>
-
-  <!-- Footer include (hidden in .embed via pricing.css) -->
+  <!-- Shared footer (hidden automatically in .embed mode via pricing.css) -->
   <div id="footer-container"></div>
 
-  <!-- Header/Footer injection -->
+  <!-- Inject header/footer HTML -->
   <script>
     (function () {
       fetch("/header.html").then(r => r.text()).then(html => {
@@ -89,7 +104,7 @@
     })();
   </script>
 
-  <!-- pricing.js uses ES modules; load accordingly -->
+  <!-- Pricing logic (ES module is required if the file uses export/import) -->
   <script type="module" src="/js/modules/pricing.js"></script>
 </body>
 </html>

@@ -1,166 +1,168 @@
-// /js/modules/pricing.js
-// NSM-159/160 — Robust Pricing loader with PHP-first, JSON fallback, and shape-agnostic parsing.
+/* NSMG Pricing loader (robust)
+   - Populates #packages-body and #ala-carte-body
+   - Works with payload shapes:
+       A) { packages: [...], alacarte: [...] }
+       B) [ { type: "package"|"alacarte", service, description, price }, ... ]
+   - Uses absolute endpoint to avoid relative path issues when under /services/
+*/
 
-const API_URL = '/php/get_pricing.php';
-const JSON_URL = '/json/pricing.json';
-
-function $(sel, root = document) { return root.querySelector(sel); }
-
-function usd(n) {
-  if (n === null || n === undefined || isNaN(Number(n))) return '';
-  try {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n));
-  } catch {
-    return `$${Number(n).toFixed(2)}`;
-  }
-}
-
-async function getJson(url) {
-  const res = await fetch(url, { cache: 'no-store', credentials: 'same-origin' });
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-  return await res.json();
-}
-
-/** Detects our canonical PHP payload: {packages:[], alaCarte:[] } */
-function looksLikePhpPayload(x) {
-  return x && Array.isArray(x.packages) && Array.isArray(x.alaCarte);
-}
-
-/** Some older JSONs might be a flat array or {items:[...]} with keys in different cases. */
-function normalizeToSections(payload) {
-  // Case 1: canonical
-  if (looksLikePhpPayload(payload)) {
-    return {
-      packages: payload.packages.map(normalizeItem),
-      alaCarte: payload.alaCarte.map(normalizeItem),
-    };
-  }
-
-  // Case 2: { items: [...] } or plain array
-  const items = Array.isArray(payload) ? payload
-             : Array.isArray(payload?.items) ? payload.items
-             : [];
-
-  const norm = items.map(normalizeItem);
-  const packages = norm.filter(i => i.isPackage === true);
-  const alaCarte = norm.filter(i => i.isPackage === false);
-
-  return { packages, alaCarte };
-}
-
-/** Accepts multiple key styles and returns a consistent item shape */
-function normalizeItem(row = {}) {
-  const name = row.service ?? row.Service ?? row.name ?? '';
-  const desc = row.description ?? row.Description ?? '';
-  const unit = row.unit ?? row.Unit ?? null;
-
-  // price may already be formatted (Price, PriceDisplay), prefer numeric if present
-  const priceRaw = row.price ?? row.Price ?? null;
-  const priceDisp = row.PriceDisplay ?? null;
-  const price = (priceRaw === null || priceRaw === undefined || priceRaw === '')
-    ? null
-    : Number(priceRaw);
-
-  // package flag could be boolean, 0/1, "1", or missing; treat missing as false
-  const isPkg =
-    (typeof row.isPackage === 'boolean') ? row.isPackage :
-    (row.is_package !== undefined) ? (Number(row.is_package) === 1) :
-    (row.IsPackage !== undefined) ? Boolean(row.IsPackage) :
-    false;
-
-  // visibility may come from backend; default visible if unspecified
-  const isVisible =
-    (row.isVisible !== undefined) ? Boolean(row.isVisible) :
-    (row.is_visible !== undefined) ? (Number(row.is_visible) === 1) : true;
-
-  return {
-    service: String(name || '').trim(),
-    description: String(desc || '').trim(),
-    unit: unit ? String(unit).trim() : null,
-    price,                       // numeric or null
-    priceDisplay: priceDisp || null, // optional preformatted
-    isPackage: !!isPkg,
-    isVisible: !!isVisible,
+(function () {
+  // ----- Config
+  const ENDPOINT = '/php/get_pricing.php'; // <-- absolute path so it works from anywhere
+  const SELECTORS = {
+    packagesBody: '#packages-body',
+    alacarteBody: '#ala-carte-body',
+    fallbackContainer: '#pricing-container' // optional extra render spot
   };
-}
 
-function clearBody(tbody) {
-  while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
-}
+  // ----- DOM helpers
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-function rowHtml(item) {
-  const name = item.service || '';
-  const desc = item.description || '';
-  const priceText = item.priceDisplay || usd(item.price) || '';
-  const unitText = item.unit ? ` ${item.unit}` : '';
-
-  const priceCell = (priceText || unitText)
-    ? `${priceText}${unitText ? `<span class="unit">${unitText}</span>` : ''}`
-    : '—';
-
-  return `
-    <tr>
-      <td>${escapeHtml(name)}</td>
-      <td>${escapeHtml(desc)}</td>
-      <td>${priceCell}</td>
-    </tr>
-  `;
-}
-
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-function renderTable(tbodyId, items) {
-  const tbody = document.getElementById(tbodyId);
-  if (!tbody) return;
-
-  clearBody(tbody);
-
-  const visible = (items || []).filter(i => i && i.isVisible !== false);
-  if (!visible.length) {
-    tbody.innerHTML = `<tr><td colspan="3">No items available.</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = visible.map(rowHtml).join('');
-}
-
-async function getPricingPreferPhp() {
-  // 1) Try PHP
-  try {
-    const php = await getJson(API_URL);
-    if (looksLikePhpPayload(php)) {
-      console.info('[pricing] using PHP payload');
-      return normalizeToSections(php);
-    } else {
-      console.warn('[pricing] PHP payload unexpected shape; will try JSON fallback');
-      // fall through to JSON
+  function ensureTargets() {
+    const pkgBody = $(SELECTORS.packagesBody);
+    const alaBody = $(SELECTORS.alacarteBody);
+    if (!pkgBody || !alaBody) {
+      console.warn('[pricing] Expected table bodies not found.',
+        { packagesBody: !!pkgBody, alacarteBody: !!alaBody }
+      );
     }
-  } catch (e) {
-    console.warn('[pricing] PHP failed; will try JSON fallback. Error:', e);
+    return { pkgBody, alaBody };
   }
 
-  // 2) Fallback JSON
-  const j = await getJson(JSON_URL);
-  const norm = normalizeToSections(j);
-  console.info('[pricing] using JSON fallback');
-  return norm;
-}
-
-export async function loadPricing() {
-  try {
-    const data = await getPricingPreferPhp();
-    renderTable('packages-body', data.packages);
-    renderTable('ala-carte-body', data.alaCarte);
-  } catch (e) {
-    console.error('[pricing] fatal error rendering pricing:', e);
-    // graceful failure: show a terse message if DOM nodes exist
-    const pb = $('#packages-body'), ab = $('#ala-carte-body');
-    if (pb) pb.innerHTML = `<tr><td colspan="3">Pricing unavailable.</td></tr>`;
-    if (ab) ab.innerHTML = `<tr><td colspan="3">Pricing unavailable.</td></tr>`;
+  function setStatus(tbody, msg) {
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="3">${msg}</td></tr>`;
   }
-}
+
+  function formatPrice(v) {
+    if (v == null || v === '') return '';
+    // Accept already formatted strings like "$100" or "From $200"
+    if (typeof v === 'string' && /[$€£]/.test(v)) return v;
+    const n = Number(v);
+    if (Number.isFinite(n)) {
+      try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(n); }
+      catch { return `$${n.toFixed(2)}`; }
+    }
+    return String(v);
+  }
+
+  function rowHTML(item) {
+    const service = item.service ?? item.title ?? item.name ?? '';
+    const desc = item.description ?? item.details ?? item.desc ?? '';
+    const price = formatPrice(item.price ?? item.cost ?? item.rate);
+    return `
+      <tr>
+        <td>${escapeHTML(service)}</td>
+        <td>${escapeHTML(desc)}</td>
+        <td>${escapeHTML(price)}</td>
+      </tr>
+    `;
+  }
+
+  function escapeHTML(s) {
+    return String(s ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
+  function normalizeData(data) {
+    // Accept two shapes:
+    // 1) { packages: [...], alacarte: [...] }
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+      const packages = Array.isArray(data.packages) ? data.packages : [];
+      const alacarte = Array.isArray(data.alacarte) ? data.alacarte : (Array.isArray(data.alaCarte) ? data.alaCarte : []);
+      return { packages, alacarte };
+    }
+    // 2) [ { type: 'package'|'alacarte', ... }, ... ]
+    if (Array.isArray(data)) {
+      const packages = data.filter(i => (i.type || i.category || '').toString().toLowerCase().includes('pack'));
+      const alacarte = data.filter(i => (i.type || i.category || '').toString().toLowerCase().includes('la') || (i.type || i.category || '').toString().toLowerCase().includes('à'));
+      // If no explicit type, do a naive split: first half -> packages, second -> alacarte
+      if (!packages.length && !alacarte.length) {
+        const mid = Math.floor(data.length / 2);
+        return { packages: data.slice(0, mid), alacarte: data.slice(mid) };
+      }
+      return { packages, alacarte };
+    }
+    // Unknown shape → treat as empty
+    return { packages: [], alacarte: [] };
+  }
+
+  async function load() {
+    const { pkgBody, alaBody } = ensureTargets();
+    if (pkgBody) setStatus(pkgBody, 'Loading prices...');
+    if (alaBody) setStatus(alaBody, 'Loading prices...');
+
+    let res;
+    try {
+      res = await fetch(ENDPOINT, { credentials: 'same-origin', cache: 'no-store' });
+    } catch (err) {
+      console.error('[pricing] Network error fetching endpoint', ENDPOINT, err);
+      if (pkgBody) setStatus(pkgBody, 'Unable to load prices (network).');
+      if (alaBody) setStatus(alaBody, 'Unable to load prices (network).');
+      return;
+    }
+
+    if (!res.ok) {
+      console.error('[pricing] Endpoint returned error', ENDPOINT, res.status, res.statusText);
+      if (pkgBody) setStatus(pkgBody, `Unable to load prices (HTTP ${res.status}).`);
+      if (alaBody) setStatus(alaBody, `Unable to load prices (HTTP ${res.status}).`);
+      return;
+    }
+
+    let data;
+    try {
+      data = await res.json();
+    } catch (err) {
+      console.error('[pricing] Failed to parse JSON from endpoint', ENDPOINT, err);
+      if (pkgBody) setStatus(pkgBody, 'Unable to load prices (invalid JSON).');
+      if (alaBody) setStatus(alaBody, 'Unable to load prices (invalid JSON).');
+      return;
+    }
+
+    const { packages, alacarte } = normalizeData(data);
+    // Render packages
+    if (pkgBody) {
+      if (!packages.length) {
+        setStatus(pkgBody, 'No package pricing available.');
+      } else {
+        pkgBody.innerHTML = packages.map(rowHTML).join('');
+      }
+    }
+    // Render à la carte
+    if (alaBody) {
+      if (!alacarte.length) {
+        setStatus(alaBody, 'No à la carte pricing available.');
+      } else {
+        alaBody.innerHTML = alacarte.map(rowHTML).join('');
+      }
+    }
+
+    // Extra: if neither populated but we have a generic container, dump a quick diagnostic
+    if ((!packages?.length && !alacarte?.length) && $(SELECTORS.fallbackContainer)) {
+      const c = $(SELECTORS.fallbackContainer);
+      c.hidden = false;
+      c.innerHTML = `
+        <div class="pricing-empty-note" style="padding:.75rem 0;">
+          <small>Pricing data returned empty. Check <code>${ENDPOINT}</code> response shape in Network tab.</small>
+        </div>`;
+    }
+
+    // Log summary for debugging
+    console.info('[pricing] Loaded', {
+      endpoint: ENDPOINT,
+      counts: { packages: packages?.length || 0, alacarte: alacarte?.length || 0 }
+    });
+  }
+
+  // Kick off when DOM is interactive/ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', load, { once: true });
+  } else {
+    load();
+  }
+})();
