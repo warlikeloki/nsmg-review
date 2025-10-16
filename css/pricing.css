@@ -1,44 +1,100 @@
 /* =========================================================
-   pricing.css — scoped rules for the Pricing page
-   - Standalone view: show sidebars/layout normally
-   - Embed view (?embed=1 → body.embed): hide header/footer/sidebars/chrome
-   - No site-wide color or typography overrides here
+   pricing.css — Enhanced visual design for Pricing page
    ========================================================= */
 
-/* ---------- Page-level spacing for standalone ---------- */
-#pricing-page .main-content #pricing-section {
-  /* keep content readable; actual colors/typography come from global.css */
-  padding: 1rem 0;
+/* ---------- Basic section styling ---------- */
+#pricing-section {
+  background: var(--background-section, #fafafa);
+  border-radius: var(--border-radius, 8px);
+  padding: 2rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-/* Basic table layout (visual styles should exist already site-wide) */
+#pricing-section h1 {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  color: var(--text-main, #222);
+}
+
+#pricing-section .intro {
+  text-align: center;
+  color: var(--text-secondary, #555);
+  max-width: 700px;
+  margin: 0 auto 2rem auto;
+  line-height: 1.6;
+}
+
+#packages-section,
+#ala-carte-section {
+  margin-top: 2rem;
+}
+
+#packages-section h2,
+#ala-carte-section h2 {
+  margin-bottom: 0.75rem;
+  border-left: 5px solid var(--primary-color, #0073e6);
+  padding-left: 0.5rem;
+  color: var(--text-main, #222);
+}
+
+/* ---------- Table styling ---------- */
 .pricing-table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 0.95rem;
+  background-color: var(--background-card, #fff);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: var(--border-radius, 6px);
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
-.pricing-table th,
+
+.pricing-table thead {
+  background-color: var(--primary-color, #0073e6);
+  color: var(--text-light, #fff);
+}
+
+.pricing-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border-bottom: 2px solid var(--primary-color-dark, #005bb5);
+}
+
 .pricing-table td {
-  padding: 0.6rem 0.75rem;
-  vertical-align: top;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color, #eee);
+  color: var(--text-secondary, #444);
 }
 
-/* Headings and intro spacing */
-#pricing-section h1 { margin-bottom: 0.25rem; }
-#pricing-section .intro { margin: 0 0 1rem 0; }
-
-/* Group spacing */
-#packages-section,
-#ala-carte-section {
-  margin-top: 1.25rem;
+/* Zebra striping for better readability */
+.pricing-table tbody tr:nth-child(odd) {
+  background-color: var(--background-alt, #f9fbfd);
 }
 
-/* =========================================================
-   EMBED MODE
-   When the page is loaded as /services/pricing.html?embed=1,
-   the <body> has class="embed". Only then do we hide chrome.
-   ========================================================= */
+/* Hover effect */
+.pricing-table tbody tr:hover {
+  background-color: var(--accent-hover, rgba(0,115,230,0.08));
+  transition: background-color 0.2s ease-in-out;
+}
 
-/* Hide header/footer and sidebars INSIDE the iframe only */
+/* Price alignment */
+.pricing-table td:last-child {
+  text-align: right;
+  font-weight: 600;
+  color: var(--text-main, #222);
+}
+
+/* ---------- “No data” row ---------- */
+.pricing-table td[colspan="3"] {
+  text-align: center;
+  color: var(--text-secondary, #777);
+  font-style: italic;
+}
+
+/* ---------- Embed mode (iframe) ---------- */
 body.embed #header-container,
 body.embed #footer-container,
 body.embed header,
@@ -51,13 +107,13 @@ body.embed #right-sidebar {
   display: none !important;
 }
 
-/* Expand the main content to full width in embed mode */
 body.embed .page-container {
-  display: block !important;     /* ignore outer flex so we get full width */
+  display: block !important;
   max-width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
 }
+
 body.embed .main-content {
   width: 100% !important;
   max-width: 100% !important;
@@ -65,23 +121,20 @@ body.embed .main-content {
   padding: 0 !important;
 }
 
-/* Remove any outer margins around the pricing section when embedded */
 body.embed #pricing-section {
   margin: 0 !important;
-  padding: 0.5rem 0 !important;
+  padding: 1rem !important;
+  box-shadow: none;
+  border-radius: 0;
+  background: transparent;
 }
 
-/* Prevent horizontal scrollbars inside the iframe */
 body.embed {
   overflow-x: hidden;
-  background: transparent; /* let parent page control the bg */
+  background: transparent;
 }
 
-/* =========================================================
-   SAFETY RESET (standalone)
-   If any prior global change hid sidebars by mistake,
-   ensure they are visible in non-embed mode.
-   ========================================================= */
+/* ---------- Safety reset for standalone ---------- */
 body:not(.embed) .left-sidebar,
 body:not(.embed) .right-sidebar,
 body:not(.embed) .sidebar,
