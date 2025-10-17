@@ -24,11 +24,7 @@
 <body>
   <!-- HEADER -->
   <div id="header-container"></div>
-  <script>
-    fetch('/header.html')
-      .then(r => r.text())
-      .then(html => document.getElementById('header-container').innerHTML = html);
-  </script>
+  
 
   <div class="page-container">
     <aside class="sidebar left-sidebar"></aside>
@@ -83,11 +79,7 @@
 
   <!-- FOOTER -->
   <div id="footer-container"></div>
-  <script>
-    fetch('/footer.html')
-      .then(r => r.text())
-      .then(html => document.getElementById('footer-container').innerHTML = html);
-  </script>
+  
 
   <!-- Site bootstrap -->
   <script type="module" src="/js/main.js" defer></script>

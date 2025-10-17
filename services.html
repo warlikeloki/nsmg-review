@@ -71,11 +71,7 @@
 <body>
   <!-- HEADER -->
   <div id="header-container"></div>
-  <script>
-    fetch('/header.html')
-      .then(r => r.text())
-      .then(html => document.getElementById('header-container').innerHTML = html);
-  </script>
+  
 
   <div class="page-container">
     <!-- Left Sidebar: Services Drawer Host -->
@@ -121,11 +117,7 @@
 
   <!-- FOOTER -->
   <div id="footer-container"></div>
-  <script>
-    fetch('/footer.html')
-      .then(r => r.text())
-      .then(html => document.getElementById('footer-container').innerHTML = html);
-  </script>
+  
 
   <!-- Page-specific JS -->
   <script type="module" src="/js/pages/services.js" defer></script>

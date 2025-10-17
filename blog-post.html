@@ -40,16 +40,7 @@
   <div id="footer-container"></div>
 
   <!-- Header/Footer injection (same pattern used elsewhere) -->
-  <script>
-    (function () {
-      fetch('/header.html').then(r => r.text()).then(html => {
-        document.getElementById('header-container').innerHTML = html;
-      }).catch(()=>{});
-      fetch('/footer.html').then(r => r.text()).then(html => {
-        document.getElementById('footer-container').innerHTML = html;
-      }).catch(()=>{});
-    })();
-  </script>
+  
 
   <!-- Detail page script -->
   <script src="/js/modules/blog-post.js" defer></script>

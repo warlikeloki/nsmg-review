@@ -28,11 +28,7 @@
 <body>
   <!-- Header -->
   <div id="header-container"></div>
-  <script>
-    fetch('/header.html')
-      .then(res => res.text())
-      .then(html => document.getElementById('header-container').innerHTML = html);
-  </script>
+  
 
   <div class="page-container">
     <!-- Left Sidebar -->
@@ -69,11 +65,6 @@
 
   <!-- Footer -->
   <div id="footer-container"></div>
-  <script>
-    fetch('/footer.html')
-      .then(res => res.text())
-      .then(html => document.getElementById('footer-container').innerHTML = html);
-  </script>
 
   <!-- Load all site-wide JS modules (navigation, dropdowns, etc.) -->
   <script type="module" src="/js/main.js" defer></script>
