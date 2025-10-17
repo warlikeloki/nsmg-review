@@ -1,7 +1,6 @@
-﻿<!-- /header.html — Classic structure with JS hooks -->
+﻿<!-- /header.html -->
 <header id="site-header" class="nav-container" role="banner">
   <div class="container">
-    <!-- Logo and Navigation -->
     <div class="nav-logo">
       <a href="/index.html" aria-label="Neil Smith Media Group">
         <img src="/media/logos/Logo-wordmarkv2.png" alt="Neil Smith Media Group Logo" class="site-logo">
@@ -15,7 +14,6 @@
 
         <li>
           <a href="/services.html">Services</a>
-          <!-- Keep your 'dropdown' class; add 'submenu' so CSS/JS can target it -->
           <ul class="dropdown submenu">
             <li><a href="/services.html">Services</a></li>
             <li><a href="/services/photography.html">Photography</a></li>
@@ -37,10 +35,8 @@
 
         <li><a href="/blog.html">Blog</a></li>
         <li><a href="/contact.html">Contact</a></li>
-        <!-- <li><a href="/admin/admin.php" class="nav-link">Admin</a></li> -->
       </ul>
 
-      <!-- Works with your CSS and the new JS -->
       <button class="hamburger"
               aria-label="Toggle navigation"
               aria-controls="nav-menu"
@@ -51,7 +47,29 @@
     </nav>
   </div>
 </header>
-<link rel="stylesheet" href="/css/sticky-header.css">
 
-<!-- Spacer prevents content being hidden under fixed header -->
-<div id="header-spacer" aria-hidden="true"></div>
+<!-- Inline, minimal fallback so the hamburger ALWAYS works on mobile.
+     It politely steps aside if the real nav module sets window.__NSM_NAV_READY = true. -->
+<script>
+(function(){
+  var attached = false;
+  function onClick(e){
+    if (window.__NSM_NAV_READY === true) return; // real module owns it
+    var btn = e.target.closest && e.target.closest('.hamburger,[data-nav-toggle]');
+    if (!btn) return;
+    var id = btn.getAttribute('aria-controls') || 'nav-menu';
+    var menu = document.getElementById(id);
+    if (!menu) return;
+    e.preventDefault();
+    var isOpen = menu.classList.toggle('open');
+    document.documentElement.classList.toggle('nav-open', isOpen);
+    document.body.classList.toggle('nav-open', isOpen);
+    btn.setAttribute('aria-expanded', String(isOpen));
+  }
+  // Attach once
+  if (!attached) {
+    document.addEventListener('click', onClick, { passive: false });
+    attached = true;
+  }
+})();
+</script>

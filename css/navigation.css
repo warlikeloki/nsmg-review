@@ -1,10 +1,10 @@
-/* /css/navigation.css — NSMG classic nav
-   - Works with: header.html using <ul id="nav-menu" class="nav-menu"> and .hamburger button
-   - Fixes: desktop hamburger hidden; mobile hamburger shown; dropdowns visible (white bg, brand text) with hover invert
-   - Preserves: first-tap expand, second-tap navigate, re-tap collapse (via navigation.js)
+/* /css/navigation.css — NSMG classic nav (deduped)
+   Works with: <ul id="nav-menu" class="nav-menu"> and .hamburger button in header.html
+   Desktop: inline menu; white dropdowns w/ brand text; full-width brand hover
+   Mobile: off-canvas drawer; scroll lock; same look/feel
 */
 
-/* Theme bridge to global.css */
+/* --- Theme bridge to global.css --- */
 :root{
   --nav-gap: 1rem;
   --nav-drawer-w: 280px;
@@ -12,38 +12,38 @@
   --nav-focus: rgba(var(--primary-color-rgb), 0.45);
 }
 
-/* Keep logo square */
+/* Keep logo square (global img rule rounds by default) */
 .nav-container .site-logo { border-radius: 0; display:block; }
 
-/* Desktop-first, inline menu */
+/* --------- Desktop (inline) --------- */
 .nav-menu{
   display:flex;
   align-items:center;
   justify-content:flex-end;
   gap: var(--nav-gap);
 }
-
-/* Reset UL/LI and links */
 .nav-menu, .nav-menu ul{ list-style:none; margin:0; padding:0; }
 .nav-menu li{ position:relative; }
+
 .nav-menu > li > a{
   display:inline-block;
   text-decoration:none;
   font-weight:600;
   line-height:1.2;
   padding:.5rem .5rem;
-  color: var(--text-light); /* header is brand-colored; links are light */
+  color: var(--text-light); /* header background is brand color */
 }
 .nav-menu > li > a:link,
 .nav-menu > li > a:visited,
 .nav-menu > li > a:hover,
 .nav-menu > li > a:active{ color: var(--text-light); }
+
 .nav-menu > li > a[aria-current="page"]{
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 
-/* ---- Dropdowns (your markup uses .dropdown; JS also targets .submenu) ---- */
+/* Dropdown panel (your markup uses .dropdown; we also accept .submenu) */
 .nav-menu li > .dropdown,
 .nav-menu li > .submenu{
   display:none;
@@ -52,7 +52,7 @@
   left:0;
   min-width: 220px;
   margin-top: 6px;
-  background: var(--background-card);     /* white */
+  background: var(--background-card); /* white */
   color: var(--text-main);
   border: 1px solid var(--nav-border);
   border-radius: 10px;
@@ -61,33 +61,34 @@
   z-index: 20;
 }
 
-/* Desktop hover reveal */
+/* Desktop hover; mobile visibility handled by .is-expanded */
 .nav-menu > li:hover > .dropdown,
 .nav-menu > li:hover > .submenu{ display:block; }
-
-/* Mobile reveal via JS (.is-expanded on LI) */
 .is-expanded > .dropdown,
 .is-expanded > .submenu{ display:block; }
 
-/* Dropdown item colors: brand text on white; invert on hover */
+/* Dropdown items: brand text, invert on hover */
 .nav-menu li > .dropdown a,
 .nav-menu li > .submenu a{
   display:block;
   padding:.5rem .9rem;
   font-weight:600;
-  color: var(--primary-color);            /* brand text */
   text-decoration: none;
+  color: var(--primary-color);
 }
 .nav-menu li > .dropdown a:hover,
 .nav-menu li > .submenu a:hover{
-  background: var(--primary-color);       /* brand bg */
-  color: var(--text-light);               /* white text */
+  background: var(--primary-color);
+  color: var(--text-light);
 }
 
 /* Keyboard focus */
-.nav-menu a:focus{ outline:3px solid var(--nav-focus); outline-offset:2px; }
+.nav-menu a:focus{
+  outline:3px solid var(--nav-focus);
+  outline-offset:2px;
+}
 
-/* Caret for expandable parents (ARIA controlled by JS) */
+/* Caret on expandable parents (ARIA toggled by JS) */
 .nav-menu > li > a[aria-expanded="true"]::after,
 .nav-menu > li > a[aria-expanded="false"]::after{
   content:""; display:inline-block; width:0; height:0; margin-left:.35em; vertical-align:middle;
@@ -96,24 +97,22 @@
 .nav-menu > li > a[aria-expanded="false"]::after{ border-top:6px solid var(--text-light); }
 .nav-menu > li > a[aria-expanded="true"]::after{  border-bottom:6px solid var(--text-light); }
 
-/* ---- Hamburger (your header uses .hamburger) ---- */
+/* --------- Hamburger (header button) --------- */
 .hamburger,
 .menu-toggle{
   background:none; border:0; padding:.25rem; cursor:pointer; color: var(--text-light);
-  display:none; /* hidden on desktop */
+  display:none; /* hidden on desktop; shown on mobile below */
 }
 .hamburger span,
 .menu-toggle .menu-toggle-line{
   display:block; width:24px; height:2px; margin:5px 0; background: currentColor;
 }
 
-/* ---- Mobile drawer behavior ---- */
+/* --------- Mobile (media query) --------- */
 @media (max-width:1023px){
-  /* Show the hamburger only on mobile */
   .hamburger,
   .menu-toggle{ display:block; }
 
-  /* Off-canvas drawer on the UL#nav-menu */
   .nav-menu{
     position: fixed;
     top:0; right:0;
@@ -122,7 +121,7 @@
     align-items: stretch;
     gap:0;
     padding:80px 16px 16px;               /* clears header area */
-    background: var(--background-card);   /* light drawer */
+    background: var(--background-card);
     color: var(--text-main);
     transform: translateX(100%);
     transition: transform .25s ease;
@@ -152,7 +151,7 @@
   .nav-menu li > .submenu a{
     padding:.5rem 1rem .5rem 1.25rem;    /* indent */
     border-radius:6px;
-    color: var(--primary-color);         /* brand text on light bg */
+    color: var(--primary-color);
   }
   .nav-menu li > .dropdown a:hover,
   .nav-menu li > .submenu a:hover{
@@ -161,98 +160,26 @@
   }
 }
 
-/* Navigation Hot-Fix */
-
-@media (max-width: 1050px) { /* small buffer above 1023 to avoid scrollbar jitter */
-  /* Show hamburger; hide full inline menu unless opened */
-  .hamburger { display: inline-block; }
-
-  /* Ensure the UL#nav-menu behaves as an off-canvas drawer on mobile */
-  #nav-menu.nav-menu {
-    position: fixed;
-    top: 0; right: 0;
-    height: 100vh; width: 280px;
-    transform: translateX(100%);
-    transition: transform .25s ease;
-    padding: 80px 16px 16px;
-    background: var(--background-card);
-    color: var(--text-main);
-    box-shadow: -12px 0 30px rgba(0,0,0,.12);
-    border-left: 1px solid rgba(0,0,0,0.08);
-    overflow-y: auto;
-    z-index: 1000;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    display: flex;
-  }
-  #nav-menu.open { transform: translateX(0); }
-
-  html.nav-open, body.nav-open { overflow: hidden; }
-}
-
-/* === JS-controlled mobile mode: applies whenever html.nav-mobile is present === */
+/* --------- JS-controlled mobile mode (fallback / stabilization) --------- */
+/* These rules apply whenever <html class="nav-mobile"> is present.
+   They mirror the MQ behavior so mobile still works if MQs or viewport are off. */
 html.nav-mobile .hamburger { display: inline-block; }
 
-html.nav-mobile #nav-menu.nav-menu {
+html.nav-mobile #nav-menu.nav-menu{
   position: fixed;
-  top: 0; right: 0;
-  height: 100vh; width: 280px;
+  top:0; right:0;
+  height:100vh; width: var(--nav-drawer-w);
   transform: translateX(100%);
   transition: transform .25s ease;
-  padding: 80px 16px 16px;
+  padding:80px 16px 16px;
   background: var(--background-card);
   color: var(--text-main);
   box-shadow: -12px 0 30px rgba(0,0,0,.12);
-  border-left: 1px solid rgba(0,0,0,0.08);
-  overflow-y: auto;
-  z-index: 1000;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0;
-  display: flex;
+  border-left: 1px solid var(--nav-border);
+  overflow-y:auto; z-index:1000;
+  display:flex; flex-direction:column; align-items:stretch; gap:0;
 }
-
-html.nav-mobile #nav-menu.open { transform: translateX(0); }
-
-html.nav-mobile.nav-open,
-html.nav-mobile body.nav-open { overflow: hidden; }
-
-/* ===== JS-controlled mobile mode (no media queries needed) ===== */
-html.nav-mobile .hamburger { display: inline-block; }
-
-html.nav-mobile #nav-menu.nav-menu {
-  position: fixed;
-  top: 0; right: 0;
-  height: 100vh; width: 280px;
-  transform: translateX(100%);
-  transition: transform .25s ease;
-  padding: 80px 16px 16px;
-  background: var(--background-card);
-  color: var(--text-main);
-  box-shadow: -12px 0 30px rgba(0,0,0,.12);
-  border-left: 1px solid rgba(0,0,0,0.08);
-  overflow-y: auto;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0;
-}
-html.nav-mobile #nav-menu.open { transform: translateX(0); }
+html.nav-mobile #nav-menu.open{ transform: translateX(0); }
 
 html.nav-mobile, html.nav-mobile body { overflow-x: hidden; }
 html.nav-mobile.nav-open, html.nav-mobile body.nav-open { overflow: hidden; }
-
-/* Force page to “phone layout” when JS says it’s mobile */
-html.nav-mobile .page-container {
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-  gap: 16px !important;
-}
-html.nav-mobile .left-sidebar,
-html.nav-mobile .right-sidebar { display: none !important; }
-
-/* Keep images/tables from blowing layout wide */
-html.nav-mobile img, html.nav-mobile video, html.nav-mobile canvas { max-width: 100%; height: auto; }
-html.nav-mobile .table-wrap { width: 100%; overflow-x: auto; }
