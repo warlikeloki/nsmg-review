@@ -1,50 +1,77 @@
-﻿<header id="site-header" class="nav-container" role="banner">
-  <div class="container">
-    <!-- Logo and Navigation -->
-    <div class="nav-logo">
-      <a href="/index.html" aria-label="Neil Smith Media Group">
-        <img src="/media/logos/Logo-wordmarkv2.png" alt="Neil Smith Media Group Logo" class="site-logo">
-      </a>
-    </div>
+﻿<!-- /header.html -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a class="brand" href="/" aria-label="Neil Smith Media Group home">
+      <img src="/media/logo/nsmg-wordmark.svg" alt="Neil Smith Media Group" width="180" height="36" loading="eager" decoding="async">
+    </a>
 
-    <nav aria-label="Primary">
-      <ul class="nav-menu" id="nav-menu">
-        <li><a href="/index.html">Home</a></li>
-        <li><a href="/about-us/about.html">About</a></li>
+    <!-- Mobile Toggle -->
+    <button class="menu-toggle" type="button"
+            aria-label="Open main menu"
+            aria-controls="primary-nav"
+            aria-expanded="false"
+            data-nav-toggle>
+      <span class="menu-toggle-box" aria-hidden="true">
+        <span class="menu-toggle-line"></span>
+        <span class="menu-toggle-line"></span>
+        <span class="menu-toggle-line"></span>
+      </span>
+      <span class="sr-only">Menu</span>
+    </button>
 
-        <li>
-          <a href="/services.html">Services</a>
-          <ul class="dropdown">
-            <li><a href="/services.html">Services</a></li>
-            <li><a href="/services/photography.html">Photography</a></li>
-            <li><a href="/services/videography.html">Videography</a></li>
-            <li><a href="/services/editing.html">Editing</a></li>
-            <li><a href="/services/other-services.html">Other Available Services</a></li>
-            <li><a href="/services/pricing.html">Pricing</a></li>
+    <!-- Primary Navigation -->
+    <nav id="primary-nav" class="nav-menu" aria-label="Primary">
+      <ul class="nav-root" role="menubar">
+        <li role="none">
+          <a role="menuitem" href="/index.html">Home</a>
+        </li>
+
+        <!-- Services (parent link + submenu) -->
+        <li role="none" class="has-submenu">
+          <a role="menuitem" href="/services.html">Services</a>
+          <ul class="submenu" role="menu">
+            <li role="none"><a role="menuitem" href="/services/photography.html">Photography</a></li>
+            <li role="none"><a role="menuitem" href="/services/videography.html">Videography</a></li>
+            <li role="none"><a role="menuitem" href="/services/editing.html">Editing</a></li>
+            <li role="none"><a role="menuitem" href="/services/other-services.html">Other Services</a></li>
+            <li role="none"><a role="menuitem" href="/services/pricing.html">Pricing</a></li>
+            <li role="none"><a role="menuitem" href="/services/request-form.html">Request a Service</a></li>
           </ul>
         </li>
 
-        <li>
-          <a href="/portfolio.html">Portfolio</a>
-          <ul class="dropdown">
-            <li><a href="/portfolio.html">Portfolio</a></li>
-            <li><a href="/gallery/gallery.html">Gallery</a></li>
-            <li><a href="/testimonials.html">Testimonials</a></li>
+        <!-- Portfolio with submenu (example) -->
+        <li role="none" class="has-submenu">
+          <a role="menuitem" href="/portfolio.html">Portfolio</a>
+          <ul class="submenu" role="menu">
+            <li role="none"><a role="menuitem" href="/gallery.html">Gallery</a></li>
+            <li role="none"><a role="menuitem" href="/portfolio.html#featured">Featured Work</a></li>
           </ul>
         </li>
 
-        <li><a href="/blog.html">Blog</a></li>
-        <li><a href="/contact.html">Contact</a></li>
-        <!-- <li><a href="/admin/admin.php" class="nav-link">Admin</a></li> -->
+        <li role="none">
+          <a role="menuitem" href="/testimonials.html">Testimonials</a>
+        </li>
+
+        <li role="none" class="has-submenu">
+          <a role="menuitem" href="/blog.html">Blog</a>
+          <ul class="submenu" role="menu">
+            <li role="none"><a role="menuitem" href="/blog.html">All Posts</a></li>
+            <li role="none"><a role="menuitem" href="/about-us/index.html#news">News & Updates</a></li>
+          </ul>
+        </li>
+
+        <li role="none">
+          <a role="menuitem" href="/contact.html">Contact</a>
+        </li>
       </ul>
-
-      <button class="hamburger" aria-label="Toggle navigation" aria-controls="nav-menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
     </nav>
+
+    <!-- Optional utility links / icons -->
+    <div class="header-utilities" aria-label="Utilities">
+      <a class="util-link email" href="/contact.html" aria-label="Email us">
+        <img src="/media/icons/email.svg" alt="" width="20" height="20" loading="lazy" decoding="async">
+      </a>
+      <!-- Add socials as needed -->
+    </div>
   </div>
 </header>
-<link rel="stylesheet" href="/css/sticky-header.css">
-
-<!-- Spacer prevents content being hidden under fixed header -->
-<div id="header-spacer" aria-hidden="true"></div>

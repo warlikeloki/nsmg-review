@@ -1,101 +1,163 @@
-/* navigation.css */
+/* /css/navigation.css
+   NSMG — Navigation (Desktop + Mobile Drawer)
+   Covers NSM-103, NSM-104, NSM-35
+   Guarded against global.css (button/link/img resets)
+*/
 
-/* Nav container */
-.nav-container {
-  background-color: var(--primary-color);
-  color: var(--text-light, #fff);
-  padding: 0.75rem 0;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  border-bottom: 2px solid var(--accent-color);
+/* ===========================
+   Variables (optional)
+   =========================== */
+:root{
+  --nav-bg: #111;
+  --nav-fg: #fff;
+  --nav-hover-bg: #222;
+  --nav-focus: #00bcd4;
+  --nav-gap: 1.5rem;
+  --nav-drawer-w: 260px;
+  --nav-breakpoint: 1023px; /* JS uses 1024 as desktop cutoff */
 }
 
-/* Flex wrapper */
-.nav-container .container {
+/* ===========================
+   Base header & brand guards (vs global.css)
+   =========================== */
+.site-header .brand img{ border-radius: 0; }          /* prevent rounded logo */
+.menu-toggle{                                         /* defeat global button styles */
+  display: none; background: none; border: 0;
+  padding: 0.25rem; cursor: pointer; color: inherit;
+}
+.menu-toggle:hover,
+.menu-toggle:focus{ background: none; color: inherit; }
+
+/* ===========================
+   Base nav layout (desktop-first)
+   =========================== */
+.nav-menu{
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--nav-gap);
+  color: var(--nav-fg);
 }
 
-/* Logo */
-.nav-logo img.site-logo {
-  height: 50px;
-  width: auto;
-}
-
-/* Base nav menu */
-.nav-menu {
+.nav-menu ul{
   list-style: none;
-  display: flex;
-  gap: 1.5rem;
   margin: 0;
   padding: 0;
 }
 
-/* Links */
-.nav-menu a {
-  color: var(--text-light, #fff);
+.nav-menu li{ position: relative; }
+
+/* Guard link colors from global a{} and a:hover{} */
+.nav-menu a{
   text-decoration: none;
-  font-size: 1rem;
-  padding: 0.5rem 0;
-  transition: color 0.3s;
+  color: var(--nav-fg);
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  display: inline-block;
+  line-height: 1.2;
 }
+.nav-menu a:link,
+.nav-menu a:visited,
+.nav-menu a:hover,
+.nav-menu a:active{ color: var(--nav-fg); }
 
-.nav-menu a:hover {
-  color: var(--accent-color);
-}
-
-/* Active link */
-.nav-menu a.active {
-  color: var(--accent-color);
-  font-weight: bold;
-  border-bottom: 2px solid var(--accent-color);
-}
-
-/* Dropdown (desktop) */
-.nav-menu li {
-  position: relative;
-}
-
-.nav-menu li ul.dropdown {
-  display: none;
+/* ===========================
+   Submenus (desktop hover; mobile via .is-expanded)
+   =========================== */
+.nav-root > li > .submenu{
+  display: none; /* hidden by default; mobile shown via .is-expanded */
   position: absolute;
   top: 100%;
   left: 0;
-  background: var(--background-card, #fff);
-  color: var(--primary-color);
-  min-width: 200px;
+  background: var(--nav-bg);
   padding: 0.5rem 0;
-  border-radius: var(--border-radius);
-  box-shadow: 0 2px 10px rgba(var(--shadow-color, 0,0,0), 0.2);
-  z-index: 999;
+  min-width: 180px;
+  z-index: 10;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
 }
 
-.nav-menu li:hover > ul.dropdown {
+.nav-root > li:hover > .submenu{ display: block; } /* desktop hover */
+.is-expanded > .submenu{ display: block; }         /* mobile JS toggle */
+
+.submenu a{
   display: block;
-}
-
-.nav-menu li ul.dropdown a {
-  color: var(--primary-color);
   padding: 0.5rem 1rem;
-  display: block;
+  white-space: nowrap;
+}
+.submenu a:hover{ background: var(--nav-hover-bg); }
+
+/* ===========================
+   Mobile toggle icon bits
+   =========================== */
+.menu-toggle-box{ display: inline-block; }
+.menu-toggle-line{
+  width: 24px; height: 2px; margin: 5px 0;
+  background: currentColor; display: block;
+  transition: transform .2s ease;
 }
 
-.nav-menu li ul.dropdown a:hover {
-  background-color: var(--primary-color);
-  color: var(--text-light, #fff);
+/* ===========================
+   Accessibility helpers
+   =========================== */
+.nav-menu a:focus{
+  outline: 2px solid var(--nav-focus);
+  outline-offset: 2px;
 }
 
-/* Mobile menu icon (hidden desktop) */
-#mobile-menu-icon {
-  display: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  background: none;
-  border: none;
-  color: var(--text-light, #fff);
+/* Visual caret for expanded state (managed by JS on mobile) */
+.nav-root > li > a[aria-expanded="true"]::after{
+  content: "▲"; margin-left: 0.35em; font-size: 0.7em;
+}
+.nav-root > li > a[aria-expanded="false"]::after{
+  content: "▼"; margin-left: 0.35em; font-size: 0.7em;
 }
 
-/* === MOBILE STYLES ARE IN mobile.css === */
+/* ===========================
+   Mobile drawer behavior
+   =========================== */
+@media (max-width: 1023px){
+  .menu-toggle{ display: block; }
+
+  .nav-menu{
+    position: fixed;
+    top: 0; right: 0;
+    height: 100vh; width: var(--nav-drawer-w);
+    flex-direction: column; align-items: flex-start;
+    padding: 4rem 1rem;
+    gap: 0.25rem;
+    background: var(--nav-bg);
+    transform: translateX(100%);            /* hidden off-canvas */
+    transition: transform 0.25s ease;
+    overflow-y: auto; z-index: 1000;
+    box-shadow: -8px 0 24px rgba(0,0,0,0.35);
+  }
+  .nav-menu.open{ transform: translateX(0); } /* shown */
+
+  html.nav-open,
+  body.nav-open{ overflow: hidden; }          /* page lock while open */
+
+  .nav-root > li{ width: 100%; }
+  .nav-root > li > a{
+    width: 100%;
+    padding: 0.75rem 0.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  /* Submenus stack and indent inside drawer */
+  .submenu{
+    position: static; background: none; border: 0; border-radius: 0;
+    padding: 0; margin: 0 0 0.25rem 0;
+  }
+  .submenu a{ padding: 0.5rem 1.25rem; } /* indent */
+}
+
+/* ===========================
+   Utilities
+   =========================== */
+.header-utilities .util-link{
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 8px;
+  transition: background .15s ease; color: inherit;
+}
+.header-utilities .util-link:hover{ background: rgba(255,255,255,0.08); }
