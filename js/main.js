@@ -6,11 +6,11 @@
 // - Conditionally loads /js/modules/* based on DOM markers.
 
 (() => {
-  // ---------- Small helpers ----------
+  // ---------- Helpers ----------
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  function waitFor(selector, { timeout = 10000, root = document } = {}) {
+  function waitFor(selector, { timeout = 2500, root = document } = {}) {
     return new Promise((resolve, reject) => {
       const start = performance.now();
       (function tick(){
@@ -23,14 +23,13 @@
   }
 
   function ensureViewportMeta() {
-    const head = document.head || document.getElementsByTagName("head")[0];
     const wanted = "width=device-width, initial-scale=1.0, viewport-fit=cover";
-    let tag = head.querySelector('meta[name="viewport"]');
+    let tag = document.head.querySelector('meta[name="viewport"]');
     if (!tag) {
       tag = document.createElement("meta");
       tag.name = "viewport";
       tag.content = wanted;
-      head.appendChild(tag);
+      document.head.appendChild(tag);
     } else if (!/width\s*=\s*device-width/i.test(tag.content)) {
       tag.content = wanted;
     }
@@ -80,7 +79,22 @@
     });
   }
 
-  // --------- Resilient fallback so hamburger always works ---------
+  function ensureContainer(id, position = "start") {
+    if (document.getElementById(id)) return;
+    const div = document.createElement("div");
+    div.id = id;
+    position === "start" ? document.body.prepend(div) : document.body.append(div);
+  }
+
+  async function loadPartial(url, containerSelector) {
+    const container = $(containerSelector);
+    if (!container) return;
+    const res = await fetch(url, { credentials: "same-origin", cache: "no-store" });
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    container.innerHTML = await res.text();
+  }
+
+  // --------- Fallback so hamburger always works ---------
   function attachHamburgerFallback() {
     document.addEventListener("click", (e) => {
       // If the real nav module is live, let it handle the click.
