@@ -21,10 +21,50 @@
   <link rel="stylesheet" href="/css/footer.css" />
   <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/equipment.css" />
+  <link rel="stylesheet" href="/css/wip.css" />
+
+  <!-- Page-scoped overrides for the Services drawer -->
+  <style>
+    /* Keep the services drawer acting like a vertical sidebar on desktop */
+    #services-drawer.nav-menu {
+      display: block;
+      position: static;
+      transform: none;
+      height: auto;
+      width: auto;
+      box-shadow: none;
+      border: 0;
+      background: transparent;
+      padding: 0;
+    }
+    #services-drawer .admin-button { display: block; width: 100%; margin-bottom: .5rem; }
+
+    /* Sidebar layout stays vertical */
+    .left-sidebar #services-nav { display: block; }
+
+    /* Hide the mobile hamburger on desktop; shown by navigation.css at <=1023px */
+    #services-toggle.hamburger { display: none; }
+
+    /* Mobile: turn the services drawer into an off-canvas panel that navigation.js toggles with .open */
+    @media (max-width: 1023px) {
+      /* Show the page-level hamburger (we reuse your existing #services-toggle) */
+      #services-toggle.hamburger { display: inline-block; }
+
+      /* Ensure the drawer uses the off-canvas rules supplied by /css/navigation.css (.nav-menu.open) */
+      #services-drawer.nav-menu {
+        /* The base off-canvas styles (position, size, transform, etc.)
+           are already defined in navigation.css for .nav-menu under 1023px.
+           We only tweak spacing to fit this sidebar’s content. */
+        padding: 80px 16px 16px;
+      }
+
+      /* On mobile, we usually hide the static left sidebar area since the drawer replaces it */
+      .left-sidebar { display: none; }
+    }
+  </style>
 
   <!-- Site-wide JS -->
   <script type="module" src="/js/main.js" defer></script>
-  <link rel="stylesheet" href="/css/wip.css" />
   <script type="module" src="/js/wip.js" defer></script>
   <script type="module" src="/js/modules/site-settings.js"></script>
 </head>
@@ -38,26 +78,37 @@
   </script>
 
   <div class="page-container">
-    <!-- Left Sidebar: Button Navigation -->
+    <!-- Left Sidebar: Services Drawer Host -->
     <aside class="sidebar left-sidebar">
-      <div id="services-nav">
-        <h2>Our Services</h2>
-        <button class="admin-button" data-service="photography">Photography</button>
-        <button class="admin-button" data-service="videography">Videography</button>
-        <button class="admin-button" data-service="editing">Editing</button>
-        <button class="admin-button" data-service="other-services">Other Services</button>
-        <!-- NEW: Pricing button (same styling/class as others) -->
-        <button class="admin-button" data-service="pricing">Pricing</button>
-        <button class="admin-button" data-service="request-form">Request a Service</button>
-      </div>
+      <!-- IMPORTANT: Give the drawer an id + class="nav-menu" so navigation.js toggles .open here -->
+      <nav id="services-drawer" class="nav-menu" aria-label="Services Menu">
+        <!-- Keep your original services-nav id and button structure so existing JS keeps working -->
+        <div id="services-nav">
+          <h2>Our Services</h2>
+          <button class="admin-button" data-service="photography">Photography</button>
+          <button class="admin-button" data-service="videography">Videography</button>
+          <button class="admin-button" data-service="editing">Editing</button>
+          <button class="admin-button" data-service="other-services">Other Services</button>
+          <button class="admin-button" data-service="pricing">Pricing</button>
+          <button class="admin-button" data-service="request-form">Request a Service</button>
+        </div>
+      </nav>
     </aside>
 
     <!-- Main Content -->
     <main class="main-content" id="services-content">
-      <!-- NSM-85: mobile services toggle -->
-      <button id="services-toggle" class="btn services-toggle" aria-expanded="false" aria-controls="services-nav">
-        Services ☰
+      <!-- Mobile-only dashboard hamburger (keeps your original #services-toggle id for module detection) -->
+      <button
+        id="services-toggle"
+        class="hamburger"
+        aria-label="Toggle services menu"
+        aria-controls="services-drawer"
+        aria-expanded="false"
+        data-dashboard-toggle
+      >
+        <span></span><span></span><span></span>
       </button>
+
       <div id="service-placeholder">
         <h1>Our Services</h1>
         <p>Select a service from the left to learn more about what we offer.</p>
@@ -76,7 +127,7 @@
       .then(html => document.getElementById('footer-container').innerHTML = html);
   </script>
 
-  <!-- Page-specific JS (migrated out of inline script) -->
+  <!-- Page-specific JS -->
   <script type="module" src="/js/pages/services.js" defer></script>
 </body>
 </html>
