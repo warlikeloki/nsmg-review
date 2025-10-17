@@ -56,15 +56,6 @@
   <div id="footer-container"></div>
 
   <!-- Load header and footer -->
-  <script>
-    fetch('/header.html')
-      .then(response => response.text())
-      .then(html => document.getElementById('header-container').innerHTML = html);
-
-    fetch('/footer.html')
-      .then(response => response.text())
-      .then(html => document.getElementById('footer-container').innerHTML = html);
-  </script>
 
   <!-- Load all JS modules -->
   <script type="module" src="/js/main.js" defer></script>

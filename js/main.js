@@ -1,7 +1,9 @@
 ﻿// /js/main.js
-// Does NOT inject header/footer (pages handle their own fetches).
-// Waits for the existing header to load, then initializes navigation.
-// Includes a fallback hamburger handler that steps aside once the real module is ready.
+// Central bootstrap for NSMG:
+// - Unconditionally injects header/footer via partials (single source of truth).
+// - Initializes navigation after injection (with resilient hamburger fallback).
+// - Enforces a correct mobile viewport and stabilizes mobile layout.
+// - Conditionally loads /js/modules/* based on DOM markers.
 
 (() => {
   // ---------- Small helpers ----------
@@ -34,9 +36,9 @@
     }
   }
 
-  // Keep mobile layout stable even if a page’s CSS MQs misbehave
+  // JS-stabilized mobile class to avoid breakpoint jitter/scrollbar effects.
   function installNavMobileClass() {
-    const MOBILE_MAX = 1050; // buffer above 1023 to avoid scrollbar/zoom jitter
+    const MOBILE_MAX = 1050; // buffer above 1023
     function setNavMobile() {
       document.documentElement.classList.toggle("nav-mobile", window.innerWidth <= MOBILE_MAX);
     }
@@ -45,7 +47,28 @@
     window.addEventListener("orientationchange", setNavMobile, { passive: true });
   }
 
-  // Highlight current page link
+  // Create containers if missing (lets us inject universally).
+  function ensureContainer(id, position = "start") {
+    let el = document.getElementById(id);
+    if (!el) {
+      el = document.createElement("div");
+      el.id = id;
+      position === "start" ? document.body.prepend(el) : document.body.append(el);
+    }
+    return el;
+  }
+
+  // Fetch & inject a partial into a container selector.
+  async function loadPartial(url, containerSelector) {
+    const container = $(containerSelector);
+    if (!container) return;
+    const res = await fetch(url, { credentials: "same-origin", cache: "no-store" });
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    const html = await res.text();
+    container.innerHTML = html;
+  }
+
+  // Mark the current page link in the injected header.
   function setActiveNav() {
     const path = location.pathname.replace(/\/+$/, "") || "/";
     $$("#header-container nav a[href], header nav a[href]").forEach(a => {
@@ -60,7 +83,7 @@
   // --------- Resilient fallback so hamburger always works ---------
   function attachHamburgerFallback() {
     document.addEventListener("click", (e) => {
-      // If the real module is live, let it handle everything.
+      // If the real nav module is live, let it handle the click.
       if (window.__NSM_NAV_READY === true) return;
 
       const btn = e.target.closest(".hamburger, [data-nav-toggle]");
@@ -77,7 +100,6 @@
       document.body.classList.toggle("nav-open", isOpen);
       btn.setAttribute("aria-expanded", String(isOpen));
 
-      // Close drawer when any link inside is tapped
       if (isOpen) {
         const onLink = (evt) => {
           const a = evt.target.closest("a[href]");
@@ -93,7 +115,50 @@
     }, { passive: false });
   }
 
-  // -------------- Conditional module autoloads (unchanged logic) --------------
+  // ------------------ Bootstrap: inject + init nav ------------------
+  async function initNavigation() {
+    // Always inject header/footer via partials (single source of truth).
+    const headerContainer = ensureContainer("header-container", "start");
+    const footerContainer = ensureContainer("footer-container", "end");
+
+    // Clear any stale content first to avoid duplicates
+    headerContainer.innerHTML = "";
+    footerContainer.innerHTML = "";
+
+    await Promise.all([
+      loadPartial("/header.html", "#header-container"),
+      loadPartial("/footer.html", "#footer-container"),
+    ]);
+
+    // Header is now present; the UL id we target is #nav-menu per your header.html
+    await waitFor("#nav-menu", { timeout: 8000 });
+
+    // Stabilize layout & make hamburger work regardless of module status.
+    setActiveNav();
+    installNavMobileClass();
+    attachHamburgerFallback();
+
+    // Try to enable the full navigation module (submenu tap logic, ARIA, etc.).
+    try {
+      const mod = await import("/js/modules/navigation.js");
+      if (window.NSM?.navigation && typeof window.NSM.navigation.init === "function") {
+        window.NSM.navigation.init({
+          headerSelector: "#header-container header, header.nav-container, header.site-header",
+          navSelector: "#nav-menu", // IMPORTANT: your UL id
+          toggleSelector: "[data-nav-toggle], .hamburger, [aria-controls='nav-menu']",
+          openClassOnNav: "open",
+          desktopWidth: 1024,
+          injectBackdrop: true,
+          debug: false
+        });
+        window.__NSM_NAV_READY = true; // tells the fallback to back off
+      }
+    } catch (err) {
+      console.warn("[NSMG] navigation module import failed; fallback handler remains active.", err);
+    }
+  }
+
+  // ------------------ Conditional module autoloads ------------------
   async function autoInitModules() {
     const has = (sel) => !!document.querySelector(sel);
 
@@ -130,47 +195,15 @@
     if (has(".filter-buttons"))                              { try { await import("/js/modules/portfolio.js"); } catch {} }
   }
 
-  // ------------------ Bootstrap ------------------
-  async function initNavigationAfterHeader() {
-    // Pages inject header themselves; just wait for it
-    // Support both patterns: #header-container > header … OR a directly inlined <header>
-    const headerEl = (await waitFor("#header-container header, header.nav-container, header.site-header")).closest("header");
-    await waitFor("#nav-menu"); // your header’s UL id
-
-    setActiveNav();             // once header exists
-    installNavMobileClass();    // JS-stable mobile layout class
-    attachHamburgerFallback();  // make hamburger work regardless
-
-    // Try to enable the full navigation module (submenu tap logic, ARIA syncing)
-    try {
-      const mod = await import("/js/modules/navigation.js");
-      if (window.NSM?.navigation && typeof window.NSM.navigation.init === "function") {
-        window.NSM.navigation.init({
-          headerSelector: "#header-container header, header.nav-container, header.site-header",
-          navSelector: "#nav-menu", // IMPORTANT: your UL id
-          toggleSelector: "[data-nav-toggle], .hamburger, [aria-controls='nav-menu']",
-          openClassOnNav: "open",
-          desktopWidth: 1024,
-          injectBackdrop: true,
-          debug: false
-        });
-        // Tell the fallback to back off
-        window.__NSM_NAV_READY = true;
-      }
-    } catch (err) {
-      console.warn("[NSMG] navigation module import failed; fallback handler remains active.", err);
-    }
-  }
-
+  // ------------------ Boot ------------------
   async function start() {
     ensureViewportMeta();
 
-    // NOTE: We do NOT inject header/footer here. Pages do their own inline fetches.
+    try { await initNavigation(); } catch (e) {
+      console.error("Nav init error:", e);
+    }
 
-    // Wait for header to appear, then wire nav
-    try { await initNavigationAfterHeader(); } catch (e) { console.error("Nav init error:", e); }
-
-    // Site-wide utilities (leave as async best-effort)
+    // Stickies & site chrome (after header exists)
     try { await import("/js/modules/wip-offset.js"); } catch {}
     try { await import("/js/modules/sticky-header.js"); } catch {}
     try {
