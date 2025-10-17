@@ -1,20 +1,31 @@
 ﻿// /js/main.js
+// Central bootstrap (hardened):
+// - Waits for <body>, ensures header/footer containers exist
+// - Injects /header.html and /footer.html with safe fallbacks
+// - Initializes navigation (with resilient hamburger fallback)
+// - Enforces correct mobile viewport and stabilizes mobile layout
+// - Conditionally loads /js/modules/* based on DOM markers
 
 (() => {
-  // ---------- Helpers ----------
+  // ---------- Tiny helpers ----------
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  function waitFor(selector, { timeout = 2500, root = document } = {}) {
+  function waitFor(selector, { timeout = 10000, root = document } = {}) {
     return new Promise((resolve, reject) => {
-      const start = performance.now();
+      const t0 = performance.now();
       (function tick(){
         const el = root.querySelector(selector);
         if (el) return resolve(el);
-        if (performance.now() - start > timeout) return reject(new Error("waitFor timeout: " + selector));
+        if (performance.now() - t0 > timeout) return reject(new Error("waitFor timeout: " + selector));
         requestAnimationFrame(tick);
       })();
     });
+  }
+
+  async function waitForBody() {
+    if (document.body) return document.body;
+    return waitFor("body", { timeout: 15000 });
   }
 
   function ensureViewportMeta() {
@@ -41,28 +52,32 @@
     window.addEventListener("orientationchange", setNavMobile, { passive: true });
   }
 
-  // Create containers if missing (lets us inject universally).
+  // Create or return a container. Requires body to exist.
   function ensureContainer(id, position = "start") {
     let el = document.getElementById(id);
-    if (!el) {
-      el = document.createElement("div");
-      el.id = id;
-      position === "start" ? document.body.prepend(el) : document.body.append(el);
-    }
+    if (el) return el;
+    el = document.createElement("div");
+    el.id = id;
+    if (!document.body) return null; // should not happen after waitForBody
+    if (position === "start") document.body.prepend(el);
+    else document.body.append(el);
     return el;
   }
 
-  // Fetch & inject a partial into a container selector.
-  async function loadPartial(url, containerSelector) {
-    const container = $(containerSelector);
-    if (!container) return;
-    const res = await fetch(url, { credentials: "same-origin", cache: "no-store" });
-    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-    const html = await res.text();
-    container.innerHTML = html;
+  async function loadPartial(url, container) {
+    if (!container) return false;
+    try {
+      const res = await fetch(url, { credentials: "same-origin", cache: "no-store" });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      const html = await res.text();
+      container.innerHTML = html;
+      return true;
+    } catch (e) {
+      console.error(`[NSMG] Failed to load ${url}:`, e);
+      return false;
+    }
   }
 
-  // Mark the current page link in the injected header.
   function setActiveNav() {
     const path = location.pathname.replace(/\/+$/, "") || "/";
     $$("#header-container nav a[href], header nav a[href]").forEach(a => {
@@ -74,26 +89,10 @@
     });
   }
 
-  function ensureContainer(id, position = "start") {
-    if (document.getElementById(id)) return;
-    const div = document.createElement("div");
-    div.id = id;
-    position === "start" ? document.body.prepend(div) : document.body.append(div);
-  }
-
-  async function loadPartial(url, containerSelector) {
-    const container = $(containerSelector);
-    if (!container) return;
-    const res = await fetch(url, { credentials: "same-origin", cache: "no-store" });
-    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-    container.innerHTML = await res.text();
-  }
-
-  // --------- Fallback so hamburger always works ---------
+  // --------- Resilient fallback so hamburger always works ---------
   function attachHamburgerFallback() {
     document.addEventListener("click", (e) => {
-      // If the real nav module is live, let it handle the click.
-      if (window.__NSM_NAV_READY === true) return;
+      if (window.__NSM_NAV_READY === true) return; // real module owns it
 
       const btn = e.target.closest(".hamburger, [data-nav-toggle]");
       if (!btn) return;
@@ -124,43 +123,86 @@
     }, { passive: false });
   }
 
-  // ------------------ Bootstrap: inject + init nav ------------------
-  async function initNavigation() {
-    // Always inject header/footer via partials (single source of truth).
+  // --------- Inject header/footer safely (with fallbacks) ---------
+  async function ensureHeaderAndFooterInjected() {
+    await waitForBody();
+
     const headerContainer = ensureContainer("header-container", "start");
     const footerContainer = ensureContainer("footer-container", "end");
 
-    // Clear any stale content first to avoid duplicates
-    headerContainer.innerHTML = "";
-    footerContainer.innerHTML = "";
+    // Clear any stale content to avoid duplicates
+    if (headerContainer) headerContainer.replaceChildren();
+    if (footerContainer) footerContainer.replaceChildren();
 
-    await Promise.all([
-      loadPartial("/header.html", "#header-container"),
-      loadPartial("/footer.html", "#footer-container"),
-    ]);
+    const headerOk = await loadPartial("/header.html", headerContainer);
+    const footerOk = await loadPartial("/footer.html", footerContainer);
 
-    // Header is now present; the UL id we target is #nav-menu per your header.html
-    await waitFor("#nav-menu", { timeout: 8000 });
+    // Minimal fallbacks if the partials failed (keeps site usable)
+    if (!headerOk && headerContainer) {
+      headerContainer.innerHTML = `
+        <header id="site-header" class="nav-container" role="banner">
+          <div class="container">
+            <div class="nav-logo"><a href="/index.html">Neil Smith Media Group</a></div>
+            <nav aria-label="Primary">
+              <ul class="nav-menu" id="nav-menu">
+                <li><a href="/index.html">Home</a></li>
+              </ul>
+              <button class="hamburger" aria-controls="nav-menu" aria-expanded="false"><span></span><span></span><span></span></button>
+            </nav>
+          </div>
+        </header>`;
+    }
+    if (!footerOk && footerContainer) {
+      footerContainer.innerHTML = `
+        <footer class="site-footer">
+          <div class="container">
+            <p>&copy; ${new Date().getFullYear()} Neil Smith Media Group</p>
+          </div>
+        </footer>`;
+    }
+
+    // Ensure we truly have a header element before proceeding
+    await waitFor("#header-container header, header.nav-container, header.site-header", { timeout: 8000 });
+  }
+
+  // ------------------ Bootstrap: inject + init nav ------------------
+  async function initNavigation() {
+    await ensureHeaderAndFooterInjected();
+
+    // Ensure #nav-menu exists; if not, create a tiny one as a last resort
+    let navMenu = document.getElementById("nav-menu");
+    if (!navMenu) {
+      const header = $("#header-container header, header.nav-container, header.site-header");
+      if (header) {
+        const nav = header.querySelector("nav") || header.appendChild(document.createElement("nav"));
+        nav.setAttribute("aria-label", nav.getAttribute("aria-label") || "Primary");
+        navMenu = document.createElement("ul");
+        navMenu.id = "nav-menu";
+        navMenu.className = "nav-menu";
+        navMenu.innerHTML = `<li><a href="/index.html">Home</a></li>`;
+        nav.appendChild(navMenu);
+      }
+    }
 
     // Stabilize layout & make hamburger work regardless of module status.
     setActiveNav();
     installNavMobileClass();
     attachHamburgerFallback();
 
-    // Try to enable the full navigation module (submenu tap logic, ARIA, etc.).
+    // Try to enable the full navigation module (submenu tap logic, ARIA, etc.)
     try {
       const mod = await import("/js/modules/navigation.js");
       if (window.NSM?.navigation && typeof window.NSM.navigation.init === "function") {
         window.NSM.navigation.init({
           headerSelector: "#header-container header, header.nav-container, header.site-header",
-          navSelector: "#nav-menu", // IMPORTANT: your UL id
+          navSelector: "#nav-menu",
           toggleSelector: "[data-nav-toggle], .hamburger, [aria-controls='nav-menu']",
           openClassOnNav: "open",
           desktopWidth: 1024,
           injectBackdrop: true,
           debug: false
         });
-        window.__NSM_NAV_READY = true; // tells the fallback to back off
+        window.__NSM_NAV_READY = true; // fallback steps aside
       }
     } catch (err) {
       console.warn("[NSMG] navigation module import failed; fallback handler remains active.", err);
