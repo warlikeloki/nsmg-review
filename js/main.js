@@ -1,9 +1,4 @@
 ﻿// /js/main.js
-// Central bootstrap for NSMG:
-// - Unconditionally injects header/footer via partials (single source of truth).
-// - Initializes navigation after injection (with resilient hamburger fallback).
-// - Enforces a correct mobile viewport and stabilizes mobile layout.
-// - Conditionally loads /js/modules/* based on DOM markers.
 
 (() => {
   // ---------- Small helpers ----------
