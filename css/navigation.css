@@ -160,3 +160,33 @@
     color: var(--text-light);
   }
 }
+
+/* Navigation Hot-Fix */
+
+@media (max-width: 1050px) { /* small buffer above 1023 to avoid scrollbar jitter */
+  /* Show hamburger; hide full inline menu unless opened */
+  .hamburger { display: inline-block; }
+
+  /* Ensure the UL#nav-menu behaves as an off-canvas drawer on mobile */
+  #nav-menu.nav-menu {
+    position: fixed;
+    top: 0; right: 0;
+    height: 100vh; width: 280px;
+    transform: translateX(100%);
+    transition: transform .25s ease;
+    padding: 80px 16px 16px;
+    background: var(--background-card);
+    color: var(--text-main);
+    box-shadow: -12px 0 30px rgba(0,0,0,.12);
+    border-left: 1px solid rgba(0,0,0,0.08);
+    overflow-y: auto;
+    z-index: 1000;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    display: flex;
+  }
+  #nav-menu.open { transform: translateX(0); }
+
+  html.nav-open, body.nav-open { overflow: hidden; }
+}
