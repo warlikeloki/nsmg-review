@@ -181,14 +181,13 @@
     const api = (window.NSM && window.NSM.navigation) || (mod && mod.default);
     if (api && typeof window.NSM?.navigation?.init === "function") {
       window.NSM.navigation.init({
-        headerSelector: "header.site-header, header[role='banner']",
-        navSelector: "#primary-nav",
-        toggleSelector: "[data-nav-toggle], .menu-toggle, [aria-controls='primary-nav']",
+        headerSelector: "#header-container header",
+        navSelector: "#nav-menu",                      // must match your UL id
+        toggleSelector: "[data-nav-toggle], .hamburger, [aria-controls='nav-menu']",
         openClassOnNav: "open",
-        desktopWidth: 1024,
-        injectBackdrop: true,
-        debug: false
+        desktopWidth: 1024
       });
+
       // console.log("[NSMG] navigation initialized");
     } else {
       console.warn("[NSMG] navigation module not available");
