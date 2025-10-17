@@ -217,3 +217,42 @@ html.nav-mobile #nav-menu.open { transform: translateX(0); }
 
 html.nav-mobile.nav-open,
 html.nav-mobile body.nav-open { overflow: hidden; }
+
+/* ===== JS-controlled mobile mode (no media queries needed) ===== */
+html.nav-mobile .hamburger { display: inline-block; }
+
+html.nav-mobile #nav-menu.nav-menu {
+  position: fixed;
+  top: 0; right: 0;
+  height: 100vh; width: 280px;
+  transform: translateX(100%);
+  transition: transform .25s ease;
+  padding: 80px 16px 16px;
+  background: var(--background-card);
+  color: var(--text-main);
+  box-shadow: -12px 0 30px rgba(0,0,0,.12);
+  border-left: 1px solid rgba(0,0,0,0.08);
+  overflow-y: auto;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+html.nav-mobile #nav-menu.open { transform: translateX(0); }
+
+html.nav-mobile, html.nav-mobile body { overflow-x: hidden; }
+html.nav-mobile.nav-open, html.nav-mobile body.nav-open { overflow: hidden; }
+
+/* Force page to “phone layout” when JS says it’s mobile */
+html.nav-mobile .page-container {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 16px !important;
+}
+html.nav-mobile .left-sidebar,
+html.nav-mobile .right-sidebar { display: none !important; }
+
+/* Keep images/tables from blowing layout wide */
+html.nav-mobile img, html.nav-mobile video, html.nav-mobile canvas { max-width: 100%; height: auto; }
+html.nav-mobile .table-wrap { width: 100%; overflow-x: auto; }

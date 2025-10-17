@@ -7,6 +7,31 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
+  // --- Viewport + JS-controlled mobile mode (add near the top of main.js) ---
+(function ensureViewportMetaAndMobileClass(){
+  // Ensure we have a correct mobile viewport meta
+  const wanted = "width=device-width, initial-scale=1.0, viewport-fit=cover";
+  let tag = document.head.querySelector('meta[name="viewport"]');
+  if (!tag) {
+    tag = document.createElement("meta");
+    tag.name = "viewport";
+    tag.content = wanted;
+    document.head.appendChild(tag);
+  } else if (!/width\s*=\s*device-width/i.test(tag.content)) {
+    tag.content = wanted;
+  }
+
+  // JS-controlled mobile mode to avoid media-query jitter
+  function setNavMobileClass() {
+    const MOBILE_MAX = 1050; // buffer above 1023 to absorb scrollbar/zoom jitter
+    const isMobile = window.innerWidth <= MOBILE_MAX;
+    document.documentElement.classList.toggle("nav-mobile", isMobile);
+  }
+  setNavMobileClass();
+  window.addEventListener("resize", setNavMobileClass, { passive: true });
+  window.addEventListener("orientationchange", setNavMobileClass, { passive: true });
+})();
+
   // --- Utilities ---
   function waitFor(selector, { timeout = 8000, root = document } = {}) {
     return new Promise((resolve, reject) => {
