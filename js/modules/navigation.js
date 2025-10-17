@@ -1,181 +1,245 @@
-/*! NSM-91: /js/modules/navigation.js (delegated + safe link navigation)
- * Initialize from main.js *after* header/footer injection:
+/*!
+ * NSMG Navigation Module
+ * Solves: NSM-103, NSM-104, NSM-35
+ * Usage (after header/footer injection):
  *   await import('/js/modules/navigation.js');
  *   window.NSM.navigation.init({
- *     navSelector: '.nav-menu',   // set this to your menu container
- *     openClassOnNav: 'open'      // set to the class your CSS uses to reveal it
- *     // injectBackdrop: true      // default true; set false if you don’t want an overlay
+ *     headerSelector: "#header-container header, header.site-header, header[role='banner'], header",
+ *     toggleSelector: "[data-nav-toggle], [data-dashboard-toggle], button[aria-controls], .nav-toggle, .hamburger, .menu-toggle",
+ *     navSelector: "#primary-nav, .nav-menu, nav[aria-label='Primary'], nav.primary-nav, header nav, nav",
+ *     submenuSelector: "ul, .submenu, [role='menu']",
+ *     openClassOnHtml: "nav-open",
+ *     openClassOnNav: "open",
+ *     expandedClass: "is-expanded",
+ *     desktopWidth: 1024,
+ *     injectBackdrop: true,
+ *     backdropId: "nsm-nav-backdrop",
+ *     debug: false
  *   });
  */
-(function (root) {
+(function(root){
   "use strict";
 
-  var DEFAULT_CONFIG = {
-    headerSelector: "#header-container header, #site-header, header.site-header, header[role='banner'], header",
-    toggleSelector: "[data-nav-toggle], button[aria-controls], .nav-toggle, .hamburger, .menu-toggle",
-    navSelector: "#primary-nav, .nav-menu, nav[aria-label='Primary'], nav.primary-nav, header nav, nav",
-    openClassOnHtml: "nav-open",   // added to BOTH <html> and <body>
-    openClassOnNav: "open",        // change to match your CSS if different
+  var DEFAULTS = {
+    headerSelector: "header",
+    toggleSelector: "[data-nav-toggle], .nav-toggle",
+    navSelector: "nav",
+    submenuSelector: "ul, .submenu, [role='menu']",
+    openClassOnHtml: "nav-open",
+    openClassOnNav: "open",
+    expandedClass: "is-expanded",
     desktopWidth: 1024,
     injectBackdrop: true,
     backdropId: "nsm-nav-backdrop",
     debug: false
   };
 
-  function merge(a, b) { var o={},k; for (k in a) o[k]=a[k]; if (b) for (k in b) o[k]=b[k]; return o; }
-  function onReady(fn){ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",fn,{once:true});}else{fn();}}
-  function log(){ if(!state.CFG.debug) return; try{console.log.apply(console,arguments);}catch(e){} }
+  var state = { CFG: DEFAULTS, ready:false, backdrop:null };
 
-  var state = { CFG: DEFAULT_CONFIG, bound:false, backdrop:null };
+  function merge(a,b){ var o={},k; for(k in a) o[k]=a[k]; for(k in b||{}) o[k]=b[k]; return o; }
+  function log(){ if(!state.CFG.debug) return; try{ console.log.apply(console, arguments); }catch(e){} }
+  function isMobile(){ return (window.matchMedia ? window.matchMedia("(max-width:"+ (state.CFG.desktopWidth-1) +"px)").matches : (window.innerWidth < state.CFG.desktopWidth)); }
 
-  function ensureBackdrop() {
-    if (!state.CFG.injectBackdrop) return null;
-    var el = document.getElementById(state.CFG.backdropId);
+  function ensureBackdrop(){
+    if(!state.CFG.injectBackdrop) return null;
+    var id = state.CFG.backdropId;
+    var el = document.getElementById(id);
     if (el) return el;
     el = document.createElement("div");
-    el.id = state.CFG.backdropId;
-    el.setAttribute("hidden", "");
-    el.style.position = "fixed";
-    el.style.inset = "0";
-    el.style.background = "rgba(0,0,0,0.35)";
-    el.style.zIndex = "1000";              // keep below most navs; bump your nav z-index if needed
-    el.style.pointerEvents = "auto";
+    el.id = id;
+    el.setAttribute("aria-hidden","true");
+    el.style.cssText = "position:fixed;inset:0;display:none;background:rgba(0,0,0,.35);";
     document.body.appendChild(el);
     return el;
   }
 
-  function isOpen() {
-    return document.documentElement.classList.contains(state.CFG.openClassOnHtml) ||
-           document.body.classList.contains(state.CFG.openClassOnHtml);
+  function isOpen(){
+    var cls = state.CFG.openClassOnHtml;
+    return document.documentElement.classList.contains(cls) || document.body.classList.contains(cls);
   }
-
-  var NAV_OPEN_CLASSES = null;
-  function computeNavOpenClasses(){
-    if (NAV_OPEN_CLASSES) return NAV_OPEN_CLASSES;
-    NAV_OPEN_CLASSES = [state.CFG.openClassOnNav, "is-open", "active", "expanded"]
-      .filter(Boolean).filter(function(v,i,a){return a.indexOf(v)===i;});
-    return NAV_OPEN_CLASSES;
-  }
-  function addNavOpenClasses(nav){
-    var cls = computeNavOpenClasses();
-    for (var i=0;i<cls.length;i++) nav.classList.add(cls[i]);
-    if (nav.hasAttribute("hidden")) nav.removeAttribute("hidden");
-    if (nav.style && nav.style.display === "none") nav.style.display = "";
-  }
-  function removeNavOpenClasses(nav){
-    var cls = computeNavOpenClasses();
-    for (var i=0;i<cls.length;i++) nav.classList.remove(cls[i]);
-  }
-
-  function openNav(toggle, nav){
-    document.documentElement.classList.add(state.CFG.openClassOnHtml);
-    document.body.classList.add(state.CFG.openClassOnHtml);
-    addNavOpenClasses(nav);
-    if (toggle) toggle.setAttribute("aria-expanded","true");
-    if (state.backdrop) state.backdrop.hidden = false;
-    log("[NSM-91] openNav");
-  }
-  function closeNav(toggle, nav){
-    document.documentElement.classList.remove(state.CFG.openClassOnHtml);
-    document.body.classList.remove(state.CFG.openClassOnHtml);
-    removeNavOpenClasses(nav);
-    if (toggle) toggle.setAttribute("aria-expanded","false");
-    if (state.backdrop) state.backdrop.hidden = true;
-    log("[NSM-91] closeNav");
-  }
-
-  function closestInHeader(el, sel){
-    var header = el.closest(state.CFG.headerSelector);
-    return header ? header.querySelector(sel) : null;
-  }
-  function findNavForToggle(toggle){
-    if (!toggle) return null;
-    var id = toggle.getAttribute("aria-controls");
-    if (id) {
-      var t = document.getElementById(id);
-      if (t) return t;
+  function openNav(nav){
+    var cls = state.CFG.openClassOnHtml;
+    document.documentElement.classList.add(cls);
+    document.body.classList.add(cls);
+    if (nav) {
+      nav.classList.add(state.CFG.openClassOnNav);
+      nav.removeAttribute("hidden");
+      if (nav.style.display === "none") nav.style.display = "";
     }
-    return closestInHeader(toggle, state.CFG.navSelector) || document.querySelector(state.CFG.navSelector);
+    if (state.backdrop){ state.backdrop.style.display = "block"; }
+    lockScroll(true);
+  }
+  function closeNav(nav){
+    var cls = state.CFG.openClassOnHtml;
+    document.documentElement.classList.remove(cls);
+    document.body.classList.remove(cls);
+    if (nav) nav.classList.remove(state.CFG.openClassOnNav);
+    if (state.backdrop){ state.backdrop.style.display = "none"; }
+    lockScroll(false);
+  }
+  function lockScroll(lock){
+    if (lock){
+      if (!document.documentElement.style.getPropertyValue("--nsm-scroll-lock")){
+        var scrollBarComp = window.innerWidth - document.documentElement.clientWidth;
+        document.documentElement.style.setProperty("--nsm-scroll-lock", "1");
+        document.documentElement.style.setProperty("--nsm-scrollbar-comp", scrollBarComp + "px");
+        document.body.style.overflow = "hidden";
+        document.body.style.paddingRight = scrollBarComp ? (scrollBarComp + "px") : "";
+      }
+    } else {
+      document.documentElement.style.removeProperty("--nsm-scroll-lock");
+      document.documentElement.style.removeProperty("--nsm-scrollbar-comp");
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    }
   }
 
-  function toggleHandler(e){
-    if (e.type === "click" && e.button !== 0) return;
-    var toggle = e.target.closest(state.CFG.toggleSelector);
-    if (!toggle) return;
+  function findNavForToggle(toggle){
+    if (!toggle) return document.querySelector(state.CFG.navSelector);
+    // aria-controls or data-target by id
+    var id = toggle.getAttribute("aria-controls") || toggle.getAttribute("data-target") || toggle.getAttribute("data-controls");
+    if (id) {
+      if (id.charAt(0) === "#") id = id.slice(1);
+      var byId = document.getElementById(id);
+      if (byId) return byId;
+    }
+    // closest header's nav
     var header = toggle.closest(state.CFG.headerSelector);
-    if (!header) return;
+    if (header) {
+      var navInHeader = header.querySelector(state.CFG.navSelector);
+      if (navInHeader) return navInHeader;
+    }
+    // fallback: first matching nav
+    return document.querySelector(state.CFG.navSelector);
+  }
 
+  function handleToggleClick(e){
+    var toggle = e.currentTarget;
     var nav = findNavForToggle(toggle);
-    if (!nav) { log("[NSM-91] no nav for toggle"); return; }
+    if (!nav) return;
 
     e.preventDefault();
-    if (isOpen()) closeNav(toggle, nav); else openNav(toggle, nav);
+    if (isOpen()) closeNav(nav); else openNav(nav);
   }
 
-  // Only close on **backdrop click** (no global pointerdown)
-  function bindBackdropClose(){
+  // Submenu logic:
+  //  - First tap on parent link when collapsed (mobile) -> expand, prevent navigation
+  //  - Second tap while expanded -> follow link
+  //  - Tapping the same parent again with submenu open and not intending to navigate -> collapse (NSM-35)
+  function bindSubmenus(rootEl){
+    rootEl = rootEl || document;
+    var parents = rootEl.querySelectorAll(state.CFG.navSelector + " li");
+    parents.forEach(function(li){
+      // a parent if it has a submenu element
+      var submenu = li.querySelector(":scope > " + state.CFG.submenuSelector);
+      var link = li.querySelector(":scope > a[href]");
+      if (!submenu || !link) return;
+
+      // mark as expandable for a11y
+      link.setAttribute("aria-haspopup","true");
+      link.setAttribute("aria-expanded","false");
+
+      // store timer for single->double tap window
+      var tapTimer = null;
+
+      function expand(){
+        li.classList.add(state.CFG.expandedClass);
+        link.setAttribute("aria-expanded","true");
+        submenu.hidden = false;
+      }
+      function collapse(){
+        li.classList.remove(state.CFG.expandedClass);
+        link.setAttribute("aria-expanded","false");
+        submenu.hidden = true;
+      }
+      // Start collapsed in DOM (doesn't override CSS on desktop)
+      submenu.hidden = true;
+
+      function onLinkActivate(ev){
+        if (!isMobile()) return; // desktop: default behavior
+        var isExpanded = li.classList.contains(state.CFG.expandedClass);
+
+        if (!isExpanded){
+          // First tap -> expand instead of navigate
+          ev.preventDefault();
+          expand();
+          // set a short window where a second tap will navigate
+          if (tapTimer) clearTimeout(tapTimer);
+          tapTimer = setTimeout(function(){ tapTimer = null; }, 800);
+          return;
+        }
+
+        // Already expanded:
+        if (tapTimer){
+          // second tap inside window -> allow navigation (do nothing)
+          return;
+        } else {
+          // NSM-35: tapping same parent again (after window) should collapse
+          ev.preventDefault();
+          collapse();
+        }
+      }
+
+      link.addEventListener("click", onLinkActivate);
+      link.addEventListener("touchend", function(ev){
+        // unify with click; on iOS sometimes only touchend fires on fast taps
+        onLinkActivate(ev);
+      }, {passive:false});
+    });
+  }
+
+  function bindBackdrop(){
     state.backdrop = ensureBackdrop();
     if (!state.backdrop) return;
     state.backdrop.addEventListener("click", function(){
       var nav = document.querySelector(state.CFG.navSelector);
-      if (isOpen() && nav) closeNav(null, nav);
+      if (isOpen() && nav) closeNav(nav);
     });
   }
 
-  // Allow link clicks inside the menu to navigate, then close
-  function bindNavLinkAutoClose(){
+  // Auto-close drawer after any link click inside nav (let the navigation happen)
+  function bindAutoCloseOnLink(){
     document.addEventListener("click", function(e){
-      var navEl = e.target.closest(state.CFG.navSelector);
-      if (!navEl) return;
+      var nav = e.target.closest(state.CFG.navSelector);
+      if (!nav) return;
       var link = e.target.closest("a[href]");
       if (!link) return;
-      // Let navigation proceed; close drawer after the click is processed
-      setTimeout(function(){ if (isOpen()) closeNav(null, navEl); }, 0);
-    }, true); // capture so we schedule close early, but do not prevent default
+      setTimeout(function(){ if (isOpen()) closeNav(nav); }, 0);
+    }, true);
   }
 
-  function escHandler(e){
-    if (!isOpen()) return;
-    if (e.key === "Escape") {
-      e.preventDefault();
-      var nav = document.querySelector(state.CFG.navSelector);
-      if (nav) closeNav(null, nav);
-    }
-  }
-
-  function resizeHandler(){
-    if (window.innerWidth >= state.CFG.desktopWidth && isOpen()) {
-      var nav = document.querySelector(state.CFG.navSelector);
-      if (nav) closeNav(null, nav);
-    }
-  }
-
-  function bind(){
-    if (state.bound) return;
-    state.bound = true;
-
-    bindBackdropClose();
-    bindNavLinkAutoClose();
-
-    // Delegated toggle handler
-    document.addEventListener("click", toggleHandler);
-    document.addEventListener("keydown", escHandler);
-    window.addEventListener("resize", resizeHandler);
-
-    log("[NSM-91] navigation bound", state.CFG);
-  }
-
-  function init(userConfig){
-    state.CFG = merge(DEFAULT_CONFIG, userConfig || {});
-    onReady(function () {
-      bind();
-      // Initial debug info
-      log("[NSM-91] ready", {
-        header: !!document.querySelector(state.CFG.headerSelector),
-        toggle: !!document.querySelector(state.CFG.headerSelector + " " + state.CFG.toggleSelector + ", " + state.CFG.toggleSelector),
-        nav: !!document.querySelector(state.CFG.navSelector)
+  // Services dashboard hamburger (NSM-104)
+  // Works for elements annotated with [data-dashboard-toggle]
+  function bindDashboardHamburger(){
+    var toggles = document.querySelectorAll("[data-dashboard-toggle]");
+    toggles.forEach(function(btn){
+      btn.addEventListener("click", function(e){
+        var nav = findNavForToggle(btn);
+        if (!nav) return;
+        e.preventDefault();
+        nav.classList.toggle(state.CFG.openClassOnNav);
       });
     });
+  }
+
+  function bindGlobalToggles(){
+    var toggles = document.querySelectorAll(state.CFG.toggleSelector);
+    toggles.forEach(function(t){
+      t.addEventListener("click", handleToggleClick);
+    });
+  }
+
+  function init(cfg){
+    if (state.ready) return;
+    state.CFG = merge(DEFAULTS, cfg||{});
+    state.backdrop = ensureBackdrop();
+    bindBackdrop();
+    bindGlobalToggles();
+    bindDashboardHamburger();
+    bindSubmenus(document);
+    bindAutoCloseOnLink();
+    state.ready = true;
+    log("[navigation] initialized", state.CFG);
   }
 
   root.NSM = root.NSM || {};
