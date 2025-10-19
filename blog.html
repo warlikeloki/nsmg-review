@@ -60,10 +60,25 @@
     </aside>
   </div>
 
-  <!-- FOOTER (injected) -->
+    <!-- FOOTER (injected) -->
   <div id="footer-container" role="contentinfo"></div>
 
   <!-- App bootstrap -->
   <script type="module" src="/js/main.js" defer></script>
+
+  <!-- Blog page loader -->
+  <script type="module" defer>
+    import '/js/modules/blog-page.js';
+
+    // Point this to the same source your homepage uses.
+    // Examples: '/data/blog.json', '/api/blog', '/feed.json'
+    const endpoint = '/data/blog.json'; // <-- set this to your real blog data endpoint
+
+    const container = document.getElementById('blog-posts-container');
+    if (container) {
+      container.dataset.endpoint = endpoint;
+    }
+  </script>
 </body>
 </html>
+

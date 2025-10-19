@@ -173,3 +173,28 @@
   color: var(--accent-hover-color, #005bb5);
   text-decoration: underline;
 }
+
+/* Keep post images civilized */
+.blog-post img,
+.post-content img,
+.article-body img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Optional: hero image wrapper if your template uses it */
+.post-hero,
+.article-hero {
+  max-height: 480px;          /* adjust to taste */
+  overflow: hidden;
+}
+
+.post-hero img,
+.article-hero img {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* If your hero images are extremely tall and you want consistent crops: */
+  /* height: 100%; object-fit: cover; */
+}
