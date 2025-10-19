@@ -226,6 +226,17 @@
       console.warn("[NSMG] navigation module import failed; fallback handler remains active.", err);
     }
   }
+/* Optional: dynamically set .header-offset height to match the header
+   Uncomment if header height changes (e.g., shrinking sticky header).
+*/
+// document.addEventListener('DOMContentLoaded', () => {
+//   const header = document.querySelector('#site-header');
+//   const offset = document.querySelector('.header-offset');
+//   if (header && offset) {
+//     const headerHeight = header.offsetHeight;
+//     offset.style.height = `${headerHeight}px`;
+//   }
+// });
 
   // ------------------ Conditional module autoloads ------------------
   async function autoInitModules() {

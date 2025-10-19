@@ -21,11 +21,17 @@
   <link rel="stylesheet" href="/css/testimonials-page.css"/>
 </head>
 <body>
-  <div id="header-container"></div>
+  <a class="skip-link" href="#testimonials-page">Skip to main content</a>
 
-  <main id="testimonials-page" class="with-sidebars" tabindex="-1">
+  <!-- Header (injected by /js/main.js) -->
+  <div id="header-container" role="banner"></div>
+
+  <!-- Spacer to prevent sticky header overlap -->
+  <div class="header-offset" aria-hidden="true"></div>
+
+  <main id="testimonials-page" class="with-sidebars" tabindex="-1" role="main" aria-labelledby="testimonials-title">
     <!-- LEFT DASHBOARD SIDEBAR -->
-    <aside class="left-sidebar" aria-label="Left sidebar">
+    <aside class="left-sidebar" aria-label="Left sidebar" role="complementary">
       <nav class="dash-card" aria-label="Quick actions">
         <h2 class="dash-title">Quick Actions</h2>
         <ul class="dash-list">
@@ -35,7 +41,7 @@
           <li><a class="dash-btn" href="/services/pricing.html"><span class="dash-emoji" aria-hidden="true">💳</span><span>Packages & Pricing</span></a></li>
         </ul>
       </nav>
-<!--
+      <!--
       <section class="dash-card" aria-label="Helpful links">
         <h2 class="dash-title">Helpful Links</h2>
         <ul class="dash-list">
@@ -44,12 +50,12 @@
           <li><a class="dash-link" href="/policies.html">Policies</a></li>
         </ul>
       </section>
--->
+      -->
     </aside>
 
     <!-- CONTENT -->
     <section class="content">
-      <h1>Testimonials</h1>
+      <h1 id="testimonials-title">Testimonials</h1>
       <div id="testimonials-grid" class="testimonials-grid" aria-live="polite" aria-busy="true">
         <!-- Cards injected by /js/modules/testimonials.js (simple page mode) -->
       </div>
@@ -57,13 +63,13 @@
     </section>
 
     <!-- RIGHT DASHBOARD SIDEBAR -->
-    <aside class="right-sidebar" aria-label="Right sidebar">
+    <aside class="right-sidebar" aria-label="Right sidebar" role="complementary">
       <section class="dash-card highlight" aria-label="Work with us">
         <h2 class="dash-title">Work With Us</h2>
         <p class="dash-text">Ready to plan your project?</p>
         <a class="dash-cta" href="/contact.html">Start a Conversation</a>
       </section>
-<!--
+      <!--
       <section class="dash-card" aria-label="Contact options">
         <h2 class="dash-title">Contact Options</h2>
         <ul class="dash-list two-col">
@@ -73,13 +79,13 @@
           <li><a class="dash-btn" href="/contact.html#form"><span class="dash-emoji" aria-hidden="true">📝</span><span>Contact Form</span></a></li>
         </ul>
       </section>
--->     
+      -->
     </aside>
   </main>
 
-  <div id="footer-container"></div>
+  <div id="footer-container" role="contentinfo"></div>
 
   <!-- App bootstrap -->
-  <script type="module" src="/js/main.js"></script>
+  <script type="module" src="/js/main.js" defer></script>
 </body>
 </html>

@@ -1,208 +1,257 @@
-/**
- * Services page loader
- * - Left-nav buttons load fragments into #services-content (Photography, Videography, Editing, Other, Request).
- * - Pricing loads as an iframe of /services/pricing-dashboard.html to ensure the same SQL-backed behavior as the standalone page without sidebars
- * - Hides right sidebar while Pricing is visible; restores for other sections.
- * - Removes versioned querystrings when loading helper scripts (VS Code preview safe).
- * - Mobile toggle for left nav.
- */
+/* /js/pages/services.js
+   Services dashboard loader — no-scroll, fragment-only content, resilient paths.
 
-(function () {
-  const content = document.getElementById('services-content');
-  const leftNav = document.getElementById('services-nav');
-  const rightSidebar = document.querySelector('.right-sidebar');
-  const navButtons = leftNav ? leftNav.querySelectorAll('.admin-button') : [];
+   Key features:
+   - Prevents jumps: never touches location.hash, focuses with preventScroll.
+   - Extracts only the main fragment from fetched pages (no header/footer/scripts).
+   - Tries multiple candidate URLs for each service (esp. Pricing) until one works.
+   - Console logs which candidate succeeded or why they failed.
+*/
 
-  // Screenreader live region
-  let live = document.getElementById('sr-live');
-  if (!live) {
-    live = document.createElement('div');
-    live.id = 'sr-live';
-    live.setAttribute('aria-live', 'polite');
-    live.setAttribute('aria-atomic', 'true');
-    Object.assign(live.style, {
-      position: 'absolute',
-      width: '1px',
-      height: '1px',
-      padding: '0',
-      margin: '-1px',
-      overflow: 'hidden',
-      clip: 'rect(0,0,0,0)',
-      whiteSpace: 'nowrap',
-      border: '0'
-    });
-    document.body.appendChild(live);
+(() => {
+  // Safety: don't let the browser auto-restore scroll on history navigation
+  try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch {}
+
+  const MAIN_ID = 'services-content'; // <main id="services-content">
+  const DRAWER_ID = 'services-drawer';
+  const TOGGLE_ID = 'services-toggle';
+
+  // Candidate URL lists per service (RELATIVE paths for Live Preview + prod)
+  // Order matters: we'll try each until one returns 200 OK.
+  const SERVICE_CANDIDATES = {
+    photography: [
+      'services/photography.html',
+      './services/photography.html'
+    ],
+    videography: [
+      'services/videography.html',
+      './services/videography.html'
+    ],
+    editing: [
+      'services/editing.html',
+      './services/editing.html'
+    ],
+    'other-services': [
+      'services/other-services.html',
+      './services/other-services.html'
+    ],
+    pricing: [
+      // Prefer the self-embedding page to avoid extra chrome
+      'pricing.html?embed=1',
+      './pricing.html?embed=1',
+      // If you kept a dashboard copy:
+      'pricing-dashboard.html',
+      './pricing-dashboard.html',
+      // Fall back to the services subpath (with & without embed)
+      'services/pricing.html?embed=1',
+      './services/pricing.html?embed=1',
+      'services/pricing.html',
+      './services/pricing.html',
+      // Absolute root as last resort (works on real server)
+      '/pricing.html?embed=1',
+      '/pricing-dashboard.html'
+    ],
+    'request-form': [
+      'services/request-form.html',
+      './services/request-form.html',
+      // fallback guesses if the file moves later:
+      'services/request.html',
+      './services/request.html'
+    ]
+  };
+
+  // Optional: service-specific fragment selectors for higher precision.
+  // We’ll try these first (in order) when extracting content from the fetched document.
+  const SERVICE_FRAGMENT_SELECTORS = {
+    'request-form': [
+      '#request-form',
+      'form[action*="request"]',
+      '[data-fragment="request-form"]',
+      'main',
+      '[role="main"]',
+      'section[id*="request"]'
+    ],
+    pricing: [
+      '#pricing-section',
+      '#pricing-main',
+      '[data-fragment="pricing"]',
+      'main',
+      '[role="main"]'
+    ],
+    photography: ['[data-fragment="service"]', 'main', '[role="main"]', 'article', 'section'],
+    videography: ['[data-fragment="service"]', 'main', '[role="main"]', 'article', 'section'],
+    editing: ['[data-fragment="service"]', 'main', '[role="main"]', 'article', 'section'],
+    'other-services': ['[data-fragment="service"]', 'main', '[role="main"]', 'article', 'section']
+  };
+
+  // Get main container and ensure a mount exists
+  const main = document.getElementById(MAIN_ID);
+  if (!main) return;
+
+  let mount = main.querySelector('#service-mount');
+  if (!mount) {
+    mount = document.createElement('div');
+    mount.id = 'service-mount';
+    const placeholder = document.getElementById('service-placeholder');
+    if (placeholder && placeholder.parentNode === main) {
+      placeholder.insertAdjacentElement('afterend', mount);
+    } else {
+      main.appendChild(mount);
+    }
   }
 
-  const stripVersion = (s) => (s || '').split('?')[0];
+  // Optional: prevent layout jank from scroll anchoring on dynamic content
+  // mount.style.overflowAnchor = 'none';
 
-  function ensureModule(src) {
-    const cleanSrc = stripVersion(src);
-    const found = [...document.scripts].some(s => (s.getAttribute('src') || '') === cleanSrc);
-    if (found) return;
-    const tag = document.createElement('script');
-    tag.src = cleanSrc;
-    tag.defer = true; // keep compatible with existing helpers
-    document.body.appendChild(tag);
+  // Close drawer helper (on mobile) without scrolling the page
+  function closeDrawerIfOpen() {
+    const drawer = document.getElementById(DRAWER_ID);
+    const toggle = document.getElementById(TOGGLE_ID);
+    if (drawer && drawer.classList.contains('open')) {
+      drawer.classList.remove('open');
+      if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    }
   }
 
-  function setRightSidebarVisible(visible) {
-    if (!rightSidebar) return;
-    rightSidebar.hidden = !visible;
-    rightSidebar.style.display = visible ? '' : 'none';
-    rightSidebar.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  // Try a list of candidate URLs until one succeeds.
+  async function fetchFirstOk(candidates) {
+    const errors = [];
+    for (const url of candidates) {
+      try {
+        const res = await fetch(url, { credentials: 'same-origin', cache: 'no-cache' });
+        if (res.ok) {
+          const text = await res.text();
+          console.info(`[services] Loaded fragment from: ${url}`);
+          return { url, text };
+        }
+        errors.push({ url, status: res.status });
+      } catch (e) {
+        errors.push({ url, status: 'network', err: String(e) });
+      }
+    }
+    console.error('[services] All candidates failed:', errors);
+    throw new Error('All candidate URLs failed to load.');
   }
 
-  function injectFragment(html) {
+  // Extract a meaningful fragment from a fetched HTML document
+  function extractFragmentFromHTML(html, serviceKey) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
-    const main = doc.querySelector('main');
-    content.innerHTML = main ? main.innerHTML : '<p>Unable to load content.</p>';
-  }
 
-  async function fetchText(url) {
-    try {
-      const res = await fetch(url, { cache: 'no-store' });
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-      return await res.text();
-    } catch {
-      try {
-        const rel = url.startsWith('/') ? url.slice(1) : url;
-        const res2 = await fetch(rel, { cache: 'no-store' });
-        if (!res2.ok) throw new Error(`${res2.status} ${res2.statusText}`);
-        return await res2.text();
-      } catch (e2) {
-        throw new Error(`Content not found: ${url}`);
-      }
+    // Service-specific selectors (priority first)
+    const serviceSelectors = SERVICE_FRAGMENT_SELECTORS[serviceKey] || [];
+
+    // General candidates if none matched
+    const generalSelectors = [
+      '[data-fragment="content"]',
+      'main',
+      '[role="main"]',
+      '#content',
+      '#page',
+      'article',
+      'section'
+    ];
+
+    const candidates = [...serviceSelectors, ...generalSelectors];
+
+    let fragment = null;
+    for (const sel of candidates) {
+      const node = doc.querySelector(sel);
+      if (node) { fragment = node.cloneNode(true); break; }
     }
+
+    // If still nothing, fall back to <body> and prune
+    if (!fragment) fragment = doc.body.cloneNode(true);
+
+    // Strip header/footer/sidebars/scripts/extra CSS that might be in the fetched doc
+    fragment.querySelectorAll('#header-container, #site-header, header, #footer-container, footer, .sidebar, script').forEach(el => el.remove());
+    fragment.querySelectorAll('link[rel="stylesheet"]').forEach(el => el.remove());
+
+    return fragment.innerHTML.trim();
   }
 
-  async function loadGenericService(service) {
-    const url = service === 'request-form' ? '/services/request-form.html' : `/services/${service}.html`;
+  // Load a service fragment into the mount
+  async function loadService(key) {
+    const candidates = SERVICE_CANDIDATES[key];
+    if (!candidates || !candidates.length) return;
+
+    main.setAttribute('data-loading', 'true');
+
     try {
-      const html = await fetchText(url);
-      injectFragment(html);
+      const { url, text } = await fetchFirstOk(candidates);
+      const fragmentHTML = extractFragmentFromHTML(text, key);
 
-      // Hydrate helpers (no versioned querystrings)
-      if (content.querySelector('#equipment-list')) {
-        ensureModule('/js/modules/equipment.js');
-        if (typeof window.loadEquipment === 'function') window.loadEquipment();
-      }
-      if (content.querySelector('#other-services-container')) {
-        ensureModule('/js/modules/other-services.js');
-      }
-      if (service === 'request-form') {
-        ensureModule('/js/modules/service-request.js');
+      mount.innerHTML = fragmentHTML || `
+        <div class="notice error" role="alert"><p>Section loaded but no content matched.</p></div>
+      `;
+
+      // Accessibility: move focus to first meaningful heading without scrolling the page
+      const focusTarget =
+        mount.querySelector('h1, h2, [role="heading"], form, section, article, [tabindex]') || mount;
+      if (focusTarget) {
+        const hadTabIndex = focusTarget.hasAttribute('tabindex');
+        if (!hadTabIndex) focusTarget.setAttribute('tabindex', '-1');
+        try { focusTarget.focus({ preventScroll: true }); } catch {}
+        if (!hadTabIndex) focusTarget.removeAttribute('tabindex');
       }
 
-      setRightSidebarVisible(true);
-      live.textContent = 'Content loaded.';
-      content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Neutralize in-fragment hash links so they can't yank the page
+      interceptLocalAnchors(mount);
+
+      // Close the drawer on mobile — no scrolling
+      closeDrawerIfOpen();
     } catch (err) {
       console.error(err);
-      content.innerHTML = `<p>Error loading content: ${err.message}</p>`;
-      setRightSidebarVisible(true);
+      mount.innerHTML = `
+        <div class="notice error" role="alert">
+          <p>Sorry, we couldn’t load that section right now.</p>
+        </div>`;
+    } finally {
+      main.removeAttribute('data-loading');
     }
   }
 
-  // -------- Pricing via iframe (SQL-backed parity with standalone page) --------
-  function autoResizeAndStrip(iframe) {
-    function resize() {
-      try {
-        const doc = iframe.contentDocument;
-        if (!doc) return;
-
-        // Remove header/footer inside the iframe to avoid nested chrome
-        const header = doc.querySelector('#header-container, header');
-        const footer = doc.querySelector('#footer-container, footer');
-        if (header) header.style.display = 'none';
-        if (footer) footer.style.display = 'none';
-
-        // Resize to content height
-        const body = doc.body, html = doc.documentElement;
-        const h = Math.max(
-          body.scrollHeight, body.offsetHeight,
-          html.clientHeight, html.scrollHeight, html.offsetHeight
-        );
-        iframe.style.height = (h + 20) + 'px';
-      } catch {
-        /* ignore cross-origin (should be same-origin) */
-      }
-    }
-
-    iframe.addEventListener('load', () => {
-      resize();
-      // In case assets load later
-      setTimeout(resize, 400);
-      setTimeout(resize, 1000);
+  // Intercept anchors that point to #hash within the same page to prevent sudden jumps
+  function interceptLocalAnchors(scope = document) {
+    scope.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        if (a.dataset.allowHash === 'true') return; // opt-out
+        e.preventDefault();
+        e.stopPropagation();
+      }, { passive: false });
     });
   }
 
-  function mountPricingIframe(src) {
-    // Clear and mount
-    content.innerHTML = '';
-    const region = document.createElement('section');
-    region.setAttribute('role', 'region');
-    region.setAttribute('aria-label', 'Pricing');
-
-    const iframe = document.createElement('iframe');
-    iframe.title = 'Pricing';
-    iframe.src = src;
-    iframe.style.width = '100%';
-    iframe.style.border = '0';
-    iframe.setAttribute('loading', 'eager'); // this is the main content
-
-    region.appendChild(iframe);
-    content.appendChild(region);
-
-    autoResizeAndStrip(iframe);
-    setRightSidebarVisible(false);
-
-    // Fallback: if /services/pricing.html fails to load, swap to /pricing.html
-    iframe.addEventListener('error', () => {
-      if (iframe.src.endsWith('/services/pricing.html')) {
-        iframe.src = '/pricing.html';
-      }
-    });
-
-    // Accessibility cue
-    iframe.addEventListener('load', () => {
-      live.textContent = 'Pricing loaded.';
-      content.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
+  // Optional helper — only use if you WANT a controlled scroll after load
+  function smoothScrollIntoView(el) {
+    const headerHeight = getHeaderHeight();
+    const rect = el.getBoundingClientRect();
+    const absoluteTop = window.pageYOffset + rect.top - headerHeight;
+    window.scrollTo({ top: absoluteTop, behavior: 'smooth' });
   }
 
-  async function loadPricing() {
-    // Prefer the services-fragment page first
-    mountPricingIframe('/services/pricing-dashboard.html');
+  function getHeaderHeight() {
+    const hdr = document.getElementById('site-header');
+    if (hdr) return hdr.offsetHeight || 0;
+    const cssVar = getComputedStyle(document.documentElement).getPropertyValue('--header-height');
+    const parsed = parseInt(cssVar, 10);
+    return Number.isFinite(parsed) ? parsed : 80;
   }
 
-  async function loadService(service) {
-    if (service === 'pricing') {
-      await loadPricing();
-    } else {
-      await loadGenericService(service);
-    }
-  }
+  // Global click handler for the admin buttons — zero scroll, precise content
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.admin-button');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const key = btn.getAttribute('data-service');
+    if (!key) return;
+    loadService(key);
+  }, { passive: false });
 
-  // Wire up left-nav buttons
-  navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      navButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const service = btn.getAttribute('data-service');
-      loadService(service);
-    });
-  });
+  // Harden existing anchors against accidental jumps
+  interceptLocalAnchors(document);
 
-  // Mobile left-nav toggle
-  const toggleBtn = document.getElementById('services-toggle');
-  if (toggleBtn && leftNav) {
-    toggleBtn.addEventListener('click', () => {
-      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-      const next = !expanded;
-      toggleBtn.setAttribute('aria-expanded', String(next));
-      leftNav.style.display = next ? '' : 'none';
-    });
-  }
+  // Optional: choose an initial default (won't scroll the page)
+  // loadService('photography');
 })();

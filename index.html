@@ -2,21 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <title>Your Story, Captured | Neil Smith Media Group</title>
   <meta name="description" content="Photography, videography, and editing services for brands, events, and businesses. Explore our portfolio and request a quote." />
   <link rel="canonical" href="https://neilsmith.org/" />
 
-  <!-- Icons / Manifest -->
-  <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml" />
-  <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
-  <link rel="icon" type="image/svg+xml" href="" />
-  <link rel="icon" type="image/png" href="" sizes="96x96" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/media/icons/apple-touch-icon.png" />
-  <link rel="manifest" href="/media/icons/site.webmanifest" />
+  <!-- App / Theme -->
   <meta name="apple-mobile-web-app-title" content="NSMG" />
   <meta name="application-name" content="Neil Smith Media Group" />
+  <meta name="theme-color" content="#111827" />
+
+  <!-- Icons / Manifest -->
+  <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml" />
+  <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
+  <link rel="icon" type="image/png" href="/media/icons/favicon-96.png" sizes="96x96" />
+  <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/media/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="/media/icons/site.webmanifest" />
 
   <!-- Open Graph / Twitter -->
   <meta property="og:site_name" content="Neil Smith Media Group" />
@@ -39,16 +42,14 @@
   <link rel="stylesheet" href="/css/homepage.css" />
   <link rel="stylesheet" href="/css/a11y.css" />
   <link rel="stylesheet" href="/css/wip.css" />
-  <link rel="stylesheet" href="/css/flickr-gallery.css">
-  <link rel="stylesheet" href="/css/cta-email-icon.css">
-  <link rel="stylesheet" href="/css/homepage-blog.css">
-  <link rel="stylesheet" href="/css/home-services.css">
-
+  <link rel="stylesheet" href="/css/flickr-gallery.css" />
+  <link rel="stylesheet" href="/css/cta-email-icon.css" />
+  <link rel="stylesheet" href="/css/homepage-blog.css" />
+  <link rel="stylesheet" href="/css/home-services.css" />
 
   <!-- JS -->
   <script type="module" src="/js/main.js" defer></script>
   <script type="module" src="/js/wip.js" defer></script>
-  <!-- <script type="module" src="/js/modules/site-settings.js"></script> -->
   <script type="module" src="/js/modules/flickr.js" defer></script>
   <script type="module" src="/js/modules/home-gallery-preview.js" defer></script>
   <script type="module" src="/js/modules/cta-email-icon.js" defer></script>
@@ -57,15 +58,18 @@
 <body class="home">
   <a class="skip-link" href="#homepage">Skip to main content</a>
 
-  <!-- Header -->
-  <div id="header-container"></div>
+  <!-- Header (injected via JS) -->
+  <div id="header-container" role="banner"></div>
+
+  <!-- Spacer helps prevent sticky header overlap (height set in CSS/JS) -->
+  <div class="header-offset" aria-hidden="true"></div>
 
   <div class="page-container">
     <!-- Left Sidebar -->
-    <aside class="sidebar left-sidebar" aria-label="Left sidebar"></aside>
+    <aside class="sidebar left-sidebar" aria-label="Left sidebar" role="complementary"></aside>
 
     <!-- Main Content -->
-    <main id="homepage">
+    <main id="homepage" tabindex="-1" role="main">
       <!-- HERO -->
       <section id="hero" class="homepage-section">
         <div class="hero-content">
@@ -75,9 +79,9 @@
         </div>
       </section>
 
-    <!-- =========================
-        Home: Services (NSM-130)
-        ========================= -->
+      <!-- =========================
+           Home: Services (NSM-130)
+           ========================= -->
       <section id="home-services" aria-labelledby="home-services-title">
         <div class="section-header">
           <h2 id="home-services-title">Our Services</h2>
@@ -89,18 +93,12 @@
           <article class="service-card" role="listitem">
             <div class="service-card-body">
               <h3 class="service-card-title">
-                <a class="service-card-link" href="/services/photography.html" data-analytics="home_services_photography">
-                  Photography
-                </a>
+                <a class="service-card-link" href="/services/photography.html" data-analytics="home_services_photography">Photography</a>
               </h3>
-              <p class="service-card-summary">
-                Portraits, events, and brand imagery—planned for the setting and delivered on deadline.
-              </p>
+              <p class="service-card-summary">Portraits, events, and brand imagery—planned for the setting and delivered on deadline.</p>
             </div>
             <div class="service-card-actions">
-              <a class="service-card-cta" href="/services/photography.html" aria-label="Learn more about Photography" data-analytics="home_services_photography_cta">
-                Learn more
-              </a>
+              <a class="service-card-cta" href="/services/photography.html" aria-label="Learn more about Photography" data-analytics="home_services_photography_cta">Learn more</a>
             </div>
           </article>
 
@@ -108,18 +106,12 @@
           <article class="service-card" role="listitem">
             <div class="service-card-body">
               <h3 class="service-card-title">
-                <a class="service-card-link" href="/services/videography.html" data-analytics="home_services_videography">
-                  Videography
-                </a>
+                <a class="service-card-link" href="/services/videography.html" data-analytics="home_services_videography">Videography</a>
               </h3>
-              <p class="service-card-summary">
-                Multi-camera coverage, clean audio, and edits ready for web and social.
-              </p>
+              <p class="service-card-summary">Multi-camera coverage, clean audio, and edits ready for web and social.</p>
             </div>
             <div class="service-card-actions">
-              <a class="service-card-cta" href="/services/videography.html" aria-label="Learn more about Videography" data-analytics="home_services_videography_cta">
-                Learn more
-              </a>
+              <a class="service-card-cta" href="/services/videography.html" aria-label="Learn more about Videography" data-analytics="home_services_videography_cta">Learn more</a>
             </div>
           </article>
 
@@ -127,18 +119,12 @@
           <article class="service-card" role="listitem">
             <div class="service-card-body">
               <h3 class="service-card-title">
-                <a class="service-card-link" href="/services/editing.html" data-analytics="home_services_editing">
-                  Editing
-                </a>
+                <a class="service-card-link" href="/services/editing.html" data-analytics="home_services_editing">Editing</a>
               </h3>
-              <p class="service-card-summary">
-                Color, sound, and story flow—polished cuts that fit your channels.
-              </p>
+              <p class="service-card-summary">Color, sound, and story flow—polished cuts that fit your channels.</p>
             </div>
             <div class="service-card-actions">
-              <a class="service-card-cta" href="/services/editing.html" aria-label="Learn more about Editing" data-analytics="home_services_editing_cta">
-                Learn more
-              </a>
+              <a class="service-card-cta" href="/services/editing.html" aria-label="Learn more about Editing" data-analytics="home_services_editing_cta">Learn more</a>
             </div>
           </article>
 
@@ -146,23 +132,16 @@
           <article class="service-card" role="listitem">
             <div class="service-card-body">
               <h3 class="service-card-title">
-                <a class="service-card-link" href="/services/other-services.html" data-analytics="home_services_other">
-                  Other Services
-                </a>
+                <a class="service-card-link" href="/services/other-services.html" data-analytics="home_services_other">Other Services</a>
               </h3>
-              <p class="service-card-summary">
-                Studio setups, consulting, and more on request.
-              </p>
+              <p class="service-card-summary">Studio setups, consulting, and more on request.</p>
             </div>
             <div class="service-card-actions">
-              <a class="service-card-cta" href="/services/other-services.html" aria-label="Learn more about Other Services" data-analytics="home_services_other_cta">
-                Learn more
-              </a>
+              <a class="service-card-cta" href="/services/other-services.html" aria-label="Learn more about Other Services" data-analytics="home_services_other_cta">Learn more</a>
             </div>
           </article>
         </div>
       </section>
-
 
       <!-- TESTIMONIALS CAROUSEL -->
       <section aria-labelledby="home-testimonials-title" class="home-testimonials">
@@ -170,15 +149,12 @@
 
         <div class="testimonials-slider" data-module="home-testimonials" data-hydrated="false">
           <!-- JS will inject .ts-viewport/.ts-track/.ts-prev/.ts-next/.ts-dots -->
-          <noscript>
-            <p>Please enable JavaScript to view testimonials.</p>
-          </noscript>
+          <noscript><p>Please enable JavaScript to view testimonials.</p></noscript>
         </div>
         <div class="more">
           <a class="btn" href="/testimonials.html">View More Testimonials</a>
         </div>
       </section>
-
 
       <!-- PORTFOLIO PREVIEW -->
       <section aria-labelledby="galleryPreviewHeading">
@@ -190,17 +166,17 @@
       </section>
 
       <!-- BLOG TEASER -->
-      <section id="blog-teaser" class="homepage-section">
-        <h2>Latest From Our Blog</h2>
-        <!-- latest post populated by JS -->
+      <section id="blog-teaser" class="homepage-section" aria-labelledby="blog-teaser-title">
+        <h2 id="blog-teaser-title">Latest From Our Blog</h2>
+        <div class="blog-post-preview" aria-live="polite"><!-- populated by /js/modules/homepage-blog.js --></div>
         <a href="/blog.html" class="blog-link">Read More Posts</a>
       </section>
 
       <!-- ABOUT PREVIEW -->
-      <section id="about-preview" class="homepage-section">
-        <h2>About Neil Smith Media Group</h2>
+      <section id="about-preview" class="homepage-section" aria-labelledby="about-title">
+        <h2 id="about-title">About Neil Smith Media Group</h2>
         <div class="about-content">
-          <img src="media/logos/nsmg-logo.png" alt="Neil Smith Media Group Logo" class="about-logo" decoding="async" loading="lazy" />
+          <img src="/media/logos/nsmg-logo.png" alt="Neil Smith Media Group Logo" class="about-logo" decoding="async" loading="lazy" />
           <div>
             <p>We're passionate about telling authentic stories through images and video. Our mission is to make every client look and feel their best on camera.</p>
             <a href="/about-us/about.html" class="about-link">Learn More</a>
@@ -209,19 +185,18 @@
       </section>
 
       <!-- CTA -->
-      <section id="cta" class="homepage-section">
-        <h2>Are You Ready to Get Started?</h2>
+      <section id="cta" class="homepage-section" aria-labelledby="cta-title">
+        <h2 id="cta-title">Are You Ready to Get Started?</h2>
         <a href="/contact.html" class="cta-btn">Contact Us</a>
         <a href="/services/request-form.html" class="cta-btn secondary">Request a Quote</a>
       </section>
     </main>
 
     <!-- Right Sidebar -->
-    <aside class="sidebar right-sidebar" aria-label="Right sidebar"></aside>
+    <aside class="sidebar right-sidebar" aria-label="Right sidebar" role="complementary"></aside>
   </div>
 
-  <!-- Footer -->
-  <div id="footer-container"></div>
+  <!-- Footer (injected via JS) -->
+  <div id="footer-container" role="contentinfo"></div>
 </body>
 </html>
-

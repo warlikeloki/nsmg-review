@@ -19,28 +19,32 @@
 
   <!-- WIP banner loader -->
   <script type="module" src="/js/wip.js" defer></script>
-  <script type="module" src="/js/modules/site-settings.js"></script>
+  <script type="module" src="/js/modules/site-settings.js" defer></script>
 </head>
-<body>
+<body class="contact">
+  <a class="skip-link" href="#contact-main">Skip to main content</a>
+
   <!-- HEADER -->
-  <div id="header-container"></div>
-  
+  <div id="header-container" role="banner"></div>
+
+  <!-- Spacer to prevent sticky header overlap -->
+  <div class="header-offset" aria-hidden="true"></div>
 
   <div class="page-container">
-    <aside class="sidebar left-sidebar"></aside>
+    <aside class="sidebar left-sidebar" aria-label="Left sidebar" role="complementary"></aside>
 
-    <main class="main-content">
+    <main id="contact-main" class="main-content" role="main" tabindex="-1" aria-labelledby="contact-title">
       <section class="contact-section">
-        <h1>Contact Us</h1>
+        <h1 id="contact-title">Contact Us</h1>
         <p>Use the form below to get in touch with Neil Smith Media Group. We'll get back to you as soon as possible.</p>
 
         <!-- JS intercepts submit; method/action are safe fallbacks -->
-        <form id="contact-form" method="post" action="/php/submit_contact.php">
-          <label for="name">Name<span>*</span></label>
-          <input type="text" id="name" name="name" required />
+        <form id="contact-form" method="post" action="/php/submit_contact.php" autocomplete="on">
+          <label for="name">Name<span aria-hidden="true">*</span></label>
+          <input type="text" id="name" name="name" required autocomplete="name" />
 
-          <label for="email">Email<span>*</span></label>
-          <input type="email" id="email" name="email" required autocomplete="email" />
+          <label for="email">Email<span aria-hidden="true">*</span></label>
+          <input type="email" id="email" name="email" required autocomplete="email" inputmode="email" />
 
           <label for="phone">Phone (optional)</label>
           <input
@@ -54,9 +58,9 @@
           />
           <small id="phone-help">Digits or +country code. Formatting is flexible.</small>
 
-          <label for="topic">What is this regarding?<span>*</span></label>
+          <label for="topic">What is this regarding?<span aria-hidden="true">*</span></label>
           <!-- Align with backend: name="category" -->
-          <select id="topic" name="category" required>
+          <select id="topic" name="category" required autocomplete="off">
             <option value="" disabled selected>Select a topic</option>
             <option value="Photography">Photography</option>
             <option value="Videography">Videography</option>
@@ -65,7 +69,7 @@
             <option value="General">General</option>
           </select>
 
-          <label for="message">Message<span>*</span></label>
+          <label for="message">Message<span aria-hidden="true">*</span></label>
           <textarea id="message" name="message" rows="6" required></textarea>
 
           <button type="submit" class="btn">Send Message</button>
@@ -74,12 +78,11 @@
       </section>
     </main>
 
-    <aside class="sidebar right-sidebar"></aside>
+    <aside class="sidebar right-sidebar" aria-label="Right sidebar" role="complementary"></aside>
   </div>
 
   <!-- FOOTER -->
-  <div id="footer-container"></div>
-  
+  <div id="footer-container" role="contentinfo"></div>
 
   <!-- Site bootstrap -->
   <script type="module" src="/js/main.js" defer></script>
@@ -90,5 +93,3 @@
   </script>
 </body>
 </html>
-
-

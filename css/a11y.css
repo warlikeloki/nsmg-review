@@ -31,3 +31,8 @@
   z-index: 10000 !important;
   text-decoration: none !important;
 }
+
+/* Make in-page anchor jumps account for the sticky header */
+:target {
+  scroll-margin-top: var(--header-height, 80px);
+}

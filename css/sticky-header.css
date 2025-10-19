@@ -28,6 +28,13 @@
   width: 100%;
 }
 
+/* Offset below sticky header to prevent content overlap */
+.header-offset {
+  height: var(--header-height, 80px); /* fallback to 80px if variable not defined */
+  width: 100%;
+  display: block;
+}
+
 /* When WIP banner is visible, place header right under it */
 body.has-wip-banner #site-header.nav-container{
   top: var(--wip-banner-height, 52px);

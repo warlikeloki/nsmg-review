@@ -128,3 +128,26 @@ img {
   margin: 0 auto;
   padding: var(--spacing-unit) 0;
 }
+
+/* Legal-style list formatting: indented lines with dash markers */
+.privacy-section ul,
+.terms-section ul {
+  list-style: none;           /* remove default bullets */
+  margin-left: 1.25rem;       /* gentle indent inside the text column */
+  padding-left: 0;
+}
+
+.privacy-section ul li,
+.terms-section ul li {
+  position: relative;
+  padding-left: 1rem;         /* space for the dash */
+  margin-bottom: 0.4rem;
+}
+
+.privacy-section ul li::before,
+.terms-section ul li::before {
+  content: "–";               /* en dash marker */
+  position: absolute;
+  left: 0;
+  color: var(--text-secondary, #555);
+}
