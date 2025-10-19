@@ -198,3 +198,23 @@
   /* If your hero images are extremely tall and you want consistent crops: */
   /* height: 100%; object-fit: cover; */
 }
+
+/* Keep post images responsive and sane */
+.blog-post img,
+.post-content img,
+.article-body img,
+main.blog img,
+main .post img,
+article img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Optional: constrain an unwrapped top/hero image */
+:where(.blog-post, .post-content, .article-body, main) > p:first-child > img {
+  max-height: 480px; /* adjust to taste */
+  width: 100%;
+  height: auto;
+  display: block;
+}
