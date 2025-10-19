@@ -98,3 +98,4 @@ tools/
 # (Removed your old `/sql/*.sql` ignore so schema/data files stay in Git)
 # -------------------------------------------------------
 # (no ignore here on purpose)
+
