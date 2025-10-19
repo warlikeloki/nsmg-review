@@ -41,6 +41,10 @@
 /* ---------- Table styling ---------- */
 .pricing-table {
   width: 100%;
+  /* NEW: widen and center the table within the main content area */
+  max-width: 1100px;
+  margin-inline: auto;
+
   border-collapse: collapse;
   font-size: 0.95rem;
   background-color: var(--background-card, #fff);
@@ -107,6 +111,11 @@ body.embed #right-sidebar {
   display: none !important;
 }
 
+/* NEW: hide spacer in embed so there’s no blank gap at top */
+body.embed .header-offset {
+  display: none !important;
+}
+
 body.embed .page-container {
   display: block !important;
   max-width: 100% !important;
@@ -141,4 +150,25 @@ body:not(.embed) .sidebar,
 body:not(.embed) #left-sidebar,
 body:not(.embed) #right-sidebar {
   display: revert;
+}
+
+/* ---------- Sticky-header friendly anchor jumps ---------- */
+/* If you ever link to #packages-section etc., this prevents the heading
+   from hiding under the sticky header. */
+:target {
+  scroll-margin-top: var(--header-height, 80px);
+}
+
+/* ---------- Wide-screen polish ---------- */
+@media (min-width: 1280px) {
+  /* Slightly larger tap/reading targets on big displays */
+  .pricing-table th,
+  .pricing-table td {
+    padding: 0.9rem 1.1rem;
+  }
+  #pricing-section h1 {
+    font-size: 2.2rem;
+  }
+  /* Allow the table to breathe just a bit more on very wide layouts */
+  .pricing-table { max-width: 1200px; }
 }

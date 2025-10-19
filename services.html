@@ -5,13 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Services - Neil Smith Media Group</title>
 
-  <!-- SEO Meta Description -->
-  <meta
-    name="description"
-    content="Explore Neil Smith Media Group's services: event photography, videography, editing, and other creative services tailored to your project needs."
-  />
+  <!-- SEO -->
+  <meta name="description" content="Explore Neil Smith Media Group's services: event photography, videography, editing, and other creative services tailored to your project needs." />
 
-  <!-- Stylesheets -->
+  <!-- CSS -->
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/header.css" />
@@ -52,9 +49,8 @@
 
       /* Ensure the drawer uses the off-canvas rules supplied by /css/navigation.css (.nav-menu.open) */
       #services-drawer.nav-menu {
-        /* The base off-canvas styles (position, size, transform, etc.)
-           are already defined in navigation.css for .nav-menu under 1023px.
-           We only tweak spacing to fit this sidebar’s content. */
+        /* Base off-canvas styles live in navigation.css.
+           Here we only tweak spacing for this sidebar’s content. */
         padding: 80px 16px 16px;
       }
 
@@ -63,36 +59,40 @@
     }
   </style>
 
-  <!-- Site-wide JS -->
+  <!-- JS -->
   <script type="module" src="/js/main.js" defer></script>
   <script type="module" src="/js/wip.js" defer></script>
-  <script type="module" src="/js/modules/site-settings.js"></script>
+  <script type="module" src="/js/modules/site-settings.js" defer></script>
 </head>
-<body>
+<body class="services">
+  <a class="skip-link" href="#services-content">Skip to main content</a>
+
   <!-- HEADER -->
-  <div id="header-container"></div>
-  
+  <div id="header-container" role="banner"></div>
+
+  <!-- Spacer prevents sticky header overlap -->
+  <div class="header-offset" aria-hidden="true"></div>
 
   <div class="page-container">
     <!-- Left Sidebar: Services Drawer Host -->
-    <aside class="sidebar left-sidebar">
+    <aside class="sidebar left-sidebar" aria-label="Services sidebar" role="complementary">
       <!-- IMPORTANT: Give the drawer an id + class="nav-menu" so navigation.js toggles .open here -->
       <nav id="services-drawer" class="nav-menu" aria-label="Services Menu">
         <!-- Keep your original services-nav id and button structure so existing JS keeps working -->
         <div id="services-nav">
           <h2>Our Services</h2>
-          <button class="admin-button" data-service="photography">Photography</button>
-          <button class="admin-button" data-service="videography">Videography</button>
-          <button class="admin-button" data-service="editing">Editing</button>
-          <button class="admin-button" data-service="other-services">Other Services</button>
-          <button class="admin-button" data-service="pricing">Pricing</button>
-          <button class="admin-button" data-service="request-form">Request a Service</button>
+          <button type="button" class="admin-button" data-service="photography">Photography</button>
+          <button type="button" class="admin-button" data-service="videography">Videography</button>
+          <button type="button" class="admin-button" data-service="editing">Editing</button>
+          <button type="button" class="admin-button" data-service="other-services">Other Services</button>
+          <button type="button" class="admin-button" data-service="pricing">Pricing</button>
+          <button type="button" class="admin-button" data-service="request-form">Request a Service</button>
         </div>
       </nav>
     </aside>
 
     <!-- Main Content -->
-    <main class="main-content" id="services-content">
+    <main class="main-content" id="services-content" role="main" tabindex="-1" aria-labelledby="services-title">
       <!-- Mobile-only dashboard hamburger (keeps your original #services-toggle id for module detection) -->
       <button
         id="services-toggle"
@@ -106,18 +106,17 @@
       </button>
 
       <div id="service-placeholder">
-        <h1>Our Services</h1>
+        <h1 id="services-title">Our Services</h1>
         <p>Select a service from the left to learn more about what we offer.</p>
       </div>
     </main>
 
     <!-- Right Sidebar (present but empty by default) -->
-    <aside class="sidebar right-sidebar"></aside>
+    <aside class="sidebar right-sidebar" aria-label="Right sidebar" role="complementary"></aside>
   </div>
 
   <!-- FOOTER -->
-  <div id="footer-container"></div>
-  
+  <div id="footer-container" role="contentinfo"></div>
 
   <!-- Page-specific JS -->
   <script type="module" src="/js/pages/services.js" defer></script>

@@ -4,13 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Blog - Neil Smith Media Group</title>
+
   <!-- SEO Meta Description -->
-  <meta
-    name="description"
-    content="	Read the Neil Smith Media Group blog for photography tips, videography insights, and behind-the-scenes stories to inspire your next media project."
-  />
+  <meta name="description" content="Read the Neil Smith Media Group blog for photography tips, videography insights, and behind-the-scenes stories to inspire your next media project." />
+
   <!-- Favicon and App Icons -->
-  <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml">
+  <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml" />
   <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
   <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
   <link rel="icon" type="image/png" href="/media/icons/favicon-96x96.png" sizes="96x96" />
@@ -20,46 +19,51 @@
   <meta name="application-name" content="Neil Smith Media Group" />
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="/css/global.css">
-  <link rel="stylesheet" href="/css/layout.css">
-  <link rel="stylesheet" href="/css/header.css">
+  <link rel="stylesheet" href="/css/global.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/header.css" />
   <link rel="stylesheet" href="/css/sticky-header.css" />
-  <link rel="stylesheet" href="/css/navigation.css">
-  <link rel="stylesheet" href="/css/blog.css">
-  <link rel="stylesheet" href="/css/footer.css">
-  <link rel="stylesheet" href="/css/mobile.css">
+  <link rel="stylesheet" href="/css/navigation.css" />
+  <link rel="stylesheet" href="/css/blog.css" />
+  <link rel="stylesheet" href="/css/footer.css" />
+  <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/wip.css" />
   <link rel="stylesheet" href="/css/blog-page.css" />
 
   <script type="module" src="/js/wip.js" defer></script>
-  <script type="module" src="/js/modules/site-settings.js"></script>
+  <script type="module" src="/js/modules/site-settings.js" defer></script>
 </head>
-<body>
-  <!-- HEADER -->
-  <div id="header-container"></div>
+<body class="blog">
+  <a class="skip-link" href="#blog-page">Skip to main content</a>
+
+  <!-- HEADER (injected) -->
+  <div id="header-container" role="banner"></div>
+
+  <!-- Spacer to prevent sticky header overlap -->
+  <div class="header-offset" aria-hidden="true"></div>
+
   <div class="page-container">
     <!-- Left Sidebar (Issue #29) -->
-    <aside class="sidebar left-sidebar">
-      <!-- e.g. quick links, social icons, site map -->
+    <aside class="sidebar left-sidebar" aria-label="Left sidebar" role="complementary">
+      <!-- e.g., quick links, social icons, site map -->
     </aside>
-  <!-- MAIN CONTENT -->
-  <main id="blog-page">
-    <h1>Blog</h1>
-    <div id="blog-posts-container" class="blog-posts"></div>
-  </main>
+
+    <!-- MAIN CONTENT -->
+    <main id="blog-page" class="main-content" role="main" tabindex="-1" aria-labelledby="blog-title">
+      <h1 id="blog-title">Blog</h1>
+      <div id="blog-posts-container" class="blog-posts" aria-live="polite"></div>
+    </main>
+
     <!-- Right Sidebar (Issue #29) -->
-    <aside class="sidebar right-sidebar">
-      <!-- e.g. recent posts, contact widget -->
+    <aside class="sidebar right-sidebar" aria-label="Right sidebar" role="complementary">
+      <!-- e.g., recent posts, contact widget -->
     </aside>
   </div>
-  <!-- FOOTER -->
-  <div id="footer-container"></div>
 
-  <!-- Load header and footer -->
+  <!-- FOOTER (injected) -->
+  <div id="footer-container" role="contentinfo"></div>
 
-  <!-- Load all JS modules -->
+  <!-- App bootstrap -->
   <script type="module" src="/js/main.js" defer></script>
 </body>
 </html>
-
-

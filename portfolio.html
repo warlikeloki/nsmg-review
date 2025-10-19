@@ -9,6 +9,7 @@
     name="description"
     content="Browse Neil Smith Media Group's portfolio showcasing professional photography and videography from events, portraits, and commercial projects."
   />
+
   <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/layout.css">
@@ -29,19 +30,27 @@
   <link rel="stylesheet" href="/css/wip.css" />
   <script type="module" src="/js/wip.js" defer></script>
 
+  <!-- Header/Footer injector (needed for header to appear) -->
+  <script type="module" src="/js/main.js" defer></script>
+
   <!-- Site settings (unchanged) -->
-  <script type="module" src="/js/modules/site-settings.js"></script>
+  <script type="module" src="/js/modules/site-settings.js" defer></script>
 </head>
 <body>
-  <!-- Header injected -->
+  <a class="skip-link" href="#portfolio-main">Skip to main content</a>
+
+  <!-- Header injected by /js/main.js -->
   <div id="header-container"></div>
+
+  <!-- Spacer to prevent sticky header overlap -->
+  <div class="header-offset" aria-hidden="true"></div>
 
   <div class="page-container">
     <!-- Left Sidebar -->
     <aside class="sidebar left-sidebar" aria-label="Left sidebar"></aside>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="main-content" id="portfolio-main" tabindex="-1">
       <h1>Our Work</h1>
       <p>Explore our portfolio of photography, videography, and creative projects.</p>
 
@@ -99,11 +108,8 @@
     <aside class="sidebar right-sidebar" aria-label="Right sidebar"></aside>
   </div>
 
-  <!-- Footer injected -->
+  <!-- Footer injected by /js/main.js -->
   <div id="footer-container"></div>
-
-  <!-- Header/Footer injection (unchanged) -->
-  
 
   <!-- Flickr modules -->
   <script type="module" src="/js/modules/flickr.js" defer></script>
