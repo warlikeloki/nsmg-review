@@ -1,4 +1,4 @@
-﻿// /js/main.js
+﻿// /js/main.js 
 // Central bootstrap (hardened):
 // - Waits for <body>, ensures header/footer containers exist
 // - Injects /header.html and /footer.html with safe fallbacks
@@ -238,7 +238,26 @@
       } catch {}
     }
 
-    if (document.getElementById("contact-form"))             { try { await import("/js/modules/contact.js"); } catch {} }
+    // Contact form: import and initialize if the form exists
+    if (document.getElementById("contact-form")) {
+      try {
+        const mod = await import("/js/modules/contact.js");
+        if (mod?.initContactForm) mod.initContactForm();
+      } catch (e) {
+        console.error("[NSMG] contact module failed to init:", e);
+      }
+    }
+
+    // Service Request form: import and initialize if the form exists
+    if (document.getElementById("service-request-form")) {
+      try {
+        const mod = await import("/js/modules/service-request.js");
+        if (mod?.initServiceRequestForm) mod.initServiceRequestForm();
+      } catch (e) {
+        console.error("[NSMG] service-request module failed to init:", e);
+      }
+    }
+
     if (document.getElementById("other-services-container")) { try { await import("/js/modules/other-services.js"); } catch {} }
     if (document.getElementById("services-toggle") && document.getElementById("services-nav")) {
       try { await import("/js/modules/services-nav.js"); } catch {}

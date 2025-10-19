@@ -1,66 +1,64 @@
 // /js/modules/service-request.js
-document.addEventListener('DOMContentLoaded', () => {
+// ES module for the Service Request form.
+// Expected usage in main.js:
+//   import { initServiceRequestForm } from './modules/service-request.js';
+//   initServiceRequestForm();
+
+export function initServiceRequestForm() {
   const form = document.getElementById('service-request-form');
-  const statusDiv = document.getElementById('request-status');
-  const svcContainer = document.getElementById('service-types');
+  if (!form) return;
 
-  if (!form || !statusDiv || !svcContainer) return;
+  const statusEl = document.getElementById('service-request-status');
+  const fallbackEl = document.getElementById('service-request-fallback');
 
-  const showMessage = (msg, isError = false) => {
-    statusDiv.textContent = msg;
-    statusDiv.className = isError ? 'form-error' : 'form-success';
-  };
-
-  async function loadServices() {
-    svcContainer.innerHTML = '<p>Loading services…</p>';
-    try {
-      const res = await fetch('/php/get_services.php'); // can use ?is_package=0 if needed
-      const json = await res.json();
-      if (!json?.success || !Array.isArray(json.data)) {
-        throw new Error(json?.error || 'Invalid response');
-      }
-      const data = json.data;
-      if (!data.length) {
-        svcContainer.innerHTML = '<p>No services available.</p>';
-        return;
-      }
-      svcContainer.innerHTML = data.map(s => `
-        <label class="svc-option">
-          <input type="checkbox" name="services[]" value="${s.name}">
-          <span>${s.name}${s.price != null ? ` — $${Number(s.price).toFixed(2)}` : ''}</span>
-        </label>
-      `).join('');
-    } catch (e) {
-      console.error(e);
-      svcContainer.innerHTML = '<p>Unable to load services.</p>';
-    }
+  function setStatus(msg, ok = true) {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    statusEl.classList.toggle('ok', !!ok);
+    statusEl.classList.toggle('err', !ok);
   }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    showMessage('Submitting…');
-    form.querySelector('button[type="submit"]').disabled = true;
+    setStatus('Sending...', true);
+
+    const data = new FormData(form);
+    if (!data.has('website')) data.append('website', ''); // honeypot
 
     try {
       const res = await fetch('/php/submit_service_request.php', {
         method: 'POST',
-        body: new FormData(form)
+        body: data,
+        headers: { 'Accept': 'application/json' }
       });
-      const result = await res.json();
-      if (result.success) {
-        showMessage('Thank you! Your service request has been submitted.');
+
+      const json = await res.json();
+
+      if (json.ok) {
+        setStatus('Thanks! Your request has been sent.', true);
         form.reset();
-        await loadServices();
       } else {
-        showMessage(result.error || result.message || 'Failed to submit request.', true);
+        setStatus('Email delivery failed. A direct email link is available below.', false);
+        if (fallbackEl && json.data && json.data.mailto) {
+          fallbackEl.innerHTML = `<a href="${json.data.mailto}">Email us directly</a>`;
+          fallbackEl.hidden = false;
+        }
       }
-    } catch (err) {
-      console.error('Submission error:', err);
-      showMessage('Error sending request.', true);
-    } finally {
-      form.querySelector('button[type="submit"]').disabled = false;
+    } catch {
+      setStatus('Network error. A direct email link is available below.', false);
+      if (fallbackEl) {
+        const name = (form.querySelector('#sr-name')?.value || '').trim();
+        const email = (form.querySelector('#sr-email')?.value || '').trim();
+        const phone = (form.querySelector('#sr-phone')?.value || '').trim();
+        const message = (form.querySelector('#sr-message')?.value || '').trim();
+        const services = [...form.querySelectorAll('input[name="services[]"]:checked')].map(i => i.value).join(', ');
+        const body = encodeURIComponent(
+          `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nServices: ${services}\n\n${message}\n`
+        );
+        fallbackEl.innerHTML =
+          `<a href="mailto:owner@neilsmith.org?subject=${encodeURIComponent('Service Request')}&body=${body}">Email us directly</a>`;
+        fallbackEl.hidden = false;
+      }
     }
   });
-
-  loadServices();
-});
+}
