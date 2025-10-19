@@ -1,93 +1,61 @@
 /* /js/pages/services.js
-   Services dashboard loader — no-scroll, fragment-only content, resilient paths.
+   Services dashboard loader — no-scroll, fragment-only content, and script execution.
 
-   Key features:
-   - Prevents jumps: never touches location.hash, focuses with preventScroll.
-   - Extracts only the main fragment from fetched pages (no header/footer/scripts).
-   - Tries multiple candidate URLs for each service (esp. Pricing) until one works.
-   - Console logs which candidate succeeded or why they failed.
+   What this does:
+   - Prevents scroll jumps (no location.hash changes; focus with preventScroll).
+   - Loads only the meaningful fragment from target pages (not the whole doc).
+   - Extracts and EXECUTES inline and external <script> tags found in the fragment,
+     resolving relative paths against the fetched page’s URL so SQL/data JS runs.
+   - Tries multiple candidate URLs (esp. Pricing) until one works; logs which matched.
 */
 
 (() => {
-  // Safety: don't let the browser auto-restore scroll on history navigation
+  // Safety: avoid browser auto scroll restoration on history nav
   try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch {}
 
-  const MAIN_ID = 'services-content'; // <main id="services-content">
+  const MAIN_ID   = 'services-content'; // <main id="services-content">
   const DRAWER_ID = 'services-drawer';
   const TOGGLE_ID = 'services-toggle';
 
-  // Candidate URL lists per service (RELATIVE paths for Live Preview + prod)
-  // Order matters: we'll try each until one returns 200 OK.
+  // Candidate URL lists per service (RELATIVE first for Live Preview + subfolder hosting)
   const SERVICE_CANDIDATES = {
-    photography: [
-      'services/photography.html',
-      './services/photography.html'
-    ],
-    videography: [
-      'services/videography.html',
-      './services/videography.html'
-    ],
-    editing: [
-      'services/editing.html',
-      './services/editing.html'
-    ],
-    'other-services': [
-      'services/other-services.html',
-      './services/other-services.html'
-    ],
+    photography:     ['services/photography.html', './services/photography.html'],
+    videography:     ['services/videography.html', './services/videography.html'],
+    editing:         ['services/editing.html', './services/editing.html'],
+    'other-services':['services/other-services.html', './services/other-services.html'],
     pricing: [
-      // Prefer the self-embedding page to avoid extra chrome
+      // Best inside dashboard: embedded pricing at site root
       'pricing.html?embed=1',
       './pricing.html?embed=1',
-      // If you kept a dashboard copy:
+      // Optional dashboard file if present
       'pricing-dashboard.html',
       './pricing-dashboard.html',
-      // Fall back to the services subpath (with & without embed)
+      // Service subpath fallbacks
       'services/pricing.html?embed=1',
       './services/pricing.html?embed=1',
       'services/pricing.html',
       './services/pricing.html',
-      // Absolute root as last resort (works on real server)
+      // Absolute last-resort (works on real server)
       '/pricing.html?embed=1',
       '/pricing-dashboard.html'
     ],
-    'request-form': [
-      'services/request-form.html',
-      './services/request-form.html',
-      // fallback guesses if the file moves later:
-      'services/request.html',
-      './services/request.html'
-    ]
+    'request-form':  ['services/request-form.html', './services/request-form.html', 'services/request.html', './services/request.html']
   };
 
-  // Optional: service-specific fragment selectors for higher precision.
-  // We’ll try these first (in order) when extracting content from the fetched document.
+  // Fine-grained fragment selectors per service (tried in order)
   const SERVICE_FRAGMENT_SELECTORS = {
-    'request-form': [
-      '#request-form',
-      'form[action*="request"]',
-      '[data-fragment="request-form"]',
-      'main',
-      '[role="main"]',
-      'section[id*="request"]'
-    ],
-    pricing: [
-      '#pricing-section',
-      '#pricing-main',
-      '[data-fragment="pricing"]',
-      'main',
-      '[role="main"]'
-    ],
-    photography: ['[data-fragment="service"]', 'main', '[role="main"]', 'article', 'section'],
-    videography: ['[data-fragment="service"]', 'main', '[role="main"]', 'article', 'section'],
-    editing: ['[data-fragment="service"]', 'main', '[role="main"]', 'article', 'section'],
-    'other-services': ['[data-fragment="service"]', 'main', '[role="main"]', 'article', 'section']
+    'request-form': ['#request-form','form[action*="request"]','[data-fragment="request-form"]','main','[role="main"]','section[id*="request"]'],
+    pricing: ['#pricing-section','#pricing-main','[data-fragment="pricing"]','main','[role="main"]'],
+    photography:     ['[data-fragment="service"]','main','[role="main"]','article','section'],
+    videography:     ['[data-fragment="service"]','main','[role="main"]','article','section'],
+    editing:         ['[data-fragment="service"]','main','[role="main"]','article','section'],
+    'other-services':['[data-fragment="service"]','main','[role="main"]','article','section']
   };
 
-  // Get main container and ensure a mount exists
   const main = document.getElementById(MAIN_ID);
   if (!main) return;
 
+  // Ensure a mount node exists
   let mount = main.querySelector('#service-mount');
   if (!mount) {
     mount = document.createElement('div');
@@ -100,10 +68,6 @@
     }
   }
 
-  // Optional: prevent layout jank from scroll anchoring on dynamic content
-  // mount.style.overflowAnchor = 'none';
-
-  // Close drawer helper (on mobile) without scrolling the page
   function closeDrawerIfOpen() {
     const drawer = document.getElementById(DRAWER_ID);
     const toggle = document.getElementById(TOGGLE_ID);
@@ -113,7 +77,7 @@
     }
   }
 
-  // Try a list of candidate URLs until one succeeds.
+  // Try candidates in order until one returns 200
   async function fetchFirstOk(candidates) {
     const errors = [];
     for (const url of candidates) {
@@ -133,44 +97,87 @@
     throw new Error('All candidate URLs failed to load.');
   }
 
-  // Extract a meaningful fragment from a fetched HTML document
-  function extractFragmentFromHTML(html, serviceKey) {
+  // Parse HTML and return { html: fragmentHTML, scripts: [ScriptDescriptor...] }
+  function extractFragmentAndScripts(html, serviceKey, fetchedUrl) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
-    // Service-specific selectors (priority first)
     const serviceSelectors = SERVICE_FRAGMENT_SELECTORS[serviceKey] || [];
-
-    // General candidates if none matched
-    const generalSelectors = [
-      '[data-fragment="content"]',
-      'main',
-      '[role="main"]',
-      '#content',
-      '#page',
-      'article',
-      'section'
-    ];
-
+    const generalSelectors = ['[data-fragment="content"]','main','[role="main"]','#content','#page','article','section'];
     const candidates = [...serviceSelectors, ...generalSelectors];
 
-    let fragment = null;
+    let node = null;
     for (const sel of candidates) {
-      const node = doc.querySelector(sel);
-      if (node) { fragment = node.cloneNode(true); break; }
+      const found = doc.querySelector(sel);
+      if (found) { node = found.cloneNode(true); break; }
     }
+    if (!node) node = doc.body.cloneNode(true);
 
-    // If still nothing, fall back to <body> and prune
-    if (!fragment) fragment = doc.body.cloneNode(true);
+    // Collect scripts BEFORE we remove anything; we need to replay them later
+    const rawScripts = Array.from(node.querySelectorAll('script'));
 
-    // Strip header/footer/sidebars/scripts/extra CSS that might be in the fetched doc
-    fragment.querySelectorAll('#header-container, #site-header, header, #footer-container, footer, .sidebar, script').forEach(el => el.remove());
-    fragment.querySelectorAll('link[rel="stylesheet"]').forEach(el => el.remove());
+    // Scrub things we never want inside dashboard (header/footer/sidebars)
+    node.querySelectorAll('#header-container, #site-header, header, #footer-container, footer, .sidebar').forEach(el => el.remove());
+    // Remove script elements from the HTML we’ll inject; we’ll re-execute them manually
+    node.querySelectorAll('script').forEach(el => el.remove());
+    // Optional: strip <link rel="stylesheet"> inside fragments to avoid dup CSS (keep site globals)
+    // node.querySelectorAll('link[rel="stylesheet"]').forEach(el => el.remove());
 
-    return fragment.innerHTML.trim();
+    // Build a list of script descriptors with resolved src URLs
+    const base = new URL(fetchedUrl, location.href);
+    const scripts = rawScripts.map(s => {
+      const type = (s.getAttribute('type') || '').trim(); // could be '' or 'module'
+      const src  = s.getAttribute('src');
+      const asyncAttr = s.hasAttribute('async');
+      const deferAttr = s.hasAttribute('defer');
+      const nomodule = s.hasAttribute('nomodule');
+      const text = src ? '' : s.textContent || '';
+      let resolvedSrc = '';
+      if (src) {
+        try { resolvedSrc = new URL(src, base).href; } catch { resolvedSrc = src; }
+      }
+      return { type, src: resolvedSrc, async: asyncAttr, defer: deferAttr, nomodule, text };
+    });
+
+    return { html: node.innerHTML.trim(), scripts };
   }
 
-  // Load a service fragment into the mount
+  // After injecting fragment HTML, execute its scripts in order.
+  // For external scripts, we create <script> with resolved src (respecting type/async/defer).
+  // For inline scripts, we inject textContent. Execution order: original DOM order.
+  async function executeScriptsSequentially(scripts) {
+    for (const s of scripts) {
+      // Skip empty/no-op
+      if (!s.src && !s.text) continue;
+
+      await new Promise((resolve) => {
+        const el = document.createElement('script');
+        if (s.type) el.type = s.type;             // e.g., 'module'
+        if (s.nomodule) el.noModule = true;
+        // Prefer synchronous order unless original had async/defer
+        if (s.async) el.async = true;
+        if (s.defer) el.defer = true;
+
+        if (s.src) {
+          el.src = s.src;
+          el.onload = () => resolve();
+          el.onerror = () => {
+            console.error('[services] Failed to load script:', s.src);
+            resolve(); // continue with others
+          };
+          // Append to mount to keep scope close; head would also work.
+          document.head.appendChild(el);
+        } else {
+          el.textContent = s.text;
+          // Inline scripts execute upon insertion
+          document.body.appendChild(el);
+          resolve();
+        }
+      });
+    }
+  }
+
+  // Load a service fragment into the mount and run its scripts
   async function loadService(key) {
     const candidates = SERVICE_CANDIDATES[key];
     if (!candidates || !candidates.length) return;
@@ -179,13 +186,17 @@
 
     try {
       const { url, text } = await fetchFirstOk(candidates);
-      const fragmentHTML = extractFragmentFromHTML(text, key);
+      const { html, scripts } = extractFragmentAndScripts(text, key, url);
 
-      mount.innerHTML = fragmentHTML || `
+      // Inject HTML
+      mount.innerHTML = html || `
         <div class="notice error" role="alert"><p>Section loaded but no content matched.</p></div>
       `;
 
-      // Accessibility: move focus to first meaningful heading without scrolling the page
+      // Execute any scripts present in the fragment so data loaders (SQL-backed) can run
+      await executeScriptsSequentially(scripts);
+
+      // Accessibility: focus first meaningful element without scrolling
       const focusTarget =
         mount.querySelector('h1, h2, [role="heading"], form, section, article, [tabindex]') || mount;
       if (focusTarget) {
@@ -195,10 +206,10 @@
         if (!hadTabIndex) focusTarget.removeAttribute('tabindex');
       }
 
-      // Neutralize in-fragment hash links so they can't yank the page
+      // Intercept in-fragment hash links so they don't yank the page
       interceptLocalAnchors(mount);
 
-      // Close the drawer on mobile — no scrolling
+      // Close the drawer on mobile — without changing scroll position
       closeDrawerIfOpen();
     } catch (err) {
       console.error(err);
@@ -211,25 +222,24 @@
     }
   }
 
-  // Intercept anchors that point to #hash within the same page to prevent sudden jumps
+  // Intercept anchors pointing to #hash within the same page to prevent sudden jumps
   function interceptLocalAnchors(scope = document) {
     scope.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', (e) => {
-        if (a.dataset.allowHash === 'true') return; // opt-out
+        if (a.dataset.allowHash === 'true') return; // opt-out when explicitly allowed
         e.preventDefault();
         e.stopPropagation();
       }, { passive: false });
     });
   }
 
-  // Optional helper — only use if you WANT a controlled scroll after load
+  // Optional controlled scroll helper (unused by default)
   function smoothScrollIntoView(el) {
     const headerHeight = getHeaderHeight();
     const rect = el.getBoundingClientRect();
     const absoluteTop = window.pageYOffset + rect.top - headerHeight;
     window.scrollTo({ top: absoluteTop, behavior: 'smooth' });
   }
-
   function getHeaderHeight() {
     const hdr = document.getElementById('site-header');
     if (hdr) return hdr.offsetHeight || 0;
@@ -238,7 +248,7 @@
     return Number.isFinite(parsed) ? parsed : 80;
   }
 
-  // Global click handler for the admin buttons — zero scroll, precise content
+  // Global click handler for dashboard buttons — zero scroll, stable focus
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.admin-button');
     if (!btn) return;
@@ -252,6 +262,6 @@
   // Harden existing anchors against accidental jumps
   interceptLocalAnchors(document);
 
-  // Optional: choose an initial default (won't scroll the page)
+  // Optional default on page load:
   // loadService('photography');
 })();
