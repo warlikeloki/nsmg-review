@@ -5,6 +5,7 @@
 // - Initializes navigation (with resilient hamburger fallback)
 // - Enforces correct mobile viewport and stabilizes mobile layout
 // - Conditionally loads /js/modules/* based on DOM markers
+// - Idempotently injects global CSS modules into <head>
 
 (() => {
   // ---------- Tiny helpers ----------
@@ -39,6 +40,23 @@
     } else if (!/width\s*=\s*device-width/i.test(tag.content)) {
       tag.content = wanted;
     }
+  }
+
+  // Clean, global stylesheet injector (idempotent)
+  function ensureGlobalStylesheets(hrefs = []) {
+    const head = document.head || document.getElementsByTagName('head')[0];
+    if (!head) return;
+    hrefs.forEach((href) => {
+      if (!href) return;
+      // avoid duplicates if already present (by exact href or data-nsm-href marker)
+      const exists = head.querySelector(`link[rel="stylesheet"][href="${href}"], link[rel="stylesheet"][data-nsm-href="${href}"]`);
+      if (exists) return;
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      link.setAttribute('data-nsm-href', href);
+      head.appendChild(link);
+    });
   }
 
   // JS-stabilized mobile class to avoid breakpoint jitter/scrollbar effects.
@@ -269,13 +287,19 @@
   async function start() {
     ensureViewportMeta();
 
+    // Inject global CSS modules once, clean + mergeable
+    ensureGlobalStylesheets([
+      "/css/layout-global.css",
+      "/css/home-cta.css"
+    ]);
+
     try { await initNavigation(); } catch (e) {
       console.error("Nav init error:", e);
     }
 
     // Stickies & site chrome (after header exists)
     try { await import("/js/modules/wip-offset.js"); } catch {}
-    try { await import("/js/modules/sticky-header.js"); } catch {}
+    try { await import("/js/modules/sticky-header.js"); } catch {}   // computes --nsm-header-h
     try {
       const mod = await import("/js/modules/site-settings.js");
       if (mod?.initSiteSettings) await mod.initSiteSettings();

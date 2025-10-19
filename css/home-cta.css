@@ -1,0 +1,60 @@
+/* /css/home-cta.css
+   Permanent CTA and homepage polish (not a hotfix).
+*/
+
+/* Spacing from header */
+.cta, .cta-section, section[id*="cta"] {
+  margin-top: clamp(24px, 4vw, 48px);
+}
+
+/* Inner padding */
+.cta .container, .cta .box,
+.cta-section .container, .cta-section .box,
+section[id*="cta"] .container, section[id*="cta"] .box {
+  padding-inline: clamp(16px, 4vw, 40px);
+}
+
+/* Center helper/subtitle */
+.cta .subtitle, .cta-section .subtitle,
+section[id*="cta"] .subtitle,
+.cta p:first-of-type, .cta-section p:first-of-type,
+section[id*="cta"] p:first-of-type {
+  text-align: center;
+  margin-inline: auto;
+}
+
+/* Button row alignment & line-height normalization */
+.cta .cta-actions, .cta .button-row,
+.cta-section .cta-actions, .cta-section .button-row,
+section[id*="cta"] .cta-actions, section[id*="cta"] .button-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  justify-content: center;
+}
+
+.cta .cta-actions a, .cta .button-row a,
+.cta-section .cta-actions a, .cta-section .button-row a,
+section[id*="cta"] .cta-actions a, section[id*="cta"] .button-row a,
+.cta .cta-actions .btn, .cta .button-row .btn,
+.cta-section .cta-actions .btn, .cta-section .button-row .btn,
+section[id*="cta"] .cta-actions .btn, section[id*="cta"] .button-row .btn {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  padding: 12px 18px;
+}
+
+/* Homepage Testimonials — view more CTA wrapper */
+#homepage-testimonials-container .more,
+.homepage-testimonials .more {
+  margin-top: 16px;
+  text-align: center;
+}
+
+#homepage-testimonials-container .more a,
+.homepage-testimonials .more a {
+  display: inline-block;
+  padding: 10px 16px;
+}
