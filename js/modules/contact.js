@@ -1,73 +1,65 @@
 // /js/modules/contact.js
-// Robust attach: works whether the module loads before or after DOMContentLoaded.
+// ES module for the Contact form.
+// Expected usage in main.js:
+//   import { initContactForm } from './modules/contact.js';
+//   initContactForm();
 
-(function initContactModule() {
-  const BOUND_FLAG = 'data-contact-bound';
+export function initContactForm() {
+  const form = document.getElementById('contact-form');
+  if (!form) return;
 
-  function setStatus(el, msg) {
-    if (!el) return;
-    el.textContent = msg;
-    el.setAttribute('role', 'status');
-    el.setAttribute('aria-live', 'polite');
+  const statusEl = document.getElementById('contact-status');
+  const fallbackEl = document.getElementById('contact-fallback');
+
+  function setStatus(msg, ok = true) {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    statusEl.classList.toggle('ok', !!ok);
+    statusEl.classList.toggle('err', !ok);
   }
 
-  async function handleSubmit(e) {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const form = e.currentTarget;
-    const status = document.getElementById('form-status');
-    setStatus(status, 'Sending…');
+    setStatus('Sending...', true);
 
-    const btn = form.querySelector('button[type="submit"]');
-    if (btn) btn.disabled = true;
+    const data = new FormData(form);
+    if (!data.has('website')) data.append('website', ''); // honeypot
 
     try {
-      const fd = new FormData(form);
-
-      // Default subject if none set server-side
-      if (!fd.has('subject') || !fd.get('subject')) {
-        const cat = (fd.get('category') || 'General') + '';
-        fd.set('subject', `Website Contact (${cat})`);
-      }
-
       const res = await fetch('/php/submit_contact.php', {
         method: 'POST',
-        body: fd,
-        credentials: 'same-origin'
+        body: data,
+        headers: { 'Accept': 'application/json' }
       });
 
-      let result = {};
-      try { result = await res.json(); } catch (_) {}
+      // Some hosts return 200 with an error payload, so always parse JSON
+      const json = await res.json();
 
-      if (res.ok && result && result.success) {
-        setStatus(status, 'Thank you! Your message has been sent.');
+      if (json.ok) {
+        setStatus('Thanks! Your message has been sent.', true);
         form.reset();
-        // Optional: hide the form after success
-        // form.style.display = 'none';
       } else {
-        const msg = (result && (result.error || result.message)) || `Error ${res.status || ''}: Unable to send message.`;
-        setStatus(status, msg);
+        setStatus('Email delivery failed. A direct email link is available below.', false);
+        if (fallbackEl && json.data && json.data.mailto) {
+          fallbackEl.innerHTML = `<a href="${json.data.mailto}">Email us directly</a>`;
+          fallbackEl.hidden = false;
+        }
       }
-    } catch (err) {
-      console.error('Contact form error:', err);
-      setStatus(status, 'Network error sending message.');
-    } finally {
-      if (btn) btn.disabled = false;
+    } catch {
+      setStatus('Network error. A direct email link is available below.', false);
+      if (fallbackEl) {
+        const about = (form.querySelector('#ct-about')?.value || 'General').trim();
+        const name = (form.querySelector('#ct-name')?.value || '').trim();
+        const email = (form.querySelector('#ct-email')?.value || '').trim();
+        const phone = (form.querySelector('#ct-phone')?.value || '').trim();
+        const message = (form.querySelector('#ct-message')?.value || '').trim();
+        const body = encodeURIComponent(
+          `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}\n`
+        );
+        fallbackEl.innerHTML =
+          `<a href="mailto:owner@neilsmith.org?subject=${encodeURIComponent('Website Contact — ' + about)}&body=${body}">Email us directly</a>`;
+        fallbackEl.hidden = false;
+      }
     }
-  }
-
-  function bind() {
-    const form = document.getElementById('contact-form');
-    const status = document.getElementById('form-status');
-    if (!form || !status) return false;
-    if (form.getAttribute(BOUND_FLAG) === '1') return true;
-
-    form.addEventListener('submit', handleSubmit);
-    form.setAttribute(BOUND_FLAG, '1');
-    return true;
-  }
-
-  // Try now; if elements aren’t present yet, bind on DOMContentLoaded
-  if (!bind()) {
-    document.addEventListener('DOMContentLoaded', bind, { once: true });
-  }
-})();
+  });
+}
