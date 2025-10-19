@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Blog - Neil Smith Media Group</title>
 
-  <!-- SEO Meta Description -->
+  <!-- SEO -->
   <meta name="description" content="Read the Neil Smith Media Group blog for photography tips, videography insights, and behind-the-scenes stories to inspire your next media project." />
 
-  <!-- Favicon and App Icons -->
+  <!-- Icons -->
   <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml" />
   <link rel="shortcut icon" href="/media/icons/favicon.ico" type="image/x-icon" />
   <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="NSMG" />
   <meta name="application-name" content="Neil Smith Media Group" />
 
-  <!-- Stylesheets -->
+  <!-- CSS -->
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/header.css" />
@@ -30,43 +30,118 @@
   <link rel="stylesheet" href="/css/wip.css" />
   <link rel="stylesheet" href="/css/blog-page.css" />
 
+  <!-- Optional WIP banner + settings -->
   <script type="module" src="/js/wip.js" defer></script>
   <script type="module" src="/js/modules/site-settings.js" defer></script>
 </head>
 <body class="blog">
   <a class="skip-link" href="#blog-page">Skip to main content</a>
 
-  <!-- HEADER (injected) -->
+  <!-- Header (injected) -->
   <div id="header-container" role="banner"></div>
 
   <!-- Spacer to prevent sticky header overlap -->
   <div class="header-offset" aria-hidden="true"></div>
 
   <div class="page-container">
-    <!-- Left Sidebar -->
-    <aside class="sidebar left-sidebar" aria-label="Left sidebar" role="complementary">
-      <!-- e.g., quick links, social icons, site map -->
-    </aside>
+    <aside class="sidebar left-sidebar" aria-label="Left sidebar" role="complementary"></aside>
 
-    <!-- MAIN CONTENT -->
+    <!-- Main -->
     <main id="blog-page" class="main-content" role="main" tabindex="-1" aria-labelledby="blog-title">
       <h1 id="blog-title">Blog</h1>
-      <div id="blog-posts-container" class="blog-posts" aria-live="polite" data-endpoint="/data/blog.json"></div>
+      <div id="blog-posts-container" class="blog-posts" aria-live="polite">
+        <!-- populated by inline module below -->
+        <p class="muted">Loading posts…</p>
+      </div>
     </main>
 
-    <!-- Right Sidebar -->
-    <aside class="sidebar right-sidebar" aria-label="Right sidebar" role="complementary">
-      <!-- e.g., recent posts, contact widget -->
-    </aside>
+    <aside class="sidebar right-sidebar" aria-label="Right sidebar" role="complementary"></aside>
   </div>
 
-  <!-- FOOTER (injected) -->
+  <!-- Footer (injected) -->
   <div id="footer-container" role="contentinfo"></div>
 
-  <!-- Core bootstrap -->
+  <!-- Site bootstrap (injects header/footer) -->
   <script type="module" src="/js/main.js" defer></script>
 
-  <!-- Unified blog module (powers homepage teaser + blog list) -->
-  <script type="module" src="/js/modules/homepage-blog.js" defer></script>
+  <!-- Minimal, self-contained loader that uses your existing PHP endpoint -->
+  <script type="module">
+    const ENDPOINT = '/php/get_posts.php'; // uses your current get_posts.php
+
+    const container = document.getElementById('blog-posts-container');
+    if (!container) return;
+
+    const fmtDate = (iso) => {
+      try {
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return iso || '';
+        return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+      } catch { return iso || ''; }
+    };
+
+    const urlFor = (post) => {
+      if (post.url) return post.url;
+      if (post.slug) return `/blog/${post.slug}.html`;
+      if (post.id)   return `/blog/${post.id}.html`;
+      return '#';
+    };
+
+    function render(posts) {
+      container.innerHTML = '';
+      if (!Array.isArray(posts) || posts.length === 0) {
+        container.innerHTML = '<p class="blog-empty">No posts available yet.</p>';
+        return;
+      }
+
+      // Newest-first if not already sorted
+      posts.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+      const frag = document.createDocumentFragment();
+      for (const p of posts) {
+        const article = document.createElement('article');
+        article.className = 'blog-card';
+
+        const link = urlFor(p);
+        const title = p.title || 'Untitled';
+        const date = p.date ? `<time class="blog-date" datetime="${p.date}">${fmtDate(p.date)}</time>` : '';
+        const img  = p.image ? `
+          <a class="blog-thumb" href="${link}" aria-label="${title}">
+            <img src="${p.image}" alt="" loading="lazy" decoding="async">
+          </a>` : '';
+        const excerpt = p.excerpt ? `<p class="blog-excerpt">${p.excerpt}</p>` : '';
+
+        article.innerHTML = `
+          ${img}
+          <h2 class="blog-title"><a href="${link}">${title}</a></h2>
+          ${date}
+          ${excerpt}
+          <div class="blog-actions">
+            <a class="blog-readmore" href="${link}" aria-label="Read more: ${title}">Read More</a>
+          </div>
+        `;
+        frag.appendChild(article);
+      }
+      container.appendChild(frag);
+    }
+
+    async function load() {
+      try {
+        const res = await fetch(ENDPOINT, { credentials: 'same-origin', cache: 'no-cache' });
+        if (!res.ok) {
+          container.innerHTML = `<p class="blog-error">Could not load posts (HTTP ${res.status}).</p>`;
+          return;
+        }
+        const data = await res.json();
+        // Support either array or {posts:[...]}
+        const posts = Array.isArray(data) ? data : (Array.isArray(data.posts) ? data.posts : []);
+        render(posts);
+      } catch (err) {
+        console.error('blog load error:', err);
+        container.innerHTML = `<p class="blog-error">We couldn't load blog posts right now.</p>`;
+      }
+    }
+
+    load();
+  </script>
 </body>
 </html>
