@@ -20,7 +20,7 @@
   <script type="module" src="/js/wip.js" defer></script>
   <script type="module" src="/js/modules/site-settings.js"></script>
 </head>
-<body data-category-filter="photography">
+<body>
   <!-- HEADER (injected by /js/main.js) -->
   <div id="header-container"></div>
 
@@ -33,7 +33,9 @@
 
       <!-- IMPORTANT: this is the only dynamic hook
            No pricing table IDs present on this page -->
-      <section id="equipment-list" class="equipment-grid" data-category="photography">
+      <section id="equipment-list" class="equipment-grid" 
+         data-category="photography" 
+         data-category-filter="photography">
         <p>Loading equipment</p>
       </section>
     </main>
