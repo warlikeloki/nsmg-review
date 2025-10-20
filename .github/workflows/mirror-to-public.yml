@@ -1,5 +1,5 @@
 # .github/workflows/mirror-to-public.yml
-name: Mirror Private develop → Public main
+name: Mirror Private develop → Public main (with verification)
 
 on:
   push:
@@ -37,6 +37,7 @@ jobs:
 
       - name: Build filtered tree (exclude sensitive/private files)
         run: |
+          set -e
           mkdir -p /tmp/public
           rsync -a --delete \
             --exclude 'config/config.php' \
@@ -58,20 +59,66 @@ jobs:
             --exclude 'node_modules/' \
             . /tmp/public/
 
+          echo "== Contents of /tmp/public (first 200 lines) =="
+          find /tmp/public -type f | sed 's#^/tmp/public/##' | sort | head -n 200
+
           cd /tmp/public
           git init
           git add -A
-          git commit -m "Mirror: filtered export of ${GITHUB_REPOSITORY}@${GITHUB_SHA} (source: develop)"
+
+          # If nothing to commit, still create a commit to push as a mirror snapshot.
+          if git diff --cached --quiet; then
+            echo "No file changes staged; creating a timestamped snapshot commit anyway."
+            date > .mirror_heartbeat
+            git add .mirror_heartbeat
+          fi
+
+          SRC_SHA="$(git -C "$GITHUB_WORKSPACE" rev-parse --short=12 HEAD)"
+          git commit -m "Mirror snapshot of ${GITHUB_REPOSITORY}@${SRC_SHA} (source: develop)"
+
+          echo "== Local snapshot commit =="
+          git log --oneline -1
+          echo "== Tree summary =="
+          git ls-files | wc -l
 
       - name: Push to public repo (private develop → public main)
         env:
           PUBLIC_REPO: warlikeloki/nsmg-review
           PUBLIC_PUSH_TOKEN: ${{ secrets.PUBLIC_PUSH_TOKEN }}
         run: |
+          set -e
           cd /tmp/public
-          # Normalize to a local 'main' branch so the mapping is explicit.
           git branch -M main
           git remote add public "https://x-access-token:${PUBLIC_PUSH_TOKEN}@github.com/${PUBLIC_REPO}.git"
-          # Mirror semantics with safety: overwrite public main with this filtered tree.
-          git push public main --force-with-lease --tags
-          echo "✓ Mirrored private 'develop' to public 'main' at https://github.com/${PUBLIC_REPO}"
+
+          echo "== Verify remote auth and refs before push =="
+          git ls-remote --heads public || (echo "Cannot list remote refs; check token/repo name" && exit 1)
+
+          echo "== Verbose push =="
+          git push -v public main --force-with-lease --tags
+
+      - name: Verify public repo received the commit
+        env:
+          PUBLIC_REPO: warlikeloki/nsmg-review
+          PUBLIC_PUSH_TOKEN: ${{ secrets.PUBLIC_PUSH_TOKEN }}
+        run: |
+          set -e
+          cd /tmp/public
+          LOCAL="$(git rev-parse HEAD)"
+          echo "Local pushed commit: $LOCAL"
+
+          echo "== Remote refs for public main =="
+          REMOTE_LINE="$(git ls-remote --heads public refs/heads/main | awk '{print $1}')"
+          echo "Remote public main: $REMOTE_LINE"
+
+          if [ -z "$REMOTE_LINE" ]; then
+            echo "ERROR: Could not read remote 'main'. Did the branch protection or token block the update?"
+            exit 1
+          fi
+
+          if [ "$LOCAL" != "$REMOTE_LINE" ]; then
+            echo "ERROR: Remote commit does not match local pushed commit."
+            exit 1
+          fi
+
+          echo "✓ Verification passed: public main matches local snapshot."
