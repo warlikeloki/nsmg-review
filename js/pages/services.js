@@ -1,15 +1,17 @@
 /* /js/pages/services.js
-   Services dashboard loader with:
-   - Singleton guard (prevents duplicate init → "loads twice")
-   - Debounced navigation (prevents rapid double clicks)
-   - Fragment fetch + script execution with temporary <base>
-   - MAIN content rendering with smart anchors
-   - Equipment load for photo/video/editing via /js/modules/equipment.js
-   - "Other Services" data via /php/get_other_services.php
+   Zero-invasion Services loader:
+   - Fetches a fragment and injects it into #service-mount
+   - Executes fragment scripts (with a temporary <base> for relative URLs)
+   - Does NOT create any new sections or headings
+   - Triggers post-load initializers ONLY IF the fragment contains their hooks:
+       * #equipment-list          -> import('/js/modules/equipment.js') then window.loadEquipment()
+       * #other-services-list     -> fetch('/php/get_other_services.php') and render collapsible cards
+       * #packages-body/#ala-carte-body -> import('/js/modules/pricing.js') then loadPricing()
+   - Guards against duplicate init and rapid double-clicks
 */
 
 (() => {
-  // ---- Singleton guard: prevent duplicate initialization ----
+  // --- Singleton guard (prevents duplicate click binding / double loads)
   if (window.__NSM_SERVICES_READY__) return;
   window.__NSM_SERVICES_READY__ = true;
 
@@ -19,23 +21,10 @@
   const DRAWER_ID = 'services-drawer';
   const TOGGLE_ID = 'services-toggle';
 
-  // Debounce state
   let inFlight = false;
   let currentKey = null;
 
-  // Reuse a single dynamic import for equipment.js
-  let equipmentModulePromise = null;
-  function ensureEquipmentModule() {
-    if (!equipmentModulePromise) {
-      equipmentModulePromise = import('/js/modules/equipment.js').catch((e) => {
-        console.warn('[services] equipment module import failed', e);
-        return null;
-      });
-    }
-    return equipmentModulePromise;
-  }
-
-  // Candidate URLs per section
+  // Candidate URLs for each section
   const SERVICE_CANDIDATES = {
     photography:      ['services/photography.html','./services/photography.html'],
     videography:      ['services/videography.html','./services/videography.html'],
@@ -51,7 +40,7 @@
     'request-form':   ['services/request-form.html','./services/request-form.html','services/request.html','./services/request.html']
   };
 
-  // Where inside fetched HTML to extract the useful bit
+  // Preferred fragment roots to extract
   const SERVICE_FRAGMENT_SELECTORS = {
     'request-form': ['#request-form','form[action*="request"]','[data-fragment="request-form"]','main','[role="main"]','section[id*="request"]'],
     pricing: ['#pricing-section','#pricing-main','[data-fragment="pricing"]','main','[role="main"]'],
@@ -61,17 +50,10 @@
     'other-services': ['[data-fragment="service"]','main','[role="main"]','article','section']
   };
 
-  const SERVICE_TO_EQUIPMENT = {
-    photography: 'photography',
-    videography: 'videography',
-    editing: 'editing'
-    // NOTE: other-services uses a different endpoint (get_other_services.php)
-  };
-
   const main = document.getElementById(MAIN_ID);
   if (!main) return;
 
-  // Ensure a stable mount INSIDE main
+  // Stable mount inside main
   let mount = main.querySelector('#service-mount');
   if (!mount) {
     mount = document.createElement('div');
@@ -84,27 +66,6 @@
     }
   }
 
-  // ---- Smart anchors inside MAIN (we prefer existing anchors in fragments) ----
-  const EQUIP_ID = 'service-equipment-main';
-  function findOrCreateAnchor(id, options = {}) {
-    // 1) Fragment-provided anchors take precedence
-    const existing = mount.querySelector(`[data-anchor="${id}"], #${id}, .${id}`);
-    if (existing) return existing;
-
-    // 2) Try to place after the first H2/H1 inside mount
-    const after = mount.querySelector(options.afterSel || 'h2, h1, [role="heading"]');
-    const el = document.createElement(options.tagName || 'section');
-    el.id = id;
-    if (options.className) el.className = options.className;
-    if (after && after.parentNode) after.insertAdjacentElement('afterend', el);
-    else mount.appendChild(el);
-    return el;
-  }
-  function clearAnchor(id) {
-    const el = mount.querySelector(`#${id}, [data-anchor="${id}"], .${id}`);
-    if (el) el.remove();
-  }
-
   function closeDrawerIfOpen() {
     const drawer = document.getElementById(DRAWER_ID);
     const toggle = document.getElementById(TOGGLE_ID);
@@ -114,7 +75,7 @@
     }
   }
 
-  // ---- Fragment loading helpers ----
+  // -------- fragment fetch / selection / script execution ----------
   async function fetchFirstOk(candidates) {
     const errors = [];
     for (const url of candidates) {
@@ -122,7 +83,7 @@
         const res = await fetch(url, { credentials: 'same-origin', cache: 'no-cache' });
         if (res.ok) {
           const text = await res.text();
-          console.info(`[services] Loaded fragment from: ${url}`);
+          console.info('[services] Loaded fragment from:', url);
           return { url: new URL(url, location.href).href, text };
         }
         errors.push({ url, status: res.status });
@@ -154,15 +115,15 @@
     }
     if (!node) node = doc.body.cloneNode(true);
 
-    // Collect scripts (before stripping)
+    // Collect scripts before stripping
     const rawScripts = Array.from(node.querySelectorAll('script'));
 
-    // Strip header/footer/sidebars and scripts from injected HTML
+    // Remove external chrome and scripts from the injected HTML
     node.querySelectorAll('#header-container, #site-header, header, #footer-container, footer, .sidebar').forEach(el => el.remove());
     node.querySelectorAll('script').forEach(el => el.remove());
 
     const scripts = rawScripts.map(s => {
-      const type = (s.getAttribute('type') || '').trim(); // '' or 'module'
+      const type = (s.getAttribute('type') || '').trim();
       const src  = s.getAttribute('src');
       const asyncAttr = s.hasAttribute('async');
       const deferAttr = s.hasAttribute('defer');
@@ -228,89 +189,143 @@
     });
   }
 
-  // ---- Data renderers ----
-  async function renderEquipmentIntoMain(category) {
-    const anchor = findOrCreateAnchor(EQUIP_ID, { className: 'equipment-panel equipment-panel--main', tagName: 'section' });
-    anchor.innerHTML = `<p>Loading equipment…</p>`;
-
-    const mod = await ensureEquipmentModule();
-    if (mod && (mod.NSM?.equipment?.renderInto || window.NSM?.equipment?.renderInto)) {
-      const renderInto = mod.NSM?.equipment?.renderInto || window.NSM.equipment.renderInto;
-      await renderInto(anchor, { category });
-      return;
-    }
-
-    // Fallback: minimal list if the module couldn't be imported
+  // -------- post-fragment activators (only act if hook exists) --------
+  async function activateEquipmentIfPresent() {
+    const list = mount.querySelector('#equipment-list');
+    if (!list) return;
     try {
-      const res = await fetch(`/php/get_equipment.php?category=${encodeURIComponent(category)}`, { cache: 'no-cache' });
-      const payload = await res.json();
-      const rows = Array.isArray(payload) ? payload : (payload?.data || []);
-      if (!rows.length) {
-        anchor.innerHTML = `<p>No equipment found for ${escapeHtml(category)}.</p>`;
-        return;
+      const mod = await import('/js/modules/equipment.js');
+      // prefer explicit API if exported, else legacy global hook
+      if (mod?.NSM?.equipment?.renderInto) {
+        await mod.NSM.equipment.renderInto(list, {
+          // rely on equipment.js to pick up ?category/body/list data attributes
+        });
+      } else if (window.NSM?.equipment?.renderInto) {
+        await window.NSM.equipment.renderInto(list, {});
+      } else if (typeof window.loadEquipment === 'function') {
+        await window.loadEquipment();
+      } else {
+        // as a last resort, trigger once after a tick (some modules attach late)
+        setTimeout(() => { if (typeof window.loadEquipment === 'function') window.loadEquipment(); }, 0);
       }
-      anchor.innerHTML = `<h2>Equipment — ${escapeHtml(capitalize(category))}</h2><ul>` +
-        rows.map(r => `<li>${escapeHtml(r.name || 'Unnamed')}</li>`).join('') + `</ul>`;
     } catch (e) {
-      console.error('[services] equipment fallback failed', e);
-      anchor.innerHTML = `<p class="error">Could not load equipment.</p>`;
+      console.error('[services] Failed to activate equipment module:', e);
     }
   }
 
-  async function renderOtherServicesIntoMain() {
-    // Create/find an anchor separate from equipment
-    const OTHER_ID = 'other-services-main';
-    const anchor = findOrCreateAnchor(OTHER_ID, { className: 'other-services-panel', tagName: 'section' });
-    anchor.innerHTML = `<p>Loading other services…</p>`;
+  async function activatePricingIfPresent() {
+    const hasPricing = mount.querySelector('#packages-body, #ala-carte-body');
+    if (!hasPricing) return;
+    try {
+      const mod = await import('/js/modules/pricing.js');
+      if (mod?.loadPricing) {
+        await mod.loadPricing();
+      } else if (window.loadPricing) {
+        await window.loadPricing();
+      }
+    } catch (e) {
+      console.error('[services] Failed to activate pricing module:', e);
+    }
+  }
+
+  async function activateOtherServicesIfPresent() {
+    const container = mount.querySelector('#other-services-list');
+    if (!container) return;
+
+    container.innerHTML = '<p>Loading other services…</p>';
 
     try {
-      const res = await fetch('/php/get_other_services.php', { cache: 'no-cache', headers: { 'Accept': 'application/json' } });
+      const res = await fetch('/php/get_other_services.php', {
+        cache: 'no-cache',
+        headers: { 'Accept': 'application/json' }
+      });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const payload = await res.json();
       const rows = Array.isArray(payload) ? payload : (payload?.data || []);
-      if (!rows.length) {
-        anchor.innerHTML = `<p>No other services listed.</p>`;
-        return;
-      }
-      // Simple render: title + description list
-      anchor.innerHTML = `
-        <h2>Other Services</h2>
-        <ul class="other-services-list">
-          ${rows.map(it => `
-            <li class="other-service-item">
-              <div class="other-service-title">${escapeHtml(it.name || it.title || 'Untitled')}</div>
-              ${it.description ? `<div class="other-service-desc">${escapeHtml(it.description)}</div>` : ''}
-            </li>
-          `).join('')}
-        </ul>
-      `;
+      renderOtherServicesAsCollapsible(container, rows);
     } catch (e) {
-      console.error('[services] get_other_services failed', e);
-      anchor.innerHTML = `<p class="error">Unable to load other services.</p>`;
+      console.error('[services] other services fetch failed:', e);
+      container.innerHTML = '<p class="error">Unable to load other services.</p>';
     }
   }
 
-  // ---- Core loader ----
+  // Render "Other Services" using the SAME collapsible card pattern/classes as equipment
+  function renderOtherServicesAsCollapsible(container, items) {
+    if (!Array.isArray(items) || items.length === 0) {
+      container.innerHTML = '<p>No other services listed.</p>';
+      return;
+    }
+    const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (ch) => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[ch]));
+    const byName = (a,b) => String(a?.name || a?.title || '').localeCompare(String(b?.name || b?.title || ''), undefined, { sensitivity:'base' });
+
+    const html = items.slice().sort(byName).map((it, idx) => {
+      const name = escapeHtml(it.name || it.title || 'Untitled');
+      const desc = it.description ? `<p class="eq-desc">${escapeHtml(it.description)}</p>` : '<p class="eq-desc">No description provided.</p>';
+      const img  = it.thumbnail_url ? `<img class="eq-thumb" src="${escapeHtml(it.thumbnail_url)}" alt="${name}" loading="lazy" decoding="async">` : '';
+      const pid = `os-card-panel-${idx}`;
+      const bid = `os-card-toggle-${idx}`;
+      return `
+        <article class="equip-card">
+          <div class="equip-card-hd">
+            <button type="button" id="${bid}" class="equip-toggle-mini" aria-expanded="false" aria-controls="${pid}" aria-label="Expand ${name}">+</button>
+            <span class="equip-title" title="${name}">${name}</span>
+          </div>
+          <div id="${pid}" class="equip-panel" role="region" aria-labelledby="${bid}" hidden>
+            <div class="equip-panel-inner">
+              ${img}
+              ${desc}
+            </div>
+          </div>
+        </article>`;
+    }).join('');
+
+    container.innerHTML = `<div class="equip-grid">${html}</div>`;
+
+    // wire toggles (identical behavior to equipment.js)
+    const toggles = Array.from(container.querySelectorAll('.equip-toggle-mini'));
+    const toggle = (btn) => {
+      const panel = document.getElementById(btn.getAttribute('aria-controls'));
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      if (panel) panel.hidden = expanded;
+      btn.textContent = expanded ? '+' : '–';
+    };
+    toggles.forEach((btn) => {
+      btn.addEventListener('click', (e) => { e.stopPropagation(); toggle(btn); });
+      btn.addEventListener('keydown', (e) => {
+        if (!['ArrowUp','ArrowDown','Home','End'].includes(e.key)) return;
+        const i = toggles.indexOf(btn);
+        let next = i;
+        if (e.key === 'ArrowUp')   next = (i - 1 + toggles.length) % toggles.length;
+        if (e.key === 'ArrowDown') next = (i + 1) % toggles.length;
+        if (e.key === 'Home')      next = 0;
+        if (e.key === 'End')       next = toggles.length - 1;
+        toggles[next]?.focus();
+        e.preventDefault();
+      });
+    });
+  }
+
+  // ---------------- core load -----------------
   async function loadService(key) {
-    // Debounce: ignore if same key still in-flight
+    // Debounce: ignore if same key currently in flight
     if (inFlight && key === currentKey) return;
     inFlight = true;
     currentKey = key;
 
-    // Always clear section-specific anchors before loading new content
-    clearAnchor(EQUIP_ID);
-    clearAnchor('other-services-main');
-
     main.setAttribute('data-loading', 'true');
 
     try {
-      const { url, text } = await fetchFirstOk(SERVICE_CANDIDATES[key] || []);
+      const candidates = SERVICE_CANDIDATES[key] || [];
+      const { url, text } = await fetchFirstOk(candidates);
       const { html, scripts, baseHref } = extractFragmentAndScripts(text, key, url);
 
-      // Replace the main mount content with the fragment
+      // replace main mount
       mount.innerHTML = html || `<div class="notice error" role="alert"><p>Section loaded but no content matched.</p></div>`;
 
-      // Execute any inline/external scripts from the fragment with corrected <base>
+      // Execute scripts belonging to the fragment (with correct base)
       setTempBase(baseHref);
       try {
         await executeScriptsSequentially(scripts);
@@ -318,10 +333,7 @@
         clearTempBase();
       }
 
-      // Keep hash links from causing page jumps
-      interceptLocalAnchors(mount);
-
-      // Focus the new content for a11y
+      // Accessibility focus without scroll jumps
       const focusTarget = mount.querySelector('h1, h2, [role="heading"], form, section, article, [tabindex]') || mount;
       if (focusTarget) {
         const had = focusTarget.hasAttribute('tabindex');
@@ -330,14 +342,13 @@
         if (!had) focusTarget.removeAttribute('tabindex');
       }
 
-      // Post-fragment data rendering per section
-      if (key === 'pricing' || key === 'request-form') {
-        // No extra data, anchors already cleared
-      } else if (key === 'other-services') {
-        await renderOtherServicesIntoMain();
-      } else if (SERVICE_TO_EQUIPMENT[key]) {
-        await renderEquipmentIntoMain(SERVICE_TO_EQUIPMENT[key]);
-      }
+      // Intercept hash links inside the fragment
+      interceptLocalAnchors(mount);
+
+      // Post-fragment activations — ONLY if the proper hooks exist
+      await activateEquipmentIfPresent();
+      await activatePricingIfPresent();
+      await activateOtherServicesIfPresent();
 
       closeDrawerIfOpen();
     } catch (err) {
@@ -349,7 +360,7 @@
     }
   }
 
-  // ---- Click delegation (bound once thanks to singleton guard) ----
+  // Click delegation (bound once)
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.admin-button');
     if (!btn) return;
@@ -360,14 +371,6 @@
     loadService(key);
   }, { passive: false });
 
-  // Prevent hash-jump globally
+  // Stop hash jumps globally
   interceptLocalAnchors(document);
-
-  // ---- Small utils ----
-  function capitalize(s){ return typeof s === 'string' && s ? s[0].toUpperCase()+s.slice(1) : s; }
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (ch) => ({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-    }[ch]));
-  }
 })();
