@@ -4,7 +4,7 @@
 // - Injects /header.html and /footer.html with safe fallbacks
 // - Initializes navigation (with resilient hamburger fallback)
 // - Enforces correct mobile viewport and stabilizes mobile layout
-// - Conditionally loads /js/modules/* based on DOM markers
+// - Conditionally loads /js/modules/* and /js/pages/* based on DOM markers
 // - Idempotently injects global CSS modules into <head>
 
 (() => {
@@ -226,17 +226,6 @@
       console.warn("[NSMG] navigation module import failed; fallback handler remains active.", err);
     }
   }
-/* Optional: dynamically set .header-offset height to match the header
-   Uncomment if header height changes (e.g., shrinking sticky header).
-*/
-// document.addEventListener('DOMContentLoaded', () => {
-//   const header = document.querySelector('#site-header');
-//   const offset = document.querySelector('.header-offset');
-//   if (header && offset) {
-//     const headerHeight = header.offsetHeight;
-//     offset.style.height = `${headerHeight}px`;
-//   }
-// });
 
   // ------------------ Conditional module autoloads ------------------
   async function autoInitModules() {
@@ -292,6 +281,34 @@
       try { await import("/js/modules/services-nav.js"); } catch {}
     }
     if (has(".filter-buttons"))                              { try { await import("/js/modules/portfolio.js"); } catch {} }
+
+    // --- NEW: Services dashboard/page autoload (MAIN CONTENT target) ---
+    // Triggers on services.html (staging/live) whenever the dashboard or main pane exists.
+    if (
+      document.getElementById("services-page") ||
+      document.getElementById("services-dashboard") ||
+      document.getElementById("service-content") ||
+      document.querySelector('[data-service]')
+    ) {
+      try {
+        const mod = await import("/js/pages/services.js");
+        // Be flexible with export names so staging doesn't break:
+        if (typeof mod?.initServicesPage === "function") {
+          mod.initServicesPage();
+        } else if (typeof mod?.initServicesDashboard === "function") {
+          mod.initServicesDashboard();
+        } else if (typeof mod?.default === "function") {
+          mod.default();
+        } else if (typeof window.NSM?.services?.init === "function") {
+          window.NSM.services.init();
+        } else {
+          console.warn("[NSMG] /js/pages/services.js loaded, but no initializer was found.");
+        }
+      } catch (e) {
+        console.error("[NSMG] Failed to load /js/pages/services.js", e);
+      }
+    }
+    // --- END NEW ---
   }
 
   // ------------------ Boot ------------------

@@ -1,12 +1,19 @@
 /* /js/pages/services.js
-   Services dashboard loader — fragment-only, script execution, and BASE fix.
+   Services dashboard loader — fragment-only, script execution, BASE fix,
+   and MAIN-PANE equipment rendering.
 
-   Fixes:
-   - Executes scripts found in fetched fragments (modules and classic).
-   - Temporarily sets <base> to the fragment's directory so relative fetch()
-     calls like 'get_pricing.php' resolve correctly (the core bug).
-   - Prevents scroll jumps (no hash changes; focus with preventScroll).
-   - Resilient candidate paths (esp. Pricing).
+   What’s new vs. your version:
+   - After a service fragment loads (photography/videography/editing/other-services),
+     we fetch `/php/get_equipment.php?category=<mapped>` and render the list
+     **INSIDE the main content area** (appended to #service-mount, or into an
+     existing anchor #service-equipment-main if present).
+   - Pricing and Request Form explicitly **clear** any equipment block.
+   - Robust JSON handling ({ok:true,data:[...]} or raw array).
+   - Defensive against staging/live path differences; BASE resolution remains.
+
+   Notes:
+   - Main content container id is expected to be `services-content` (matches your file).
+   - Equipment anchor id inside main is `service-equipment-main` (created if missing).
 */
 
 (() => {
@@ -16,6 +23,7 @@
   const DRAWER_ID = 'services-drawer';
   const TOGGLE_ID = 'services-toggle';
 
+  // Map button keys to fragment candidates
   const SERVICE_CANDIDATES = {
     photography:      ['services/photography.html','./services/photography.html'],
     videography:      ['services/videography.html','./services/videography.html'],
@@ -31,6 +39,7 @@
     'request-form':   ['services/request-form.html','./services/request-form.html','services/request.html','./services/request.html']
   };
 
+  // Narrow the fragment we inject from the fetched HTML
   const SERVICE_FRAGMENT_SELECTORS = {
     'request-form': ['#request-form','form[action*="request"]','[data-fragment="request-form"]','main','[role="main"]','section[id*="request"]'],
     pricing: ['#pricing-section','#pricing-main','[data-fragment="pricing"]','main','[role="main"]'],
@@ -40,9 +49,18 @@
     'other-services': ['[data-fragment="service"]','main','[role="main"]','article','section']
   };
 
+  // Map UI key -> equipment category expected by PHP
+  const SERVICE_TO_EQUIPMENT = {
+    photography: 'photography',
+    videography: 'videography',
+    editing: 'editing',
+    'other-services': 'other'
+  };
+
   const main = document.getElementById(MAIN_ID);
   if (!main) return;
 
+  // Ensure a mount inside the main content
   let mount = main.querySelector('#service-mount');
   if (!mount) {
     mount = document.createElement('div');
@@ -53,6 +71,25 @@
     } else {
       main.appendChild(mount);
     }
+  }
+
+  // --- Equipment anchor management (inside MAIN content) ---
+  const EQUIP_ID = 'service-equipment-main';
+
+  function getOrCreateEquipAnchor() {
+    let anchor = mount.querySelector('#' + EQUIP_ID);
+    if (!anchor) {
+      anchor = document.createElement('section');
+      anchor.id = EQUIP_ID;
+      anchor.className = 'equipment-panel equipment-panel--main';
+      mount.appendChild(anchor);
+    }
+    return anchor;
+  }
+
+  function clearEquipment() {
+    const anchor = mount.querySelector('#' + EQUIP_ID);
+    if (anchor) anchor.remove();
   }
 
   function closeDrawerIfOpen() {
@@ -87,7 +124,7 @@
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
-    // Use <base> from fetched doc if present; otherwise use its directory.
+    // Determine effective BASE for resolving any <script src> in the fragment
     const baseFromDoc = doc.querySelector('base[href]');
     const fetched = new URL(fetchedUrl);
     const defaultBase = fetched.origin + fetched.pathname.replace(/[^/]+$/, '');
@@ -170,6 +207,64 @@
     }
   }
 
+  // ------------- Equipment rendering (MAIN content only) -------------
+  async function renderEquipmentInMain(serviceKey) {
+    const category = SERVICE_TO_EQUIPMENT[serviceKey];
+    if (!category) return; // not a service that shows equipment
+
+    const anchor = getOrCreateEquipAnchor();
+    anchor.setAttribute('aria-busy', 'true');
+
+    const url = `/php/get_equipment.php?category=${encodeURIComponent(category)}`;
+    try {
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' }, cache: 'no-cache' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const payload = await res.json();
+      const rows = Array.isArray(payload) ? payload : (payload?.data || []);
+
+      if (!rows.length) {
+        anchor.innerHTML = `<div class="notice info">No equipment listed for ${escapeHtml(category)} yet.</div>`;
+        return;
+      }
+
+      // Group by item.category (camera, lens, lighting, etc.)
+      const byGroup = groupBy(rows, (r) => (r.category || 'Other'));
+      const sections = Object.keys(byGroup).sort().map((group) => {
+        const items = byGroup[group].map(renderEquipItem).join('');
+        return `
+          <section class="equip-group">
+            <h3 class="equip-group__title">${escapeHtml(group)}</h3>
+            <ul class="equip-list">${items}</ul>
+          </section>
+        `;
+      }).join('');
+
+      anchor.innerHTML = `
+        <h2 class="equipment-panel__title">Equipment — ${escapeHtml(capitalize(category))}</h2>
+        ${sections}
+      `;
+    } catch (err) {
+      console.error('[services] equipment load failed:', err);
+      anchor.innerHTML = `<div class="notice error">Could not load equipment for ${escapeHtml(category)}.</div>`;
+    } finally {
+      anchor.removeAttribute('aria-busy');
+    }
+  }
+
+  function renderEquipItem(item) {
+    const name = item.name || 'Unnamed';
+    const desc = item.description || '';
+    const model = item.model ? ` <span class="equip-item__model">(${escapeHtml(item.model)})</span>` : '';
+    return `
+      <li class="equip-item">
+        <div class="equip-item__name">${escapeHtml(name)}${model}</div>
+        ${desc ? `<div class="equip-item__desc">${escapeHtml(desc)}</div>` : ''}
+      </li>
+    `;
+  }
+
+  // -------------------- Core load pipeline --------------------
   async function loadService(key) {
     const candidates = SERVICE_CANDIDATES[key];
     if (!candidates || !candidates.length) return;
@@ -184,7 +279,7 @@
       mount.innerHTML = html || `<div class="notice error" role="alert"><p>Section loaded but no content matched.</p></div>`;
 
       // TEMP <base> so relative fetch/imports inside executed scripts resolve correctly
-      const tempBase = setTempBase(baseHref);
+      setTempBase(baseHref);
       try {
         await executeScriptsSequentially(scripts);
       } finally {
@@ -204,10 +299,18 @@
       // Stop in-fragment hash links from jumping the page
       interceptLocalAnchors(mount);
 
+      // Inject equipment INSIDE MAIN for service sections; clear for pricing/request
+      if (key === 'pricing' || key === 'request-form') {
+        clearEquipment();
+      } else {
+        await renderEquipmentInMain(key);
+      }
+
       closeDrawerIfOpen();
     } catch (err) {
       console.error(err);
       mount.innerHTML = `<div class="notice error" role="alert"><p>Sorry, we couldn’t load that section right now.</p></div>`;
+      clearEquipment();
     } finally {
       main.removeAttribute('data-loading');
     }
@@ -223,6 +326,7 @@
     });
   }
 
+  // Delegate clicks from your dashboard buttons (class .admin-button with data-service)
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.admin-button');
     if (!btn) return;
@@ -234,4 +338,21 @@
   }, { passive: false });
 
   interceptLocalAnchors(document);
+
+  // -------------------- Utilities --------------------
+  function groupBy(arr, keyFn) {
+    return arr.reduce((acc, it) => {
+      const k = keyFn(it);
+      (acc[k] ||= []).push(it);
+      return acc;
+    }, {});
+  }
+
+  function capitalize(s){ return typeof s === 'string' && s ? s[0].toUpperCase()+s.slice(1) : s; }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (ch) => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[ch]));
+  }
 })();

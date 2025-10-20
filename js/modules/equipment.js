@@ -8,23 +8,78 @@
 //   2) <body data-category-filter="photography">
 //   3) <section id="equipment-list" data-category="photography">
 //
-// Exposes window.loadEquipment() so /js/main.js can call it.
+// Exposes:
+//   - window.loadEquipment()                 -> auto mode for #equipment-list (backward-compatible)
+//   - window.NSM.equipment.renderInto(elOrSel, { category, q }) -> render into any container (e.g., main pane)
+//
 // Also auto-runs when #equipment-list exists.
 
 (function () {
-  if (window.loadEquipment) return; // idempotent
+  // Prevent double registration
+  if (window.NSM?.equipment?.__ready || window.loadEquipment) return;
 
+  // ---------------- Utilities ----------------
+  const NSM = (window.NSM = window.NSM || {});
+  NSM.equipment = NSM.equipment || {};
+
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, (ch) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+  }
+
+  function byName(a, b) {
+    return String(a?.name ?? '').localeCompare(String(b?.name ?? ''), undefined, { sensitivity: 'base' });
+  }
+
+  function normArray(payload) {
+    // Accept: raw array | {ok,data} | {success,data}
+    if (Array.isArray(payload)) return payload;
+    if (payload && typeof payload === 'object') {
+      if (Array.isArray(payload.data)) return payload.data;
+      // Sometimes PHP emits strings "ok"/"success"—ignore; just try to coerce
+    }
+    return [];
+  }
+
+  async function fetchEquipment(paramsObj = {}) {
+    const params = new URLSearchParams();
+    if (paramsObj.category) params.set('category', paramsObj.category);
+    if (paramsObj.q)        params.set('q', paramsObj.q);
+
+    const url = '/php/get_equipment.php' + (params.toString() ? `?${params}` : '');
+    const res = await fetch(url, { cache: 'no-store', headers: { 'Accept': 'application/json' } });
+
+    // Try to parse JSON; if parsing fails, surface a friendly error
+    let json;
+    try {
+      json = await res.json();
+    } catch {
+      throw new Error(`Invalid JSON from ${url} (HTTP ${res.status})`);
+    }
+    if (!res.ok) {
+      // Normalize common error shapes
+      const msg = json?.error || json?.message || `HTTP ${res.status}`;
+      throw new Error(msg);
+    }
+    return normArray(json);
+  }
+
+  // -------------- Rendering ------------------
   function itemCard(e, idx) {
     const panelId = `eq-card-panel-${idx}`;
     const btnId   = `eq-card-toggle-${idx}`;
+    const name    = escapeHtml(e.name || 'Unnamed');
 
     const desc = e.description
-      ? `<p class="eq-desc">${e.description}</p>`
+      ? `<p class="eq-desc">${escapeHtml(e.description)}</p>`
       : '<p class="eq-desc">No description provided.</p>';
 
     const img = e.thumbnail_url
-      ? `<img class="eq-thumb" src="${e.thumbnail_url}" alt="${e.name}" loading="lazy" decoding="async">`
+      ? `<img class="eq-thumb" src="${escapeHtml(e.thumbnail_url)}" alt="${name}" loading="lazy" decoding="async">`
       : '';
+
+    const model = e.model ? ` <span class="equip-item__model">(${escapeHtml(e.model)})</span>` : '';
 
     return `
       <article class="equip-card" data-idx="${idx}">
@@ -34,10 +89,10 @@
                   class="equip-toggle-mini"
                   aria-expanded="false"
                   aria-controls="${panelId}"
-                  aria-label="Expand ${e.name}">
+                  aria-label="Expand ${name}">
             +
           </button>
-          <span class="equip-title" title="${e.name}">${e.name}</span>
+          <span class="equip-title" title="${name}">${name}${model}</span>
         </div>
         <div id="${panelId}" class="equip-panel" role="region" aria-labelledby="${btnId}" hidden>
           <div class="equip-panel-inner">
@@ -49,15 +104,6 @@
     `;
   }
 
-  async function fetchEquipment(paramsObj = {}) {
-    const params = new URLSearchParams();
-    if (paramsObj.category) params.set('category', paramsObj.category);
-    if (paramsObj.q)        params.set('q', paramsObj.q);
-    const url = '/php/get_equipment.php' + (params.toString() ? `?${params}` : '');
-    const res = await fetch(url, { cache: 'no-store' });
-    return res.json();
-  }
-
   function wireToggles(container) {
     const toggles = Array.from(container.querySelectorAll('.equip-toggle-mini'));
 
@@ -66,15 +112,15 @@
       const expanded = btn.getAttribute('aria-expanded') === 'true';
       btn.setAttribute('aria-expanded', String(!expanded));
       if (panel) panel.hidden = expanded;
-      btn.textContent = expanded ? '+' : '–'; // show "–" when open
+      btn.textContent = expanded ? '+' : '–'; // “–” when open
     }
 
-    toggles.forEach(btn => {
+    toggles.forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         toggle(btn);
       });
-      // OPTIONAL: only the "+" toggles. Title click does nothing to avoid confusion.
+      // Simple roving focus
       btn.addEventListener('keydown', (e) => {
         if (!['ArrowUp','ArrowDown','Home','End'].includes(e.key)) return;
         const i = toggles.indexOf(btn);
@@ -89,21 +135,48 @@
     });
   }
 
-  function renderGrid(listEl, items) {
+  function renderGrid(listEl, items, opts = {}) {
+    const categoryLabel = opts.category ? ` — ${escapeHtml(opts.category)}` : '';
     if (!Array.isArray(items) || items.length === 0) {
-      listEl.innerHTML = '<p>No equipment found.</p>';
+      listEl.innerHTML = `
+        <div class="equipment-empty">
+          <h3 class="equipment-title">Equipment${categoryLabel}</h3>
+          <p>No equipment found.</p>
+        </div>`;
       return;
     }
+
     const html = items
       .slice()
-      .sort((a, b) => a.name.localeCompare(b.name))
+      .sort(byName)
       .map(itemCard)
       .join('');
-    listEl.innerHTML = `<div class="equip-grid">${html}</div>`;
+
+    listEl.innerHTML = `
+      <div class="equipment-wrapper">
+        <h3 class="equipment-title">Equipment${categoryLabel}</h3>
+        <div class="equip-grid">${html}</div>
+      </div>`;
     wireToggles(listEl);
   }
 
-  window.loadEquipment = async function loadEquipment() {
+  // -------------- Public API ----------------
+  async function renderInto(elOrSel, { category, q } = {}) {
+    const listEl = typeof elOrSel === 'string' ? document.querySelector(elOrSel) : elOrSel;
+    if (!listEl) return;
+
+    listEl.innerHTML = '<p>Loading equipment…</p>';
+    try {
+      const data = await fetchEquipment({ category, q });
+      renderGrid(listEl, data, { category });
+    } catch (e) {
+      console.error('[equipment] load error:', e);
+      listEl.innerHTML = `<p class="error">Unable to load equipment${category ? ` for ${escapeHtml(category)}` : ''}.</p>`;
+    }
+  }
+
+  // Backward-compatible auto loader for pages with #equipment-list
+  async function loadEquipment() {
     const listEl = document.getElementById('equipment-list');
     if (!listEl) return;
 
@@ -114,7 +187,7 @@
     const listCat = (listEl.dataset?.category) || '';
     const tag = urlCat || bodyCat || listCat || '';
 
-    // Optional search later
+    // Optional search box
     const qEl = document.getElementById('equipment-search');
 
     const readState = () => ({
@@ -125,12 +198,11 @@
     const apply = async () => {
       listEl.innerHTML = '<p>Loading equipment…</p>';
       try {
-        const { category, q } = readState();
-        const { success, data, error } = await fetchEquipment({ category, q });
-        if (!success) throw new Error(error || 'Failed to load equipment');
-        renderGrid(listEl, data);
+        const state = readState();
+        const data = await fetchEquipment(state);
+        renderGrid(listEl, data, { category: state.category });
       } catch (e) {
-        console.error(e);
+        console.error('[equipment] load error:', e);
         listEl.innerHTML = '<p class="error">Unable to load equipment.</p>';
       }
     };
@@ -141,14 +213,19 @@
       let t;
       qEl.addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 300); });
     }
-  };
+  }
+
+  // Expose
+  NSM.equipment.renderInto = renderInto;
+  NSM.equipment.__ready = true;
+  window.loadEquipment = loadEquipment; // legacy hook used by /js/main.js
 
   // Auto-run when hook exists
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-      if (document.getElementById('equipment-list')) window.loadEquipment();
+      if (document.getElementById('equipment-list')) loadEquipment();
     }, { once: true });
   } else if (document.getElementById('equipment-list')) {
-    window.loadEquipment();
+    loadEquipment();
   }
 })();

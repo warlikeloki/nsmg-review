@@ -22,7 +22,7 @@
 
   <!-- Page-scoped overrides for the Services drawer -->
   <style>
-    /* Keep the services drawer acting like a vertical sidebar on desktop */
+    /* Desktop: drawer behaves like a static vertical sidebar */
     #services-drawer.nav-menu {
       display: block;
       position: static;
@@ -35,31 +35,20 @@
       padding: 0;
     }
     #services-drawer .admin-button { display: block; width: 100%; margin-bottom: .5rem; }
-
-    /* Sidebar layout stays vertical */
     .left-sidebar #services-nav { display: block; }
 
-    /* Hide the mobile hamburger on desktop; shown by navigation.css at <=1023px */
+    /* Hide the page-level hamburger on desktop; navigation.css handles ≤1023px */
     #services-toggle.hamburger { display: none; }
 
-    /* Mobile: turn the services drawer into an off-canvas panel that navigation.js toggles with .open */
+    /* Mobile: off-canvas drawer toggled via aria-controls */
     @media (max-width: 1023px) {
-      /* Show the page-level hamburger (we reuse your existing #services-toggle) */
       #services-toggle.hamburger { display: inline-block; }
-
-      /* Ensure the drawer uses the off-canvas rules supplied by /css/navigation.css (.nav-menu.open) */
-      #services-drawer.nav-menu {
-        /* Base off-canvas styles live in navigation.css.
-           Here we only tweak spacing for this sidebar’s content. */
-        padding: 80px 16px 16px;
-      }
-
-      /* On mobile, we usually hide the static left sidebar area since the drawer replaces it */
+      #services-drawer.nav-menu { padding: 80px 16px 16px; }
       .left-sidebar { display: none; }
     }
   </style>
 
-  <!-- JS -->
+  <!-- JS (global bootstrap + small page helpers) -->
   <script type="module" src="/js/main.js" defer></script>
   <script type="module" src="/js/wip.js" defer></script>
   <script type="module" src="/js/modules/site-settings.js" defer></script>
@@ -67,18 +56,17 @@
 <body class="services">
   <a class="skip-link" href="#services-content">Skip to main content</a>
 
-  <!-- HEADER -->
+  <!-- HEADER (injected by /js/main.js) -->
   <div id="header-container" role="banner"></div>
 
   <!-- Spacer prevents sticky header overlap -->
   <div class="header-offset" aria-hidden="true"></div>
 
-  <div class="page-container">
+  <div class="page-container" id="services-page">
     <!-- Left Sidebar: Services Drawer Host -->
     <aside class="sidebar left-sidebar" aria-label="Services sidebar" role="complementary">
-      <!-- IMPORTANT: Give the drawer an id + class="nav-menu" so navigation.js toggles .open here -->
+      <!-- IMPORTANT: id + class=nav-menu so the global nav fallback can toggle .open -->
       <nav id="services-drawer" class="nav-menu" aria-label="Services Menu">
-        <!-- Keep your original services-nav id and button structure so existing JS keeps working -->
         <div id="services-nav">
           <h2>Our Services</h2>
           <button type="button" class="admin-button" data-service="photography">Photography</button>
@@ -91,9 +79,9 @@
       </nav>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Main Content (services.js injects fragments + equipment here) -->
     <main class="main-content" id="services-content" role="main" tabindex="-1" aria-labelledby="services-title">
-      <!-- Mobile-only dashboard hamburger (keeps your original #services-toggle id for module detection) -->
+      <!-- Mobile-only dashboard hamburger; aria-controls points to the drawer -->
       <button
         id="services-toggle"
         class="hamburger"
@@ -109,16 +97,17 @@
         <h1 id="services-title">Our Services</h1>
         <p>Select a service from the left to learn more about what we offer.</p>
       </div>
+      <!-- services.js will create #service-mount and, when needed, #service-equipment-main here -->
     </main>
 
-    <!-- Right Sidebar (present but empty by default) -->
+    <!-- Right Sidebar (kept for future use; intentionally empty) -->
     <aside class="sidebar right-sidebar" aria-label="Right sidebar" role="complementary"></aside>
   </div>
 
-  <!-- FOOTER -->
+  <!-- FOOTER (injected by /js/main.js) -->
   <div id="footer-container" role="contentinfo"></div>
 
-  <!-- Page-specific JS -->
+  <!-- Page-specific loader (must be after main so DOM hooks exist) -->
   <script type="module" src="/js/pages/services.js" defer></script>
 </body>
 </html>
