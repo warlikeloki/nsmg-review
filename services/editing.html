@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editing Services - Neil Smith Media Group</title>
 
-  <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/global.css" />
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/header.css" />
@@ -24,29 +23,38 @@
 
   <div class="page-container">
     <aside class="sidebar left-sidebar"></aside>
+
     <main class="main-content">
-      <section id="editing" class="hero-section">
-        <h1>Editing Services</h1>
-        <p>Post-production is where the story comes to life...</p>
-      </section>
-      <section class="services-offered">
-        <h2>What We Offer</h2>
-        <!-- list items -->
-      </section>
-      <section class="equipment-section">
-        <h2>Editing Tools & Software</h2>
-        <div id="equipment-list" data-category="editing"></div>
-      </section>
+      <!-- data-fragment wrapper helps services.js extract the right content -->
+      <article data-fragment="service">
+        <section id="editing" class="hero-section">
+          <h1>Editing Services</h1>
+          <p>Post-production is where the story comes to life...</p>
+        </section>
+
+        <section class="services-offered">
+          <h2>What We Offer</h2>
+          <!-- list items -->
+        </section>
+
+        <section class="equipment-section">
+          <h2>Editing Tools & Software</h2>
+          <!-- Both data-category and data-category-filter for compatibility -->
+          <div id="equipment-list" 
+               data-category="editing"
+               data-category-filter="editing">
+            <p>Loading equipment...</p>
+          </div>
+        </section>
+      </article>
     </main>
+
     <aside class="sidebar right-sidebar"></aside>
   </div>
 
   <div id="footer-container"></div>
-  
 
-  <!-- Load all JS modules -->
   <script type="module" src="/js/main.js" defer></script>
 </body>
 </html>
 <!-- Issue #46 -->
-

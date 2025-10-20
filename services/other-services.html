@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Other Services - Neil Smith Media Group</title>
 
-  <!-- Icons & Global Styles -->
   <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml">
   <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
   <link rel="stylesheet" href="/css/global.css" />
@@ -29,13 +28,17 @@
     <aside class="sidebar left-sidebar"></aside>
 
     <main class="main-content">
-      <h1>Other Services</h1>
-      <p>Additional ways we can support your project.</p>
+      <!-- data-fragment wrapper helps services.js extract the right content -->
+      <article data-fragment="service">
+        <h1>Other Services</h1>
+        <p>Additional ways we can support your project.</p>
 
-      <!-- Dynamic hook -->
-      <section id="other-services-container">
-        <p>Loading services...</p>
-      </section>
+        <!-- Changed from #other-services-container to #other-services-list 
+             to match what services.js expects -->
+        <section id="other-services-list">
+          <p>Loading services...</p>
+        </section>
+      </article>
     </main>
 
     <aside class="sidebar right-sidebar"></aside>
@@ -48,5 +51,3 @@
   <script type="module" src="/js/main.js?v=2025-08-23-os2" defer></script>
 </body>
 </html>
-
-
