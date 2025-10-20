@@ -1,74 +1,108 @@
-/* /css/blog-page.css
-   Scoped helpers for the blog list & cards (no global bleed).
-*/
+/* =========================================================
+   blog-page.css — Blog index layout & card styles
+   ========================================================= */
 
-/* Responsive list layout (safe even if blog.css exists) */
-.blog-list {
+/* Page container */
+#blog-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+/* Responsive grid for the index */
+.blog-posts {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.25rem;
-  align-items: start;
+  align-items: stretch;
 }
 
-/* Card shell — light touch */
+/* Card */
 .blog-card {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  text-decoration: none;
-  color: inherit;
-  background: var(--card-bg, #fff);
-  border: 1px solid var(--card-border, #e5e7eb);
+  display: flex;
+  flex-direction: column;
+  background: var(--background-card, #fff);
+  border: 1px solid var(--border-color, #e6e6e6);
   border-radius: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
   overflow: hidden;
-  box-shadow: var(--card-shadow, 0 1px 2px rgba(0,0,0,.04));
 }
 
-/* Image area: fix size via aspect-ratio, crop via object-fit */
-.blog-card__image {
-  width: 100%;
-  aspect-ratio: 16 / 9;     /* keeps list images consistent and not too tall */
-  overflow: hidden;
-  background: #f3f4f6;      /* subtle placeholder bg */
-}
-.blog-card__image img {
+/* Thumbnail area: fixed aspect, crop oversized images */
+.blog-card .blog-thumb {
   display: block;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;           /* keeps a consistent card height */
+  background: #f3f4f6;            /* gentle placeholder bg */
+}
+
+.blog-card .blog-thumb img {
   width: 100%;
   height: 100%;
-  object-fit: cover;         /* crops over-large images elegantly */
-  object-position: center;
+  object-fit: cover;               /* crop tall/wide images neatly */
+  display: block;
 }
 
-/* Body */
-.blog-card__body {
-  padding: 1rem;
-}
-.blog-card__title {
-  margin: 0 0 .25rem 0;
-  font-size: 1.05rem;
-}
-.blog-card__meta {
-  font-size: .9rem;
-  opacity: .8;
-  margin-bottom: .5rem;
-}
-.blog-card__excerpt {
-  margin: 0;
+/* Content */
+.blog-card .blog-title {
+  font-size: 1.1rem;
+  line-height: 1.3;
+  margin: 0.85rem 1rem 0.25rem;
 }
 
-/* Small "SAMPLE" badge, if present */
-.blog-card .badge {
+.blog-card .blog-title a {
+  text-decoration: none;
+  color: var(--text-main, #222);
+}
+
+.blog-card .blog-date {
+  margin: 0 1rem 0.5rem;
+  color: var(--text-secondary, #666);
+  font-size: 0.9rem;
+}
+
+.blog-card .blog-excerpt {
+  margin: 0 1rem 0.75rem;
+  color: var(--text-secondary, #444);
+  line-height: 1.5;
+  display: -webkit-box;           /* clamp long excerpts */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+/* Actions */
+.blog-card .blog-actions {
+  margin: auto 1rem 1rem;         /* pushes actions to bottom of card */
+}
+
+.blog-card .blog-readmore {
   display: inline-block;
-  font-size: .75rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--primary-color, #0073e6);
+  color: var(--primary-color, #0073e6);
+  text-decoration: none;
   font-weight: 600;
-  padding: .125rem .375rem;
-  margin-left: .35rem;
-  border-radius: .375rem;
-  background: #eef2ff;
-  color: #3730a3;
 }
 
-/* Compact on narrow screens */
-@media (max-width: 520px) {
-  .blog-card__body { padding: .75rem; }
-  .blog-card__title { font-size: 1rem; }
+.blog-card .blog-readmore:hover,
+.blog-card .blog-readmore:focus {
+  background: var(--primary-color, #0073e6);
+  color: #fff;
+}
+
+/* Empty/error states */
+.blog-empty,
+.blog-error {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-secondary, #666);
+  padding: 1rem 0;
+}
+
+/* Narrow screens: comfortable spacing */
+@media (max-width: 480px) {
+  #blog-page { padding: 0 0.75rem 1.25rem; }
+  .blog-card .blog-title { font-size: 1.05rem; }
 }
