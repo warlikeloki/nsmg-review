@@ -1,17 +1,16 @@
 /* /js/pages/services.js
    Zero-invasion Services loader:
-   - Fetches a fragment and injects it into #service-mount
-   - Executes fragment scripts (with a temporary <base> for relative URLs)
-   - Does NOT create any new sections or headings
-   - Triggers post-load initializers ONLY IF the fragment contains their hooks:
-       * #equipment-list          -> import('/js/modules/equipment.js') then window.loadEquipment()
-       * #other-services-list     -> fetch('/php/get_other_services.php') and render collapsible cards
-       * #packages-body/#ala-carte-body -> import('/js/modules/pricing.js') then loadPricing()
-   - Guards against duplicate init and rapid double-clicks
+   - Injects fetched fragment into #service-mount (inside #services-content)
+   - Executes fragment scripts with a temporary <base> for correct relative URLs
+   - Never creates new sections or headings
+   - Activates features ONLY if their hooks exist in the fragment:
+       * #equipment-list          -> import('/js/modules/equipment.js') and run with the correct category
+       * #other-services-list     -> fetch('/php/get_other_services.php') and render collapsible cards (same classes)
+       * #packages-body/#ala-carte-body -> import('/js/modules/pricing.js') then loadPricing() (favor embed parity)
+   - Singleton guard + in-flight guard to prevent double-loading
 */
 
 (() => {
-  // --- Singleton guard (prevents duplicate click binding / double loads)
   if (window.__NSM_SERVICES_READY__) return;
   window.__NSM_SERVICES_READY__ = true;
 
@@ -24,23 +23,21 @@
   let inFlight = false;
   let currentKey = null;
 
-  // Candidate URLs for each section
   const SERVICE_CANDIDATES = {
     photography:      ['services/photography.html','./services/photography.html'],
     videography:      ['services/videography.html','./services/videography.html'],
     editing:          ['services/editing.html','./services/editing.html'],
     'other-services': ['services/other-services.html','./services/other-services.html'],
+    // Prefer the same markup as Pricing page for consistency:
     pricing: [
-      'pricing.html?embed=1','./pricing.html?embed=1',
-      'pricing-dashboard.html','./pricing-dashboard.html',
+      '/pricing.html?embed=1','pricing.html?embed=1','./pricing.html?embed=1',
+      '/pricing-dashboard.html','pricing-dashboard.html','./pricing-dashboard.html',
       'services/pricing.html?embed=1','./services/pricing.html?embed=1',
-      'services/pricing.html','./services/pricing.html',
-      '/pricing.html?embed=1','/pricing-dashboard.html'
+      'services/pricing.html','./services/pricing.html'
     ],
     'request-form':   ['services/request-form.html','./services/request-form.html','services/request.html','./services/request.html']
   };
 
-  // Preferred fragment roots to extract
   const SERVICE_FRAGMENT_SELECTORS = {
     'request-form': ['#request-form','form[action*="request"]','[data-fragment="request-form"]','main','[role="main"]','section[id*="request"]'],
     pricing: ['#pricing-section','#pricing-main','[data-fragment="pricing"]','main','[role="main"]'],
@@ -50,10 +47,10 @@
     'other-services': ['[data-fragment="service"]','main','[role="main"]','article','section']
   };
 
+  // Main/root
   const main = document.getElementById(MAIN_ID);
   if (!main) return;
 
-  // Stable mount inside main
   let mount = main.querySelector('#service-mount');
   if (!mount) {
     mount = document.createElement('div');
@@ -75,7 +72,7 @@
     }
   }
 
-  // -------- fragment fetch / selection / script execution ----------
+  // -------- fragment fetch / parse / script exec ----------
   async function fetchFirstOk(candidates) {
     const errors = [];
     for (const url of candidates) {
@@ -115,10 +112,10 @@
     }
     if (!node) node = doc.body.cloneNode(true);
 
-    // Collect scripts before stripping
+    // Collect scripts before sanitizing
     const rawScripts = Array.from(node.querySelectorAll('script'));
 
-    // Remove external chrome and scripts from the injected HTML
+    // Remove outer chrome and in-fragment scripts; we’ll execute scripts ourselves
     node.querySelectorAll('#header-container, #site-header, header, #footer-container, footer, .sidebar').forEach(el => el.remove());
     node.querySelectorAll('script').forEach(el => el.remove());
 
@@ -179,7 +176,7 @@
     }
   }
 
-  function interceptLocalAnchors(scope = document) {
+  function interceptLocalAnchors(scope) {
     scope.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', (e) => {
         if (a.dataset.allowHash === 'true') return;
@@ -189,27 +186,42 @@
     });
   }
 
-  // -------- post-fragment activators (only act if hook exists) --------
+  // -------- activators (only when hooks exist in the fragment) --------
   async function activateEquipmentIfPresent() {
     const list = mount.querySelector('#equipment-list');
     if (!list) return;
+
+    // Decide the category: prioritize explicit data attribute; else infer from active button
+    const activeBtn = document.querySelector('.admin-button[aria-current="true"], .admin-button.active') ||
+                      document.querySelector('.admin-button[data-active="true"]');
+    const inferredCategoryFromBtn = activeBtn?.getAttribute('data-service');
+
+    let category = list.dataset.category || document.body.dataset.categoryFilter || '';
+    if (!category && inferredCategoryFromBtn) {
+      const map = { 'photography':'photography', 'videography':'videography', 'editing':'editing' };
+      category = map[inferredCategoryFromBtn] || '';
+    }
+
+    // Ensure equipment.js will read the right value:
+    if (category) {
+      document.body.dataset.categoryFilter = category; // equipment.js priority (2)
+      list.dataset.category = category;                // equipment.js priority (3)
+    }
+
     try {
       const mod = await import('/js/modules/equipment.js');
-      // prefer explicit API if exported, else legacy global hook
       if (mod?.NSM?.equipment?.renderInto) {
-        await mod.NSM.equipment.renderInto(list, {
-          // rely on equipment.js to pick up ?category/body/list data attributes
-        });
+        await mod.NSM.equipment.renderInto(list, { category });
       } else if (window.NSM?.equipment?.renderInto) {
-        await window.NSM.equipment.renderInto(list, {});
+        await window.NSM.equipment.renderInto(list, { category });
       } else if (typeof window.loadEquipment === 'function') {
         await window.loadEquipment();
       } else {
-        // as a last resort, trigger once after a tick (some modules attach late)
+        // One last nudge in case the module adds window.loadEquipment on a later tick
         setTimeout(() => { if (typeof window.loadEquipment === 'function') window.loadEquipment(); }, 0);
       }
     } catch (e) {
-      console.error('[services] Failed to activate equipment module:', e);
+      console.error('[services] equipment activation failed:', e);
     }
   }
 
@@ -224,7 +236,7 @@
         await window.loadPricing();
       }
     } catch (e) {
-      console.error('[services] Failed to activate pricing module:', e);
+      console.error('[services] pricing activation failed:', e);
     }
   }
 
@@ -249,7 +261,7 @@
     }
   }
 
-  // Render "Other Services" using the SAME collapsible card pattern/classes as equipment
+  // Same collapsible UI classes as equipment.js
   function renderOtherServicesAsCollapsible(container, items) {
     if (!Array.isArray(items) || items.length === 0) {
       container.innerHTML = '<p>No other services listed.</p>';
@@ -283,7 +295,6 @@
 
     container.innerHTML = `<div class="equip-grid">${html}</div>`;
 
-    // wire toggles (identical behavior to equipment.js)
     const toggles = Array.from(container.querySelectorAll('.equip-toggle-mini'));
     const toggle = (btn) => {
       const panel = document.getElementById(btn.getAttribute('aria-controls'));
@@ -310,7 +321,6 @@
 
   // ---------------- core load -----------------
   async function loadService(key) {
-    // Debounce: ignore if same key currently in flight
     if (inFlight && key === currentKey) return;
     inFlight = true;
     currentKey = key;
@@ -322,10 +332,8 @@
       const { url, text } = await fetchFirstOk(candidates);
       const { html, scripts, baseHref } = extractFragmentAndScripts(text, key, url);
 
-      // replace main mount
       mount.innerHTML = html || `<div class="notice error" role="alert"><p>Section loaded but no content matched.</p></div>`;
 
-      // Execute scripts belonging to the fragment (with correct base)
       setTempBase(baseHref);
       try {
         await executeScriptsSequentially(scripts);
@@ -333,7 +341,9 @@
         clearTempBase();
       }
 
-      // Accessibility focus without scroll jumps
+      // Keep navigation friendly within the fragment only
+      interceptLocalAnchors(mount);
+
       const focusTarget = mount.querySelector('h1, h2, [role="heading"], form, section, article, [tabindex]') || mount;
       if (focusTarget) {
         const had = focusTarget.hasAttribute('tabindex');
@@ -342,10 +352,7 @@
         if (!had) focusTarget.removeAttribute('tabindex');
       }
 
-      // Intercept hash links inside the fragment
-      interceptLocalAnchors(mount);
-
-      // Post-fragment activations — ONLY if the proper hooks exist
+      // Post-fragment activations (hook-driven only)
       await activateEquipmentIfPresent();
       await activatePricingIfPresent();
       await activateOtherServicesIfPresent();
@@ -360,17 +367,19 @@
     }
   }
 
-  // Click delegation (bound once)
+  // Single click delegation
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.admin-button');
     if (!btn) return;
     e.preventDefault();
     e.stopPropagation();
+
+    // mark active for category inference
+    document.querySelectorAll('.admin-button').forEach(b => b.removeAttribute('aria-current'));
+    btn.setAttribute('aria-current', 'true');
+
     const key = btn.getAttribute('data-service');
     if (!key) return;
     loadService(key);
   }, { passive: false });
-
-  // Stop hash jumps globally
-  interceptLocalAnchors(document);
 })();
