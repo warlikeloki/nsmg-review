@@ -1,14 +1,7 @@
-﻿// /js/main.js 
-// Central bootstrap (hardened):
-// - Waits for <body>, ensures header/footer containers exist
-// - Injects /header.html and /footer.html with safe fallbacks
-// - Initializes navigation (with resilient hamburger fallback)
-// - Enforces correct mobile viewport and stabilizes mobile layout
-// - Conditionally loads /js/modules/* and /js/pages/* based on DOM markers
-// - Idempotently injects global CSS modules into <head>
+﻿// /js/main.js
+// Central bootstrap (hardened)
 
 (() => {
-  // ---------- Tiny helpers ----------
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
@@ -42,13 +35,11 @@
     }
   }
 
-  // Clean, global stylesheet injector (idempotent)
   function ensureGlobalStylesheets(hrefs = []) {
     const head = document.head || document.getElementsByTagName('head')[0];
     if (!head) return;
     hrefs.forEach((href) => {
       if (!href) return;
-      // avoid duplicates if already present (by exact href or data-nsm-href marker)
       const exists = head.querySelector(`link[rel="stylesheet"][href="${href}"], link[rel="stylesheet"][data-nsm-href="${href}"]`);
       if (exists) return;
       const link = document.createElement('link');
@@ -59,9 +50,8 @@
     });
   }
 
-  // JS-stabilized mobile class to avoid breakpoint jitter/scrollbar effects.
   function installNavMobileClass() {
-    const MOBILE_MAX = 1050; // buffer above 1023
+    const MOBILE_MAX = 1050;
     function setNavMobile() {
       document.documentElement.classList.toggle("nav-mobile", window.innerWidth <= MOBILE_MAX);
     }
@@ -70,13 +60,12 @@
     window.addEventListener("orientationchange", setNavMobile, { passive: true });
   }
 
-  // Create or return a container. Requires body to exist.
   function ensureContainer(id, position = "start") {
     let el = document.getElementById(id);
     if (el) return el;
     el = document.createElement("div");
     el.id = id;
-    if (!document.body) return null; // should not happen after waitForBody
+    if (!document.body) return null;
     if (position === "start") document.body.prepend(el);
     else document.body.append(el);
     return el;
@@ -107,10 +96,9 @@
     });
   }
 
-  // --------- Resilient fallback so hamburger always works ---------
   function attachHamburgerFallback() {
     document.addEventListener("click", (e) => {
-      if (window.__NSM_NAV_READY === true) return; // real module owns it
+      if (window.__NSM_NAV_READY === true) return;
 
       const btn = e.target.closest(".hamburger, [data-nav-toggle]");
       if (!btn) return;
@@ -141,21 +129,16 @@
     }, { passive: false });
   }
 
-  // --------- Inject header/footer safely (with fallbacks) ---------
   async function ensureHeaderAndFooterInjected() {
     await waitForBody();
-
     const headerContainer = ensureContainer("header-container", "start");
     const footerContainer = ensureContainer("footer-container", "end");
-
-    // Clear any stale content to avoid duplicates
     if (headerContainer) headerContainer.replaceChildren();
     if (footerContainer) footerContainer.replaceChildren();
 
     const headerOk = await loadPartial("/header.html", headerContainer);
     const footerOk = await loadPartial("/footer.html", footerContainer);
 
-    // Minimal fallbacks if the partials failed (keeps site usable)
     if (!headerOk && headerContainer) {
       headerContainer.innerHTML = `
         <header id="site-header" class="nav-container" role="banner">
@@ -179,15 +162,12 @@
         </footer>`;
     }
 
-    // Ensure we truly have a header element before proceeding
     await waitFor("#header-container header, header.nav-container, header.site-header", { timeout: 8000 });
   }
 
-  // ------------------ Bootstrap: inject + init nav ------------------
   async function initNavigation() {
     await ensureHeaderAndFooterInjected();
 
-    // Ensure #nav-menu exists; if not, create a tiny one as a last resort
     let navMenu = document.getElementById("nav-menu");
     if (!navMenu) {
       const header = $("#header-container header, header.nav-container, header.site-header");
@@ -202,12 +182,10 @@
       }
     }
 
-    // Stabilize layout & make hamburger work regardless of module status.
     setActiveNav();
     installNavMobileClass();
     attachHamburgerFallback();
 
-    // Try to enable the full navigation module (submenu tap logic, ARIA, etc.)
     try {
       const mod = await import("/js/modules/navigation.js");
       if (window.NSM?.navigation && typeof window.NSM.navigation.init === "function") {
@@ -220,14 +198,13 @@
           injectBackdrop: true,
           debug: false
         });
-        window.__NSM_NAV_READY = true; // fallback steps aside
+        window.__NSM_NAV_READY = true;
       }
     } catch (err) {
-      console.warn("[NSMG] navigation module import failed; fallback handler remains active.", err);
+      console.warn("[NSMG] navigation module import failed; fallback remains active.", err);
     }
   }
 
-  // ------------------ Conditional module autoloads ------------------
   async function autoInitModules() {
     const has = (sel) => !!document.querySelector(sel);
 
@@ -256,7 +233,6 @@
       } catch {}
     }
 
-    // Contact form: import and initialize if the form exists
     if (document.getElementById("contact-form")) {
       try {
         const mod = await import("/js/modules/contact.js");
@@ -266,7 +242,6 @@
       }
     }
 
-    // Service Request form: import and initialize if the form exists
     if (document.getElementById("service-request-form")) {
       try {
         const mod = await import("/js/modules/service-request.js");
@@ -277,45 +252,25 @@
     }
 
     if (document.getElementById("other-services-container")) { try { await import("/js/modules/other-services.js"); } catch {} }
-    if (document.getElementById("services-toggle") && document.getElementById("services-nav")) {
-      try { await import("/js/modules/services-nav.js"); } catch {}
-    }
     if (has(".filter-buttons"))                              { try { await import("/js/modules/portfolio.js"); } catch {} }
 
-    // --- NEW: Services dashboard/page autoload (MAIN CONTENT target) ---
-    // Triggers on services.html (staging/live) whenever the dashboard or main pane exists.
-    if (
-      document.getElementById("services-page") ||
-      document.getElementById("services-dashboard") ||
-      document.getElementById("service-content") ||
-      document.querySelector('[data-service]')
-    ) {
+    // STRICT Services autoload: only on the Services page
+    const onServicesPage =
+      document.body.classList.contains("services") ||
+      !!document.getElementById("services-content");
+    if (onServicesPage) {
       try {
         const mod = await import("/js/pages/services.js");
-        // Be flexible with export names so staging doesn't break:
-        if (typeof mod?.initServicesPage === "function") {
-          mod.initServicesPage();
-        } else if (typeof mod?.initServicesDashboard === "function") {
-          mod.initServicesDashboard();
-        } else if (typeof mod?.default === "function") {
-          mod.default();
-        } else if (typeof window.NSM?.services?.init === "function") {
-          window.NSM.services.init();
-        } else {
-          console.warn("[NSMG] /js/pages/services.js loaded, but no initializer was found.");
-        }
+        if (typeof mod?.default === "function") { mod.default(); }
+        // IIFE fallback: if services.js is self-executing, importing it is sufficient.
       } catch (e) {
         console.error("[NSMG] Failed to load /js/pages/services.js", e);
       }
     }
-    // --- END NEW ---
   }
 
-  // ------------------ Boot ------------------
   async function start() {
     ensureViewportMeta();
-
-    // Inject global CSS modules once, clean + mergeable
     ensureGlobalStylesheets([
       "/css/layout-global.css",
       "/css/home-cta.css"
@@ -325,15 +280,13 @@
       console.error("Nav init error:", e);
     }
 
-    // Stickies & site chrome (after header exists)
     try { await import("/js/modules/wip-offset.js"); } catch {}
-    try { await import("/js/modules/sticky-header.js"); } catch {}   // computes --nsm-header-h
+    try { await import("/js/modules/sticky-header.js"); } catch {}
     try {
       const mod = await import("/js/modules/site-settings.js");
       if (mod?.initSiteSettings) await mod.initSiteSettings();
     } catch (e) { console.error("Failed to init site settings:", e); }
 
-    // Light enhancements
     $$("img:not([decoding])").forEach(img => img.setAttribute("decoding", "async"));
     $$(".homepage-section img:not([loading])").forEach(img => img.setAttribute("loading", "lazy"));
 
