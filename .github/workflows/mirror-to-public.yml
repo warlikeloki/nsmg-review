@@ -95,8 +95,8 @@ jobs:
           echo "== Verify remote auth and refs before push =="
           git ls-remote --heads public || (echo "Cannot list remote refs; check token/repo name" && exit 1)
 
-          echo "== Verbose push =="
-          git push -v public main --force-with-lease --tags
+          echo "== Push branch only (no tags to avoid workflow scope issues) =="
+          git push -v public main --force
 
       - name: Verify public repo received the commit
         env:
