@@ -188,42 +188,36 @@
 
   // -------- activators (only when hooks exist in the fragment) --------
   async function activateEquipmentIfPresent() {
-    const list = mount.querySelector('#equipment-list');
-    if (!list) return;
+  const list = mount.querySelector('#equipment-list');
+  if (!list) return;
 
-    // Decide the category: prioritize explicit data attribute; else infer from active button
-    const activeBtn = document.querySelector('.admin-button[aria-current="true"], .admin-button.active') ||
-                      document.querySelector('.admin-button[data-active="true"]');
-    const inferredCategoryFromBtn = activeBtn?.getAttribute('data-service');
-
-    let category = list.dataset.category || document.body.dataset.categoryFilter || '';
-    if (!category && inferredCategoryFromBtn) {
-      const map = { 'photography':'photography', 'videography':'videography', 'editing':'editing' };
-      category = map[inferredCategoryFromBtn] || '';
-    }
-
-    // Ensure equipment.js will read the right value:
-    if (category) {
-      document.body.dataset.categoryFilter = category; // equipment.js priority (2)
-      list.dataset.category = category;                // equipment.js priority (3)
-    }
-
-    try {
-      const mod = await import('/js/modules/equipment.js');
-      if (mod?.NSM?.equipment?.renderInto) {
-        await mod.NSM.equipment.renderInto(list, { category });
-      } else if (window.NSM?.equipment?.renderInto) {
-        await window.NSM.equipment.renderInto(list, { category });
-      } else if (typeof window.loadEquipment === 'function') {
-        await window.loadEquipment();
-      } else {
-        // One last nudge in case the module adds window.loadEquipment on a later tick
-        setTimeout(() => { if (typeof window.loadEquipment === 'function') window.loadEquipment(); }, 0);
-      }
-    } catch (e) {
-      console.error('[services] equipment activation failed:', e);
-    }
+  // SIMPLIFIED: Just read from the element itself
+  let category = list.dataset.category || list.dataset.categoryFilter || '';
+  
+  // Fallback: infer from active button
+  if (!category) {
+    const activeBtn = document.querySelector('#services-nav .admin-button[aria-current="true"]');
+    const btnService = activeBtn?.getAttribute('data-service');
+    // Map button names to category values
+    const categoryMap = { 
+      'photography': 'photography', 
+      'videography': 'videography', 
+      'editing': 'editing' 
+    };
+    category = categoryMap[btnService] || '';
   }
+
+  console.log('[services] Equipment category:', category); // DEBUG
+
+  try {
+    const mod = await import('/js/modules/equipment.js');
+    if (mod?.NSM?.equipment?.renderInto) {
+      await mod.NSM.equipment.renderInto(list, { category });
+    }
+  } catch (e) {
+    console.error('[services] equipment activation failed:', e);
+  }
+}
 
   async function activatePricingIfPresent() {
     const hasPricing = mount.querySelector('#packages-body, #ala-carte-body');
