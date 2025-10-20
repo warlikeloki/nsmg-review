@@ -1,14 +1,14 @@
 # .github/workflows/mirror-to-public.yml
-name: Mirror Private deploy → Public main
+name: Mirror Private develop → Public main
 
 on:
   push:
     branches:
-      - deploy
+      - develop
   workflow_dispatch:
     inputs:
       run_from_sha:
-        description: 'Optional: SHA to mirror (defaults to latest on deploy)'
+        description: 'Optional: SHA to mirror (defaults to latest on develop)'
         required: false
         default: ''
 
@@ -17,12 +17,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout private repo @ deploy
+      - name: Checkout private repo @ develop
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: deploy
+          ref: develop
 
       - name: (Optional) Checkout specific SHA
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_from_sha != '' }}
@@ -61,19 +61,17 @@ jobs:
           cd /tmp/public
           git init
           git add -A
-          git commit -m "Mirror: filtered export of ${GITHUB_REPOSITORY}@${GITHUB_SHA} (source: deploy)"
+          git commit -m "Mirror: filtered export of ${GITHUB_REPOSITORY}@${GITHUB_SHA} (source: develop)"
 
-      - name: Push to public repo (private deploy → public main)
+      - name: Push to public repo (private develop → public main)
         env:
           PUBLIC_REPO: warlikeloki/nsmg-review
           PUBLIC_PUSH_TOKEN: ${{ secrets.PUBLIC_PUSH_TOKEN }}
         run: |
           cd /tmp/public
-          # Create a local 'main' branch so the push mapping is crystal clear.
+          # Normalize to a local 'main' branch so the mapping is explicit.
           git branch -M main
           git remote add public "https://x-access-token:${PUBLIC_PUSH_TOKEN}@github.com/${PUBLIC_REPO}.git"
-
-          # Force-with-lease preserves mirror semantics while being a bit safer than --force.
+          # Mirror semantics with safety: overwrite public main with this filtered tree.
           git push public main --force-with-lease --tags
-
-          echo "✓ Mirrored private 'deploy' to public 'main' at https://github.com/${PUBLIC_REPO}"
+          echo "✓ Mirrored private 'develop' to public 'main' at https://github.com/${PUBLIC_REPO}"
