@@ -1,58 +1,79 @@
-name: Mirror to Public Repo
+# .github/workflows/mirror-to-public.yml
+name: Mirror Private deploy → Public main
 
 on:
   push:
     branches:
-      - main
+      - deploy
   workflow_dispatch:
+    inputs:
+      run_from_sha:
+        description: 'Optional: SHA to mirror (defaults to latest on deploy)'
+        required: false
+        default: ''
 
 jobs:
   mirror:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout private repo
+      - name: Checkout private repo @ deploy
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
+          ref: deploy
 
-      - name: Remove sensitive files (belt-and-suspenders)
+      - name: (Optional) Checkout specific SHA
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_from_sha != '' }}
         run: |
-          # Extra protection: remove sensitive files even if accidentally committed
-          rm -rf config/config.php
-          rm -rf secure-config/
-          rm -rf php/secrets.php
-          rm -rf php/mail_config.php
-          rm -f .env
-          rm -f .env.*
-          rm -f .user.ini
-          
-          # Remove SQL files (database schemas/data)
-          rm -rf sql/
-          find . -name "*.sql" -type f -delete
-          
-          # Remove backup files
-          find . -name "*.bak" -type f -delete
-          find . -name "*.bak-*" -type f -delete
-          
-          # Remove logs and storage content (keep .htaccess)
-          find php/logs -type f ! -name '.htaccess' -delete 2>/dev/null || true
-          find php/storage -type f ! -name '.htaccess' -delete 2>/dev/null || true
-          
-          echo "✓ Sensitive files removed"
+          git checkout ${{ github.event.inputs.run_from_sha }}
 
-      - name: Push to public repo
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Build filtered tree (exclude sensitive/private files)
+        run: |
+          mkdir -p /tmp/public
+          rsync -a --delete \
+            --exclude 'config/config.php' \
+            --exclude 'secure-config/' \
+            --exclude 'php/secrets.php' \
+            --exclude 'php/mail_config.php' \
+            --exclude '.env' \
+            --exclude '.env.*' \
+            --exclude '.user.ini' \
+            --exclude 'sql/' \
+            --exclude '*.sql' \
+            --exclude '*.bak' \
+            --exclude '*.bak-*' \
+            --exclude 'php/logs/*' \
+            --exclude 'php/storage/*' \
+            --exclude 'NSMG*.zip' \
+            --exclude '*.zip' \
+            --exclude 'vendor/' \
+            --exclude 'node_modules/' \
+            . /tmp/public/
+
+          cd /tmp/public
+          git init
+          git add -A
+          git commit -m "Mirror: filtered export of ${GITHUB_REPOSITORY}@${GITHUB_SHA} (source: deploy)"
+
+      - name: Push to public repo (private deploy → public main)
         env:
           PUBLIC_REPO: warlikeloki/nsmg-review
           PUBLIC_PUSH_TOKEN: ${{ secrets.PUBLIC_PUSH_TOKEN }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
-          # Add public repo as remote
-          git remote add public https://x-access-token:${PUBLIC_PUSH_TOKEN}@github.com/${PUBLIC_REPO}.git
-          
-          # Push to public repo (force to ensure clean mirror)
-          git push public HEAD:main --force
-          
-          echo "✓ Successfully mirrored to https://github.com/${PUBLIC_REPO}"
+          cd /tmp/public
+          # Create a local 'main' branch so the push mapping is crystal clear.
+          git branch -M main
+          git remote add public "https://x-access-token:${PUBLIC_PUSH_TOKEN}@github.com/${PUBLIC_REPO}.git"
+
+          # Force-with-lease preserves mirror semantics while being a bit safer than --force.
+          git push public main --force-with-lease --tags
+
+          echo "✓ Mirrored private 'deploy' to public 'main' at https://github.com/${PUBLIC_REPO}"
