@@ -1,11 +1,10 @@
 ﻿<!DOCTYPE html>
-<html lang="en-us">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Photography - Neil Smith Media Group</title>
 
-  <!-- Icons & Styles -->
   <link rel="preload" href="/media/icons/favicon.svg" as="image" type="image/svg+xml">
   <link rel="icon" type="image/svg+xml" href="/media/icons/favicon.svg" />
   <link rel="stylesheet" href="/css/global.css" />
@@ -28,16 +27,18 @@
     <aside class="sidebar left-sidebar"></aside>
 
     <main class="main-content">
-      <h1>Photography</h1>
-      <p>Selected gear commonly used for photography.</p>
+      <!-- data-fragment wrapper helps services.js extract the right content -->
+      <article data-fragment="service">
+        <h1>Photography</h1>
+        <p>Selected gear commonly used for photography.</p>
 
-      <!-- IMPORTANT: this is the only dynamic hook
-           No pricing table IDs present on this page -->
-      <section id="equipment-list" class="equipment-grid" 
-         data-category="photography" 
-         data-category-filter="photography">
-        <p>Loading equipment</p>
-      </section>
+        <!-- Both data-category and data-category-filter for compatibility -->
+        <section id="equipment-list" class="equipment-grid" 
+                 data-category="photography" 
+                 data-category-filter="photography">
+          <p>Loading equipment...</p>
+        </section>
+      </article>
     </main>
 
     <aside class="sidebar right-sidebar"></aside>
@@ -46,9 +47,6 @@
   <!-- FOOTER (injected by /js/main.js) -->
   <div id="footer-container"></div>
 
-  <!-- Only the main entry; modules are loaded dynamically by main.js -->
   <script type="module" src="/js/main.js?v=2025-08-23a" defer></script>
 </body>
 </html>
-
-
