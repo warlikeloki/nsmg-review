@@ -23,12 +23,14 @@
   const fromDataAttr = container.dataset.endpoint && container.dataset.endpoint.trim();
   if (fromDataAttr) candidates.push(fromDataAttr);
 
-  // Common fallbacks — adjust/remove as needed
+  // IMPORTANT: try the existing PHP endpoint first if no data-endpoint given
   candidates.push(
+    '/php/get_posts.php',   // <-- your working backend
     '/data/blog.json',
     '/blog.json',
     '/blog/index.json',
     '/api/blog',
+    './php/get_posts.php',
     './data/blog.json',
     './blog.json',
     './blog/index.json'
@@ -39,7 +41,11 @@
     const errors = [];
     for (const u of urls) {
       try {
-        const res = await fetch(u, { credentials: 'same-origin', cache: 'no-cache' });
+        const res = await fetch(u, {
+          credentials: 'same-origin',
+          cache: 'no-cache',
+          headers: { 'Accept': 'application/json' }
+        });
         if (res.ok) {
           const data = await res.json();
           console.info('[blog-page] loaded:', u);
@@ -113,8 +119,13 @@
 
   // Kick it off
   fetchFirstOk(candidates)
-    .then(render)
-    .catch(() => {
+    .then((data) => {
+      // Accept either an array or { posts: [...] }
+      const posts = Array.isArray(data) ? data : (Array.isArray(data.posts) ? data.posts : []);
+      render(posts);
+    })
+    .catch((err) => {
+      console.error('[blog-page] error:', err);
       container.innerHTML = `<p class="blog-error">We couldn't load blog posts right now.</p>`;
       container.removeAttribute('aria-busy');
     });

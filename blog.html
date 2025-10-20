@@ -30,118 +30,59 @@
   <link rel="stylesheet" href="/css/wip.css" />
   <link rel="stylesheet" href="/css/blog-page.css" />
 
-  <!-- Optional WIP banner + settings -->
   <script type="module" src="/js/wip.js" defer></script>
   <script type="module" src="/js/modules/site-settings.js" defer></script>
 </head>
 <body class="blog">
   <a class="skip-link" href="#blog-page">Skip to main content</a>
 
-  <!-- Header (injected) -->
+  <!-- HEADER (injected) -->
   <div id="header-container" role="banner"></div>
 
   <!-- Spacer to prevent sticky header overlap -->
   <div class="header-offset" aria-hidden="true"></div>
 
   <div class="page-container">
+    <!-- Left Sidebar -->
     <aside class="sidebar left-sidebar" aria-label="Left sidebar" role="complementary"></aside>
 
-    <!-- Main -->
+    <!-- MAIN CONTENT -->
     <main id="blog-page" class="main-content" role="main" tabindex="-1" aria-labelledby="blog-title">
       <h1 id="blog-title">Blog</h1>
-      <div id="blog-posts-container" class="blog-posts" aria-live="polite">
-        <!-- populated by inline module below -->
+
+      <!-- Provide BOTH common mount ids to satisfy prior modules -->
+      <!-- Primary mount most of your code used -->
+      <div id="blog-posts-container"
+           class="blog-posts"
+           aria-live="polite"
+           data-endpoint="/php/get_posts.php"
+           data-fallback="/json/posts.json">
         <p class="muted">Loading posts…</p>
       </div>
+
+      <!-- Secondary alias some earlier scripts used -->
+      <div id="posts-root"
+           hidden
+           data-endpoint="/php/get_posts.php"
+           data-fallback="/json/posts.json"></div>
+
+      <noscript>
+        <p>Please enable JavaScript to view blog posts.</p>
+      </noscript>
     </main>
 
+    <!-- Right Sidebar -->
     <aside class="sidebar right-sidebar" aria-label="Right sidebar" role="complementary"></aside>
   </div>
 
-  <!-- Footer (injected) -->
+  <!-- FOOTER (injected) -->
   <div id="footer-container" role="contentinfo"></div>
 
-  <!-- Site bootstrap (injects header/footer) -->
+  <!-- Core bootstrap -->
   <script type="module" src="/js/main.js" defer></script>
 
-  <!-- Minimal, self-contained loader that uses your existing PHP endpoint -->
-  <script type="module">
-    const ENDPOINT = '/php/get_posts.php'; // uses your current get_posts.php
-
-    const container = document.getElementById('blog-posts-container');
-    if (!container) return;
-
-    const fmtDate = (iso) => {
-      try {
-        const d = new Date(iso);
-        if (isNaN(d.getTime())) return iso || '';
-        return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-      } catch { return iso || ''; }
-    };
-
-    const urlFor = (post) => {
-      if (post.url) return post.url;
-      if (post.slug) return `/blog/${post.slug}.html`;
-      if (post.id)   return `/blog/${post.id}.html`;
-      return '#';
-    };
-
-    function render(posts) {
-      container.innerHTML = '';
-      if (!Array.isArray(posts) || posts.length === 0) {
-        container.innerHTML = '<p class="blog-empty">No posts available yet.</p>';
-        return;
-      }
-
-      // Newest-first if not already sorted
-      posts.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-
-      const frag = document.createDocumentFragment();
-      for (const p of posts) {
-        const article = document.createElement('article');
-        article.className = 'blog-card';
-
-        const link = urlFor(p);
-        const title = p.title || 'Untitled';
-        const date = p.date ? `<time class="blog-date" datetime="${p.date}">${fmtDate(p.date)}</time>` : '';
-        const img  = p.image ? `
-          <a class="blog-thumb" href="${link}" aria-label="${title}">
-            <img src="${p.image}" alt="" loading="lazy" decoding="async">
-          </a>` : '';
-        const excerpt = p.excerpt ? `<p class="blog-excerpt">${p.excerpt}</p>` : '';
-
-        article.innerHTML = `
-          ${img}
-          <h2 class="blog-title"><a href="${link}">${title}</a></h2>
-          ${date}
-          ${excerpt}
-          <div class="blog-actions">
-            <a class="blog-readmore" href="${link}" aria-label="Read more: ${title}">Read More</a>
-          </div>
-        `;
-        frag.appendChild(article);
-      }
-      container.appendChild(frag);
-    }
-
-    async function load() {
-      try {
-        const res = await fetch(ENDPOINT, { credentials: 'same-origin', cache: 'no-cache' });
-        if (!res.ok) {
-          container.innerHTML = `<p class="blog-error">Could not load posts (HTTP ${res.status}).</p>`;
-          return;
-        }
-        const data = await res.json();
-        // Support either array or {posts:[...]}
-        const posts = Array.isArray(data) ? data : (Array.isArray(data.posts) ? data.posts : []);
-        render(posts);
-      } catch (err) {
-        console.error('blog load error:', err);
-        container.innerHTML = `<p class="blog-error">We couldn't load blog posts right now.</p>`;
-      }
-    }
-
-    load();
-  </script>
+  <!-- Use ONLY your existing modules -->
+  <script type="module" src="/js/modules/blog.js" defer></script>
+  <script type="module" src="/js/modules/blog-page.js" defer></script>
 </body>
 </html>
