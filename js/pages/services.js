@@ -1,13 +1,5 @@
 /* /js/pages/services.js
-   Zero-invasion Services loader:
-   - Injects fetched fragment into #service-mount (inside #services-content)
-   - Executes fragment scripts with a temporary <base> for correct relative URLs
-   - Never creates new sections or headings
-   - Activates features ONLY if their hooks exist in the fragment:
-       * #equipment-list          -> import('/js/modules/equipment.js') and run with the correct category
-       * #other-services-list     -> fetch('/php/get_other_services.php') and render collapsible cards (same classes)
-       * #packages-body/#ala-carte-body -> import('/js/modules/pricing.js') then loadPricing() (favor embed parity)
-   - Singleton guard + in-flight guard to prevent double-loading
+   Fixed version with proper category switching
 */
 
 (() => {
@@ -28,7 +20,6 @@
     videography:      ['services/videography.html','./services/videography.html'],
     editing:          ['services/editing.html','./services/editing.html'],
     'other-services': ['services/other-services.html','./services/other-services.html'],
-    // Prefer the same markup as Pricing page for consistency:
     pricing: [
       '/pricing.html?embed=1','pricing.html?embed=1','./pricing.html?embed=1',
       '/pricing-dashboard.html','pricing-dashboard.html','./pricing-dashboard.html',
@@ -47,7 +38,6 @@
     'other-services': ['[data-fragment="service"]','main','[role="main"]','article','section']
   };
 
-  // Main/root
   const main = document.getElementById(MAIN_ID);
   if (!main) return;
 
@@ -72,7 +62,6 @@
     }
   }
 
-  // -------- fragment fetch / parse / script exec ----------
   async function fetchFirstOk(candidates) {
     const errors = [];
     for (const url of candidates) {
@@ -112,10 +101,8 @@
     }
     if (!node) node = doc.body.cloneNode(true);
 
-    // Collect scripts before sanitizing
     const rawScripts = Array.from(node.querySelectorAll('script'));
 
-    // Remove outer chrome and in-fragment scripts; we’ll execute scripts ourselves
     node.querySelectorAll('#header-container, #site-header, header, #footer-container, footer, .sidebar').forEach(el => el.remove());
     node.querySelectorAll('script').forEach(el => el.remove());
 
@@ -186,38 +173,46 @@
     });
   }
 
-  // -------- activators (only when hooks exist in the fragment) --------
+  // FIXED: Force re-render on each service switch
   async function activateEquipmentIfPresent() {
-  const list = mount.querySelector('#equipment-list');
-  if (!list) return;
+    const list = mount.querySelector('#equipment-list');
+    if (!list) return;
 
-  // SIMPLIFIED: Just read from the element itself
-  let category = list.dataset.category || list.dataset.categoryFilter || '';
-  
-  // Fallback: infer from active button
-  if (!category) {
-    const activeBtn = document.querySelector('#services-nav .admin-button[aria-current="true"]');
-    const btnService = activeBtn?.getAttribute('data-service');
-    // Map button names to category values
-    const categoryMap = { 
-      'photography': 'photography', 
-      'videography': 'videography', 
-      'editing': 'editing' 
-    };
-    category = categoryMap[btnService] || '';
-  }
-
-  console.log('[services] Equipment category:', category); // DEBUG
-
-  try {
-    const mod = await import('/js/modules/equipment.js');
-    if (mod?.NSM?.equipment?.renderInto) {
-      await mod.NSM.equipment.renderInto(list, { category });
+    // Get category from the element's data attributes first
+    let category = list.dataset.category || list.dataset.categoryFilter || '';
+    
+    // Fallback: infer from active button
+    if (!category) {
+      const activeBtn = document.querySelector('#services-nav .admin-button[aria-current="true"]');
+      const btnService = activeBtn?.getAttribute('data-service');
+      const categoryMap = { 
+        'photography': 'photography', 
+        'videography': 'videography', 
+        'editing': 'editing' 
+      };
+      category = categoryMap[btnService] || '';
     }
-  } catch (e) {
-    console.error('[services] equipment activation failed:', e);
+
+    console.log('[services] Loading equipment for category:', category);
+
+    try {
+      // CRITICAL FIX: Always re-import to get fresh module state
+      // Add timestamp to force reload
+      const timestamp = Date.now();
+      const mod = await import(`/js/modules/equipment.js?v=${timestamp}`);
+      
+      if (mod?.NSM?.equipment?.renderInto) {
+        // Force clear the container first
+        list.innerHTML = '<p>Loading equipment...</p>';
+        await mod.NSM.equipment.renderInto(list, { category });
+      } else {
+        console.error('[services] equipment.js loaded but API not found');
+      }
+    } catch (e) {
+      console.error('[services] equipment activation failed:', e);
+      list.innerHTML = '<p class="error">Unable to load equipment.</p>';
+    }
   }
-}
 
   async function activatePricingIfPresent() {
     const hasPricing = mount.querySelector('#packages-body, #ala-carte-body');
@@ -255,7 +250,6 @@
     }
   }
 
-  // Same collapsible UI classes as equipment.js
   function renderOtherServicesAsCollapsible(container, items) {
     if (!Array.isArray(items) || items.length === 0) {
       container.innerHTML = '<p>No other services listed.</p>';
@@ -313,7 +307,6 @@
     });
   }
 
-  // ---------------- core load -----------------
   async function loadService(key) {
     if (inFlight && key === currentKey) return;
     inFlight = true;
@@ -335,7 +328,6 @@
         clearTempBase();
       }
 
-      // Keep navigation friendly within the fragment only
       interceptLocalAnchors(mount);
 
       const focusTarget = mount.querySelector('h1, h2, [role="heading"], form, section, article, [tabindex]') || mount;
@@ -346,7 +338,6 @@
         if (!had) focusTarget.removeAttribute('tabindex');
       }
 
-      // Post-fragment activations (hook-driven only)
       await activateEquipmentIfPresent();
       await activatePricingIfPresent();
       await activateOtherServicesIfPresent();
@@ -354,21 +345,19 @@
       closeDrawerIfOpen();
     } catch (err) {
       console.error('[services] load error', err);
-      mount.innerHTML = `<div class="notice error" role="alert"><p>Sorry, we couldn’t load that section right now.</p></div>`;
+      mount.innerHTML = `<div class="notice error" role="alert"><p>Sorry, we couldn't load that section right now.</p></div>`;
     } finally {
       main.removeAttribute('data-loading');
       inFlight = false;
     }
   }
 
-  // Single click delegation
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.admin-button');
     if (!btn) return;
     e.preventDefault();
     e.stopPropagation();
 
-    // mark active for category inference
     document.querySelectorAll('.admin-button').forEach(b => b.removeAttribute('aria-current'));
     btn.setAttribute('aria-current', 'true');
 
