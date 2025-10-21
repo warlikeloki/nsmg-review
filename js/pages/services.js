@@ -196,17 +196,21 @@
     console.log('[services] Loading equipment for category:', category);
 
     try {
-      // CRITICAL FIX: Always re-import to get fresh module state
-      // Add timestamp to force reload
-      const timestamp = Date.now();
-      const mod = await import(`/js/modules/equipment.js?v=${timestamp}`);
+      // Force clear the container first
+      list.innerHTML = '<p>Loading equipment...</p>';
       
-      if (mod?.NSM?.equipment?.renderInto) {
-        // Force clear the container first
-        list.innerHTML = '<p>Loading equipment...</p>';
-        await mod.NSM.equipment.renderInto(list, { category });
+      // Ensure equipment.js is loaded
+      if (!window.NSM?.equipment?.renderInto) {
+        await import('/js/modules/equipment.js');
+      }
+      
+      // Check again after import
+      if (window.NSM?.equipment?.renderInto) {
+        // CRITICAL: Pass fresh category each time to force re-render
+        await window.NSM.equipment.renderInto(list, { category });
       } else {
         console.error('[services] equipment.js loaded but API not found');
+        list.innerHTML = '<p class="error">Equipment module failed to initialize.</p>';
       }
     } catch (e) {
       console.error('[services] equipment activation failed:', e);
