@@ -7,10 +7,19 @@
 (function () {
   if (window.loadOtherServices) return; // idempotent
 
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, (ch) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+  }
+
   function card(item, idx) {
     const panelId = `os-card-panel-${idx}`;
     const btnId   = `os-card-toggle-${idx}`;
-    const desc = item.description ? `<p class="eq-desc">${item.description}</p>` : '<p class="eq-desc">No description provided.</p>';
+    const title = escapeHtml(item.title || item.name || 'Untitled');
+    const desc = item.description 
+      ? `<p class="eq-desc">${escapeHtml(item.description)}</p>` 
+      : '<p class="eq-desc">No description provided.</p>';
 
     return `
       <article class="equip-card" data-idx="${idx}">
@@ -20,10 +29,10 @@
                   class="equip-toggle-mini"
                   aria-expanded="false"
                   aria-controls="${panelId}"
-                  aria-label="Expand ${item.title}">
+                  aria-label="Expand ${title}">
             +
           </button>
-          <span class="equip-title" title="${item.title ?? ''}">${item.title ?? ''}</span>
+          <span class="equip-title" title="${title}">${title}</span>
         </div>
         <div id="${panelId}" class="equip-panel" role="region" aria-labelledby="${btnId}" hidden>
           <div class="equip-panel-inner">
@@ -80,7 +89,11 @@
     }
     const html = rows
       .slice()
-      .sort((a, b) => (a.title || '').localeCompare(b.title || ''))
+      .sort((a, b) => {
+        const aTitle = a.title || a.name || '';
+        const bTitle = b.title || b.name || '';
+        return aTitle.localeCompare(bTitle, undefined, { sensitivity: 'base' });
+      })
       .map(card)
       .join('');
     container.innerHTML = `<div class="equip-grid">${html}</div>`;
@@ -88,8 +101,11 @@
   }
 
   window.loadOtherServices = async function loadOtherServices() {
-    const container = document.getElementById('other-services-container');
+    // Support both ID variants for backward compatibility
+    const container = document.getElementById('other-services-list') || 
+                      document.getElementById('other-services-container');
     if (!container) return;
+    
     container.innerHTML = '<p>Loading services...</p>';
 
     const { success, data, error } = await fetchOtherServices();
@@ -102,7 +118,9 @@
   };
 
   // Auto-run for direct hits and when injected into services.html
-  const hook = document.getElementById('other-services-container');
+  // Check for either ID variant
+  const hook = document.getElementById('other-services-list') || 
+               document.getElementById('other-services-container');
   if (hook) {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => window.loadOtherServices(), { once: true });
