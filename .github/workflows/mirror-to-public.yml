@@ -57,9 +57,11 @@ jobs:
             --exclude '*.zip' \
             --exclude 'vendor/' \
             --exclude 'node_modules/' \
-            --exclude '.github/workflows/' \
             . /tmp/public/
 
+          # Explicitly remove workflow files after rsync
+          rm -rf /tmp/public/.github/workflows/
+          
           echo "== Contents of /tmp/public (first 200 lines) =="
           find /tmp/public -type f | sed 's#^/tmp/public/##' | sort | head -n 200
 
