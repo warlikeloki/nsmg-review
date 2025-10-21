@@ -167,11 +167,11 @@
 
     listEl.innerHTML = '<p>Loading equipment…</p>';
     try {
-      const data = await fetchEquipment({ category, q });
+      const data = await fetchEquipment({ category, q });  // ← Does it pass category here?
       renderGrid(listEl, data, { category });
     } catch (e) {
       console.error('[equipment] load error:', e);
-      listEl.innerHTML = `<p class="error">Unable to load equipment${category ? ` for ${escapeHtml(category)}` : ''}.</p>`;
+      listEl.innerHTML = `<p class="error">Unable to load equipment.</p>`;
     }
   }
 
