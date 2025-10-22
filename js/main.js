@@ -219,7 +219,12 @@
       document.getElementById("testimonials-page")
     ) { try { await import("/js/modules/testimonials.js"); } catch {} }
 
-    if (document.getElementById("equipment-list")) {
+    // FIXED: Only auto-call loadEquipment if NOT on services dashboard
+    // Services dashboard handles equipment loading via services.js
+    const onServicesPage = document.body.classList.contains("services") || 
+                           !!document.getElementById("services-content");
+    
+    if (document.getElementById("equipment-list") && !onServicesPage) {
       try {
         await import("/js/modules/equipment.js");
         if (typeof window.loadEquipment === "function") window.loadEquipment();
@@ -251,13 +256,15 @@
       }
     }
 
-    if (document.getElementById("other-services-container")) { try { await import("/js/modules/other-services.js"); } catch {} }
+    // FIXED: Check for both possible IDs
+    if (document.getElementById("other-services-list") || document.getElementById("other-services-container")) { 
+      console.log('[main.js] Found other-services element, importing module...');
+      try { await import("/js/modules/other-services.js"); } catch {} 
+    }
+    
     if (has(".filter-buttons"))                              { try { await import("/js/modules/portfolio.js"); } catch {} }
 
     // STRICT Services autoload: only on the Services page
-    const onServicesPage =
-      document.body.classList.contains("services") ||
-      !!document.getElementById("services-content");
     if (onServicesPage) {
       try {
         const mod = await import("/js/pages/services.js");
