@@ -258,6 +258,7 @@
 
     // FIXED: Check for both possible IDs
     if (document.getElementById("other-services-list") || document.getElementById("other-services-container")) { 
+      console.log('[main.js] Found other-services element, importing module...');
       try { await import("/js/modules/other-services.js"); } catch {} 
     }
     

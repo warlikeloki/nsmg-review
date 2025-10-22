@@ -1,7 +1,5 @@
 /* =========================================
-   layout.css — FULL FILE (simplified for NSM-184)
-   - Fix: Equal left/right sidebar widths on Home
-   - No global :root variables (handled in global.css)
+   layout.css — FULL FILE (updated for better spacing)
    ========================================= */
 
 /* Basic Section Styles */
@@ -65,44 +63,66 @@ section a:hover {
 }
 
 /* =========================================
-   NSM-184: Home page container & sidebars
+   Page container & sidebars (UPDATED)
    ========================================= */
 
 .page-container {
   display: flex;
   align-items: flex-start;
-  justify-content: center;              /* center the 3-column layout */
-  max-width: 1200px;
+  justify-content: center;
+  max-width: 1400px;              /* Increased from 1200px */
   margin: 0 auto;
   padding: 20px;
   gap: 20px;
   box-sizing: border-box;
 }
 
-/* Equal sidebar widths */
+/* Narrower sidebars by default (UPDATED) */
 .sidebar {
   box-sizing: border-box;
-  width: clamp(200px, 18vw, 280px);
-  min-width: clamp(200px, 18vw, 280px);
-  max-width: clamp(200px, 18vw, 280px);
-  flex: 0 0 clamp(200px, 18vw, 280px);  /* lock widths equally */
+  width: clamp(120px, 10vw, 180px);      /* Reduced from 200-280px */
+  min-width: clamp(120px, 10vw, 180px);
+  max-width: clamp(120px, 10vw, 180px);
+  flex: 0 0 clamp(120px, 10vw, 180px);
+}
+
+/* Hide empty sidebars (NEW) */
+.sidebar:empty,
+.sidebar:not(:has(*)) {
+  display: none;
 }
 
 /* Flexible main content */
 .main-content {
   box-sizing: border-box;
   flex: 1 1 auto;
-  min-width: 0;                         /* prevents overflow */
+  min-width: 0;
   max-width: 100%;
+}
+
+/* Services page: wider left sidebar for nav buttons (NEW) */
+.services .left-sidebar,
+body.services .left-sidebar {
+  width: clamp(180px, 15vw, 220px);
+  min-width: clamp(180px, 15vw, 220px);
+  max-width: clamp(180px, 15vw, 220px);
+  flex: 0 0 clamp(180px, 15vw, 220px);
+  display: block !important;  /* Never hide services nav sidebar */
+}
+
+/* Services page: hide empty right sidebar (NEW) */
+.services .right-sidebar:empty,
+body.services .right-sidebar:not(:has(*)) {
+  display: none;
 }
 
 /* Slightly narrow sidebars on tablets */
 @media (max-width: 1024px) {
   .sidebar {
-    width: clamp(180px, 22vw, 240px);
-    min-width: clamp(180px, 22vw, 240px);
-    max-width: clamp(180px, 22vw, 240px);
-    flex: 0 0 clamp(180px, 22vw, 240px);
+    width: clamp(100px, 15vw, 160px);
+    min-width: clamp(100px, 15vw, 160px);
+    max-width: clamp(100px, 15vw, 160px);
+    flex: 0 0 clamp(100px, 15vw, 160px);
   }
 }
 
@@ -280,10 +300,3 @@ section a:hover {
   padding-left: 0;
   margin-left: 0;
 }
-/*
-.about-section ul li {
-  padding: 0.25rem 0;
-  border-left: 4px solid var(--primary-color, #0073e6);
-  padding-left: 0.75rem;
-}
-*/

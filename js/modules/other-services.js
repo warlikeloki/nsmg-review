@@ -3,7 +3,7 @@
 //  - each card collapsed by default
 //  - small "+" button at upper-left toggles open/close
 //  - expanded panel shows the service description
-
+console.log('[other-services.js] Module loaded, checking for hooks...');
 (function () {
   if (window.loadOtherServices) return; // idempotent
 
