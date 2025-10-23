@@ -134,10 +134,28 @@
   html.nav-open, body.nav-open{ overflow:hidden; }
 
   .nav-menu > li{ width:100%; }
+  
+  /* FIXED: Dark text on white mobile drawer background */
   .nav-menu > li > a{
     color: var(--text-main);
     padding:.9rem .25rem;
     border-bottom:1px solid var(--nav-border);
+  }
+  
+  /* FIXED: Ensure all link states use dark text */
+  .nav-menu > li > a:link,
+  .nav-menu > li > a:visited,
+  .nav-menu > li > a:hover,
+  .nav-menu > li > a:active{
+    color: var(--text-main);
+  }
+  
+  /* FIXED: Dark caret arrows for mobile */
+  .nav-menu > li > a[aria-expanded="false"]::after{ 
+    border-top-color: var(--text-main); 
+  }
+  .nav-menu > li > a[aria-expanded="true"]::after{  
+    border-bottom-color: var(--text-main); 
   }
 
   /* Mobile dropdowns: stacked, indented */
@@ -180,6 +198,17 @@ html.nav-mobile #nav-menu.nav-menu{
   display:flex; flex-direction:column; align-items:stretch; gap:0;
 }
 html.nav-mobile #nav-menu.open{ transform: translateX(0); }
+
+/* FIXED: Also apply dark text in JS-controlled mobile mode */
+html.nav-mobile #nav-menu.nav-menu > li > a {
+  color: var(--text-main);
+}
+html.nav-mobile #nav-menu.nav-menu > li > a:link,
+html.nav-mobile #nav-menu.nav-menu > li > a:visited,
+html.nav-mobile #nav-menu.nav-menu > li > a:hover,
+html.nav-mobile #nav-menu.nav-menu > li > a:active {
+  color: var(--text-main);
+}
 
 html.nav-mobile, html.nav-mobile body { overflow-x: hidden; }
 html.nav-mobile.nav-open, html.nav-mobile body.nav-open { overflow: hidden; }
