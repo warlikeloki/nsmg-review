@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Request Services - Neil Smith Media Group</title>
-    <!-- SEO Meta Description -->
+  <!-- SEO Meta Description -->
   <meta
     name="description"
     content="Request a personalized quote from Neil Smith Media Group for photography, videography, or editing services by completing our online form."
@@ -47,39 +47,49 @@
         <p>Fill out the form below to request a quote</p>
 
         <form id="service-request-form" novalidate>
-          <div id="request-status" class="form-status" aria-live="polite"></div>
+          <!-- FIXED: Correct ID for status messages -->
+          <div id="service-request-status" class="form-status" aria-live="polite"></div>
+          
+          <!-- ADDED: Fallback link container -->
+          <div id="service-request-fallback" class="form-fallback" hidden></div>
 
-          <label for="name">Name <span>*</span></label>
-          <input type="text" id="name" name="name" required />
+          <label for="sr-name">Name <span>*</span></label>
+          <input type="text" id="sr-name" name="name" required />
 
-          <label for="email">Email <span>*</span></label>
-          <input type="email" id="email" name="email" required />
+          <label for="sr-email">Email <span>*</span></label>
+          <input type="email" id="sr-email" name="email" required />
 
-          <label for="phone">Phone (optional)</label>
-          <input type="tel" id="phone" name="phone" />
+          <label for="sr-phone">Phone (optional)</label>
+          <input type="tel" id="sr-phone" name="phone" />
 
-          <label for="services[]">Service Type(s) <span>*</span></label>
-            <div class="checkbox-group">
-              <label><input type="checkbox" name="services[]" value="General Inquiry" required> General Inquiry</label>
-              <label><input type="checkbox" name="services[]" value="Photography" required> Photography</label>
-              <label><input type="checkbox" name="services[]" value="Videography"> Videography</label>
-              <label><input type="checkbox" name="services[]" value="Editing"> Editing</label>
-              <label><input type="checkbox" name="services[]" value="Other Services"> Other Services</label>
-            </div>
+          <label for="services">Service Type(s) <span>*</span></label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="services[]" value="General Inquiry"> General Inquiry</label>
+            <label><input type="checkbox" name="services[]" value="Photography"> Photography</label>
+            <label><input type="checkbox" name="services[]" value="Videography"> Videography</label>
+            <label><input type="checkbox" name="services[]" value="Editing"> Editing</label>
+            <label><input type="checkbox" name="services[]" value="Other Services"> Other Services</label>
+          </div>
 
-          <label for="date">Preferred Date (optional)</label>
-          <input type="date" id="date" name="date" />
+          <!-- FIXED: Changed name from "date" to "target_date" -->
+          <label for="sr-target-date">Preferred Date (optional)</label>
+          <input type="date" id="sr-target-date" name="target_date" />
 
-          <label for="location">Service Location (optional)</label>
-          <input type="text" id="location" name="location"
+          <!-- FIXED: Changed name from "location" to "service_location" -->
+          <label for="sr-location">Service Location (optional)</label>
+          <input type="text" id="sr-location" name="service_location"
                  placeholder="Address, venue, or general location" />
 
-          <label for="duration">Estimated Duration (optional)</label>
-          <input type="text" id="duration" name="duration"
+          <label for="sr-duration">Estimated Duration (optional)</label>
+          <input type="text" id="sr-duration" name="duration"
                  placeholder="e.g., 2 hours, full day" />
 
-          <label for="details">Project Details <span>*</span></label>
-          <textarea id="details" name="details" rows="6" required></textarea>
+          <!-- FIXED: Changed name from "details" to "message" -->
+          <label for="sr-message">Project Details <span>*</span></label>
+          <textarea id="sr-message" name="message" rows="6" required></textarea>
+
+          <!-- Honeypot for spam protection -->
+          <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off" />
 
           <button type="submit" class="btn">Submit Request</button>
         </form>
@@ -94,4 +104,3 @@
   <script type="module" src="/js/main.js" defer></script>
 </body>
 </html>
-
