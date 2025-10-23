@@ -6,6 +6,10 @@ header('Content-Type: application/json; charset=UTF-8');
 header('Cache-Control: no-store, max-age=0');
 
 require __DIR__ . '/mail_config.php';
+require __DIR__ . '/security.php';
+
+// Set security headers
+SecurityHeaders::setHeaders();
 
 // Load PHPMailer (Composer autoload if present; else manual)
 $hasComposer = file_exists(__DIR__ . '/../vendor/autoload.php');
@@ -34,25 +38,60 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   json_fail('Invalid method', 405);
 }
 
-// Gather inputs
-$name    = trim($_POST['name'] ?? '');
-$email   = trim($_POST['email'] ?? '');
-$phone   = trim($_POST['phone'] ?? '');
-$about   = trim($_POST['about'] ?? 'General');
-$message = trim($_POST['message'] ?? '');
+// CSRF Protection
+if (!CSRFProtection::validateRequest()) {
+  json_fail('Invalid or expired security token. Please refresh the page and try again.', 403);
+}
+
+// Rate Limiting (3 submissions per 5 minutes per session)
+$rateLimit = new RateLimit('contact_form', 3, 300);
+$rateLimitCheck = $rateLimit->check();
+
+if (!$rateLimitCheck['allowed']) {
+  $retryAfter = RateLimit::formatRetryAfter($rateLimitCheck['retry_after']);
+  json_fail("Too many submissions. Please try again in {$retryAfter}.", 429);
+}
+
+// Gather and sanitize inputs
+$name    = InputSanitizer::sanitizeText($_POST['name'] ?? '', 100);
+$email   = InputSanitizer::sanitizeEmail($_POST['email'] ?? '');
+$phone   = InputSanitizer::sanitizePhone($_POST['phone'] ?? '');
+$about   = InputSanitizer::sanitizeText($_POST['about'] ?? 'General', 50);
+$message = InputSanitizer::sanitizeText($_POST['message'] ?? '', 5000);
 $hp      = trim($_POST['website'] ?? ''); // honeypot
 
+// Honeypot check
 if ($hp !== '') {
-  // Bot: pretend OK
+  // Bot: pretend OK but don't record attempt
   json_ok('Thanks!');
 }
 
+// Required field validation
 if ($name === '' || $email === '' || $message === '') {
   json_fail('Required fields missing: name, email, message.');
 }
+
+// Email validation
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
   json_fail('Please enter a valid email address.');
 }
+
+// Spam detection
+if (InputSanitizer::isSpammy($message) || InputSanitizer::isSpammy($name)) {
+  // Log as potential spam but pretend success to not alert spammer
+  if (defined('NSM_MAIL_LOG') && NSM_MAIL_LOG) {
+    @file_put_contents(NSM_MAIL_LOG, "[".date('c')."] SPAM DETECTED from {$email} (IP: ".$_SERVER['REMOTE_ADDR'].")\n", FILE_APPEND);
+  }
+  json_ok('Thanks!'); // Pretend success
+}
+
+// Malicious input detection
+if (InputSanitizer::isSuspicious($message) || InputSanitizer::isSuspicious($name)) {
+  json_fail('Invalid input detected. Please remove any code or scripts from your message.');
+}
+
+// Record rate limit attempt (only after honeypot and spam checks)
+$rateLimit->recordAttempt();
 
 // Compose email
 $ip   = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
