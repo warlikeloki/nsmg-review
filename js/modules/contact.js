@@ -4,12 +4,31 @@
 //   import { initContactForm } from './modules/contact.js';
 //   initContactForm();
 
-export function initContactForm() {
+let csrfToken = null;
+
+async function fetchCSRFToken() {
+  try {
+    const res = await fetch('/php/get_csrf_token.php');
+    const json = await res.json();
+    if (json.ok && json.token) {
+      csrfToken = json.token;
+      return true;
+    }
+  } catch (err) {
+    console.error('Failed to fetch CSRF token:', err);
+  }
+  return false;
+}
+
+export async function initContactForm() {
   const form = document.getElementById('contact-form');
   if (!form) return;
 
   const statusEl = document.getElementById('contact-status');
   const fallbackEl = document.getElementById('contact-fallback');
+
+  // Fetch CSRF token on load
+  await fetchCSRFToken();
 
   function setStatus(msg, ok = true) {
     if (!statusEl) return;
@@ -22,8 +41,14 @@ export function initContactForm() {
     e.preventDefault();
     setStatus('Sending...', true);
 
+    // Refresh CSRF token if needed
+    if (!csrfToken) {
+      await fetchCSRFToken();
+    }
+
     const data = new FormData(form);
     if (!data.has('website')) data.append('website', ''); // honeypot
+    if (csrfToken) data.append('csrf_token', csrfToken); // CSRF protection
 
     try {
       const res = await fetch('/php/submit_contact.php', {
@@ -38,11 +63,21 @@ export function initContactForm() {
       if (json.ok) {
         setStatus('Thanks! Your message has been sent.', true);
         form.reset();
+        // Refresh CSRF token after successful submission
+        await fetchCSRFToken();
       } else {
-        setStatus('Email delivery failed. A direct email link is available below.', false);
-        if (fallbackEl && json.data && json.data.mailto) {
-          fallbackEl.innerHTML = `<a href="${json.data.mailto}">Email us directly</a>`;
-          fallbackEl.hidden = false;
+        // Handle specific error cases
+        if (res.status === 403) {
+          setStatus('Security token expired. Please try again.', false);
+          await fetchCSRFToken(); // Refresh token
+        } else if (res.status === 429) {
+          setStatus(json.error || 'Too many submissions. Please wait before trying again.', false);
+        } else {
+          setStatus('Email delivery failed. A direct email link is available below.', false);
+          if (fallbackEl && json.data && json.data.mailto) {
+            fallbackEl.innerHTML = `<a href="${json.data.mailto}">Email us directly</a>`;
+            fallbackEl.hidden = false;
+          }
         }
       }
     } catch {
