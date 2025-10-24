@@ -85,6 +85,7 @@
   <link rel="stylesheet" href="/css/mobile.css" />
   <!-- Reuse the same card/grid styles as the equipment UI -->
   <link rel="stylesheet" href="/css/equipment.css" />
+  <link rel="stylesheet" href="/css/services-content.css" />
   <link rel="stylesheet" href="/css/wip.css" />
   <script type="module" src="/js/wip.js" defer></script>
   <script type="module" src="/js/modules/site-settings.js"></script>
@@ -100,12 +101,28 @@
       <!-- data-fragment wrapper helps services.js extract the right content -->
       <article data-fragment="service">
         <h1>Other Services</h1>
-        <p>Additional ways we can support your project.</p>
+        <p>Additional ways we can support your project and special events beyond media production.</p>
 
-        <!-- Changed from #other-services-container to #other-services-list 
-             to match what services.js expects -->
-        <section id="other-services-list">
-          <p>Loading services...</p>
+        <section class="services-offered">
+          <h2>What We Offer</h2>
+          <ul>
+            <li><strong>Production Assistance:</strong> On-set support, equipment operation, and crew coordination</li>
+            <li><strong>Public Notary Services:</strong> Document notarization for legal and business needs</li>
+            <li><strong>Wedding Officiant:</strong> Personalized ceremony officiation for your special day</li>
+            <li><strong>Consulting:</strong> Media planning, equipment recommendations, and workflow optimization</li>
+            <li><strong>Equipment Rental:</strong> Select cameras, lenses, lighting, and audio gear available for rent</li>
+          </ul>
+        </section>
+
+        <section class="services-details">
+          <h2>Service Details</h2>
+          <p>Expand each service below for more information:</p>
+
+          <!-- Changed from #other-services-container to #other-services-list
+               to match what services.js expects -->
+          <div id="other-services-list">
+            <p>Loading services...</p>
+          </div>
         </section>
       </article>
     </main>

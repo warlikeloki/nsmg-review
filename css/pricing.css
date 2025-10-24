@@ -107,7 +107,9 @@ body.embed .sidebar,
 body.embed .left-sidebar,
 body.embed .right-sidebar,
 body.embed #left-sidebar,
-body.embed #right-sidebar {
+body.embed #right-sidebar,
+body.embed #faq,
+body.embed .pricing-faq-section {
   display: none !important;
 }
 
@@ -157,6 +159,22 @@ body:not(.embed) #right-sidebar {
    from hiding under the sticky header. */
 :target {
   scroll-margin-top: var(--header-height, 80px);
+}
+
+/* ---------- Pricing FAQ Section ---------- */
+.pricing-faq-section {
+  max-width: 900px;
+  margin: 3rem auto 2rem;
+  padding: 2rem 1.5rem;
+  background: var(--background-section, #fafafa);
+  border-radius: var(--border-radius, 8px);
+}
+
+.pricing-faq-section h2 {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color, #0073e6);
 }
 
 /* ---------- Wide-screen polish ---------- */

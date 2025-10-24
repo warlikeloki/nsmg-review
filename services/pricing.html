@@ -5,6 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pricing – Neil Smith Media Group</title>
 
+  <!-- SEO -->
+  <meta name="description" content="View our pricing for photography, videography, and editing services. Transparent rates for packages and à la carte options." />
+  <link rel="canonical" href="https://neilsmith.org/services/pricing.html" />
+
+  <!-- Structured Data - FAQPage Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Do you offer package discounts?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! Our packages bundle multiple services at discounted rates compared to à la carte pricing. Packages are ideal for events requiring photography, videography, and editing services."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I customize a package?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Absolutely. We can customize any package to fit your specific needs. Contact us to discuss your project requirements and we'll create a tailored quote."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What's included in the hourly rate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Hourly rates include the service time, professional equipment, and standard post-production. Additional editing, rush delivery, or special requests may incur extra charges."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you require a deposit?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, we typically require a 50% deposit to secure your booking date. The remaining balance is due upon project completion or delivery of final files."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What payment methods do you accept?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We accept bank transfers, checks, and most major credit cards. Payment details will be provided in your service agreement."
+        }
+      }
+    ]
+  }
+  </script>
+
   <!-- Ensure any relative URLs (e.g., fetch('get_pricing.php')) resolve from site root -->
   <base href="/" />
 
@@ -17,9 +71,11 @@
   <link rel="stylesheet" href="/css/footer.css" />
   <link rel="stylesheet" href="/css/forms.css" />
   <link rel="stylesheet" href="/css/pricing.css" />
+  <link rel="stylesheet" href="/css/faq.css" />
 
   <!-- Settings -->
   <script type="module" src="/js/modules/site-settings.js" defer></script>
+  <script type="module" src="/js/modules/faq.js" defer></script>
 </head>
 
 <body>
@@ -86,6 +142,47 @@
         <noscript>
           <p>Enable JavaScript to view live pricing information.</p>
         </noscript>
+      </section>
+
+      <!-- FAQ SECTION - Only visible in standalone mode, not embed -->
+      <section id="faq" class="pricing-faq-section" aria-labelledby="faq-title">
+        <h2 id="faq-title">Pricing FAQs</h2>
+        <div class="faq-list">
+          <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+            <h3 itemprop="name">Do you offer package discounts?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text">Yes! Our packages bundle multiple services at discounted rates compared to à la carte pricing. Packages are ideal for events requiring photography, videography, and editing services.</p>
+            </div>
+          </article>
+
+          <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+            <h3 itemprop="name">Can I customize a package?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text">Absolutely. We can customize any package to fit your specific needs. <a href="/services/request-form.html">Contact us</a> to discuss your project requirements and we'll create a tailored quote.</p>
+            </div>
+          </article>
+
+          <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+            <h3 itemprop="name">What's included in the hourly rate?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text">Hourly rates include the service time, professional equipment, and standard post-production. Additional editing, rush delivery, or special requests may incur extra charges.</p>
+            </div>
+          </article>
+
+          <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+            <h3 itemprop="name">Do you require a deposit?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text">Yes, we typically require a 50% deposit to secure your booking date. The remaining balance is due upon project completion or delivery of final files.</p>
+            </div>
+          </article>
+
+          <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+            <h3 itemprop="name">What payment methods do you accept?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text">We accept bank transfers, checks, and most major credit cards. Payment details will be provided in your service agreement.</p>
+            </div>
+          </article>
+        </div>
       </section>
     </main>
 
