@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: application/json");
 
-require_once __DIR__ . '/../php/db_connect.php';
+require_once __DIR__ . '/../includes/db.php';
 
 // Validate request method
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {

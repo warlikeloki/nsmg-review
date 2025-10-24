@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: application/json");
 
-require_once __DIR__ . '/../php/db_connect.php';
+require_once __DIR__ . '/../includes/db.php';
 
 $ballot_id = isset($_GET['ballot']) ? (int)$_GET['ballot'] : 0;
 if ($ballot_id <= 0) {

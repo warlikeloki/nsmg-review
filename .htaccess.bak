@@ -1,3 +1,0 @@
-  # Custom error pages (absolute paths from web root)
-  ErrorDocument 404 /404.html
-  ErrorDocument 500 /500.html

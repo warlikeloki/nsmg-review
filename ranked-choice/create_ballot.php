@@ -8,8 +8,8 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit;
 }
 
-// DB connection (replace with your own credentials)
-require_once __DIR__ . '/../php/db_connect.php'; // assumes you have a separate db_connect.php file
+// DB connection
+require_once __DIR__ . '/../includes/db.php';
 
 function sanitize($data) {
     return htmlspecialchars(strip_tags(trim($data)));
