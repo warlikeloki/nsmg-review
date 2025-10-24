@@ -3,17 +3,16 @@
 // Accepts ?id= or ?slug=. Uses hero_image → image → featuredImage → coverImage.
 // Renders date, author, category, and tags (array).
 
+import { fetchJson } from '../utils/fetch-utils.js';
+import { escapeHtml } from '../utils/html-utils.js';
+import { formatDate } from '../utils/date-utils.js';
+import { resolveFeaturedImage } from '../utils/blog-utils.js';
+
 (function () {
   const BLOG_JSON_FALLBACK = "/json/posts.json";
   const BLOG_PHP_ENDPOINT = "/php/get_posts.php"; // optional backend
 
   const $ = (sel, root = document) => root.querySelector(sel);
-
-  async function fetchJson(url) {
-    const r = await fetch(url, { headers: { "Accept": "application/json" } });
-    if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
-    return r.json();
-  }
 
   function getParams() {
     const p = new URLSearchParams(location.search);
@@ -49,43 +48,6 @@
     if (id)   return posts.find(p => String(p.id)   === String(id));
     if (slug) return posts.find(p => String(p.slug) === String(slug));
     return null;
-  }
-
-  function escapeHtml(str) {
-    return String(str).replace(/[&<>"']/g, s => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[s]));
-  }
-
-  function resolveFeaturedImage(post) {
-    const p = post || {};
-    const candidates = [
-      p.hero_image,           // your primary
-      p.image,                // your secondary
-      p.featuredImage,        // future-proof
-      p.coverImage,
-      p?.images?.featured,
-      Array.isArray(p?.images?.all) ? p.images.all[0] : null
-    ].filter(Boolean);
-
-    const first = candidates[0];
-    if (!first) return null;
-
-    if (typeof first === "string") return { src: first, alt: p?.title || "Blog image" };
-    if (typeof first === "object") {
-      return {
-        src: first.src || first.url || first.path || "",
-        alt: first.alt || p?.title || "Blog image"
-      };
-    }
-    return null;
-  }
-
-  function formatDate(iso) {
-    if (!iso) return "";
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return "";
-    return d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
   }
 
   function setStatus(msg, type = "info") {

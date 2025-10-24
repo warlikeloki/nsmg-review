@@ -29,8 +29,12 @@
 
   /* Border & Radius */
   --border-color: #ddd;               /* General border */
-  --border-radius: 6px;               /* Base border radius */
-  --card-radius: 1.3em;               /* Used for larger card rounding */
+  --border-radius-sm: 4px;            /* Small elements (buttons, inputs) */
+  --border-radius: 6px;               /* Base border radius (default) */
+  --border-radius-md: 8px;            /* Medium elements (cards, panels) */
+  --border-radius-lg: 12px;           /* Large elements (hero sections) */
+  --border-radius-full: 999px;        /* Pills/circular elements */
+  --card-radius: 1.3em;               /* Used for larger card rounding (legacy, consider deprecating) */
   
   /* Box Shadow & Overlay */
   --shadow-color: 30, 52, 84;         /* For box-shadow rgba() */
@@ -122,11 +126,10 @@ img {
 }
 
 /* Containers */
-.container {
-  width: 90%;
+.container, .wrap, .page-wrap {
   max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--spacing-unit) 0;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 40px);
 }
 
 /* Legal-style list formatting: indented lines with dash markers */

@@ -14,6 +14,8 @@
 //
 // Also auto-runs when #equipment-list exists.
 
+import { escapeHtml } from '../utils/html-utils.js';
+
 (function () {
   // Prevent double registration
   if (window.NSM?.equipment?.__ready || window.loadEquipment) return;
@@ -21,12 +23,6 @@
   // ---------------- Utilities ----------------
   const NSM = (window.NSM = window.NSM || {});
   NSM.equipment = NSM.equipment || {};
-
-  function escapeHtml(s) {
-    return String(s ?? '').replace(/[&<>"']/g, (ch) => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[ch]));
-  }
 
   function byName(a, b) {
     return String(a?.name ?? '').localeCompare(String(b?.name ?? ''), undefined, { sensitivity: 'base' });

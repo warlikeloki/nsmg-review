@@ -42,9 +42,4 @@ html.nsm-scrolled header {
   */
 }
 
-/* Basic container normalization; keeps content readable on large screens */
-.container, .wrap, .page-wrap {
-  max-width: 1200px;
-  margin-inline: auto;
-  padding-inline: clamp(16px, 4vw, 40px);
-}
+/* Container styles now centralized in global.css */

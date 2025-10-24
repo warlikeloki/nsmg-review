@@ -3,15 +3,12 @@
 //  - each card collapsed by default
 //  - small "+" button at upper-left toggles open/close
 //  - expanded panel shows the service description
+
+import { escapeHtml } from '../utils/html-utils.js';
+
 console.log('[other-services.js] Module loaded, checking for hooks...');
 (function () {
   if (window.loadOtherServices) return; // idempotent
-
-  function escapeHtml(s) {
-    return String(s ?? '').replace(/[&<>"']/g, (ch) => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[ch]));
-  }
 
   function card(item, idx) {
     const panelId = `os-card-panel-${idx}`;

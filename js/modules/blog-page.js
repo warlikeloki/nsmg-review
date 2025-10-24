@@ -14,6 +14,8 @@
    ]
 */
 
+import { formatDate } from '../utils/date-utils.js';
+
 (() => {
   const container = document.getElementById('blog-posts-container');
   if (!container) return;
@@ -59,17 +61,6 @@
     }
     console.error('[blog-page] all endpoints failed', errors);
     throw new Error('No blog endpoint returned data.');
-  }
-
-  function formatDate(iso) {
-    try {
-      const d = new Date(iso);
-      // fallback for non-ISO strings
-      if (isNaN(d.getTime())) return iso;
-      return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-    } catch {
-      return iso || '';
-    }
   }
 
   function createCard(post) {
