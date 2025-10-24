@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -21,6 +21,11 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/media/icons/apple-touch-icon.png" />
   <link rel="manifest" href="/media/icons/site.webmanifest" />
 
+  <!-- Resource Hints for Faster Navigation -->
+  <link rel="prefetch" href="/services.html" />
+  <link rel="prefetch" href="/portfolio.html" />
+  <link rel="prefetch" href="/contact.html" />
+
   <!-- Open Graph / Twitter -->
   <meta property="og:site_name" content="Neil Smith Media Group" />
   <meta property="og:type" content="website" />
@@ -29,6 +34,91 @@
   <meta property="og:image" content="https://neilsmith.org/media/og/default.jpg" />
   <meta property="og:url" content="https://neilsmith.org/" />
   <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Structured Data (Schema.org) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "Neil Smith Media Group",
+    "alternateName": "NSMG",
+    "description": "Photography, videography, and editing services for brands, events, and businesses. Over a decade of experience in digital media and content creation.",
+    "url": "https://neilsmith.org/",
+    "logo": "https://neilsmith.org/media/logos/nsmg-logo.png",
+    "image": "https://neilsmith.org/media/og/default.jpg",
+    "email": "neil@neilsmith.org",
+    "founder": {
+      "@type": "Person",
+      "name": "Neil Smith",
+      "jobTitle": "Founder, Photographer, Videographer, and Creative Director"
+    },
+    "sameAs": [
+      "https://www.facebook.com/NeilSmithMedia",
+      "https://www.instagram.com/NeilSmithMedia",
+      "https://youtube.com/@neilsmithmedia"
+    ],
+    "serviceType": [
+      "Photography",
+      "Videography",
+      "Video Editing",
+      "Post-Production"
+    ],
+    "areaServed": {
+      "@type": "Country",
+      "name": "United States"
+    },
+    "priceRange": "$$"
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What types of projects do you work on?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We work on a wide range of projects including corporate events, weddings, brand photography, promotional videos, social media content, and post-production editing for clients of all sizes."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I request a quote?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You can request a quote through our online form or contact us directly. We'll discuss your project needs and provide a custom quote within 1-2 business days."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What's your turnaround time?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Turnaround times vary by project scope. For photography, you can typically expect edited photos within 1-2 weeks. Video projects range from 2-4 weeks depending on complexity. Rush delivery is available upon request."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you travel for projects?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! We're available for projects throughout the United States. Travel fees may apply for projects outside our local area, which will be discussed during the quote process."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What equipment do you use?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We use professional-grade equipment including multiple camera bodies, lenses, lighting setups, audio equipment, and industry-standard editing software to ensure high-quality deliverables for every project."
+        }
+      }
+    ]
+  }
+  </script>
 
   <!-- CSS -->
   <link rel="stylesheet" href="/css/global.css" />
@@ -40,6 +130,7 @@
   <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/footer.css" />
   <link rel="stylesheet" href="/css/homepage.css" />
+  <link rel="stylesheet" href="/css/faq.css" />
   <link rel="stylesheet" href="/css/a11y.css" />
   <link rel="stylesheet" href="/css/wip.css" />
   <link rel="stylesheet" href="/css/flickr-gallery.css" />
@@ -66,16 +157,17 @@
 
   <div class="page-container">
     <!-- Left Sidebar -->
-    <aside class="sidebar left-sidebar" aria-label="Left sidebar" role="complementary"></aside>
+    <aside class="sidebar left-sidebar" aria-label="Left sidebar"></aside>
 
     <!-- Main Content -->
-    <main id="homepage" tabindex="-1" role="main">
+    <main id="homepage" tabindex="-1">
       <!-- HERO -->
-      <section id="hero" class="homepage-section">
+      <section id="hero" class="homepage-section" aria-labelledby="hero-heading">
         <div class="hero-content">
-          <h1>Your Story.<br />Captured. Edited. Delivered.</h1>
+          <h1 id="hero-heading">Your Story.<br />Captured. Edited. Delivered.</h1>
           <p>Neil Smith Media Group offers photography, videography, and editing services with a focus on creativity and client satisfaction.</p>
           <a href="/services.html" class="hero-cta">View Our Services</a>
+          <p class="hero-trust muted" aria-label="Trust indicator"><small>Over a decade of experience serving brands, events, and businesses</small></p>
         </div>
       </section>
 
@@ -88,9 +180,9 @@
           <p class="section-intro">Check out our various service offerings. Click to learn more.</p>
         </div>
 
-        <div class="services-grid" role="list">
+        <div class="services-grid">
           <!-- Photography -->
-          <article class="service-card" role="listitem">
+          <article class="service-card">
             <div class="service-card-body">
               <h3 class="service-card-title">
                 <a class="service-card-link" href="/services/photography.html" data-analytics="home_services_photography">Photography</a>
@@ -103,7 +195,7 @@
           </article>
 
           <!-- Videography -->
-          <article class="service-card" role="listitem">
+          <article class="service-card">
             <div class="service-card-body">
               <h3 class="service-card-title">
                 <a class="service-card-link" href="/services/videography.html" data-analytics="home_services_videography">Videography</a>
@@ -116,7 +208,7 @@
           </article>
 
           <!-- Editing -->
-          <article class="service-card" role="listitem">
+          <article class="service-card">
             <div class="service-card-body">
               <h3 class="service-card-title">
                 <a class="service-card-link" href="/services/editing.html" data-analytics="home_services_editing">Editing</a>
@@ -129,7 +221,7 @@
           </article>
 
           <!-- Other Services -->
-          <article class="service-card" role="listitem">
+          <article class="service-card">
             <div class="service-card-body">
               <h3 class="service-card-title">
                 <a class="service-card-link" href="/services/other-services.html" data-analytics="home_services_other">Other Services</a>
@@ -172,11 +264,52 @@
         <a href="/blog.html" class="blog-link">Read More Posts</a>
       </section>
 
+      <!-- FAQ SECTION -->
+      <section id="faq" class="homepage-section" aria-labelledby="faq-title">
+        <h2 id="faq-title">Frequently Asked Questions</h2>
+        <div class="faq-list">
+          <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+            <h3 itemprop="name">What types of projects do you work on?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text">We work on a wide range of projects including corporate events, weddings, brand photography, promotional videos, social media content, and post-production editing for clients of all sizes.</p>
+            </div>
+          </article>
+
+          <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+            <h3 itemprop="name">How do I request a quote?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text">You can <a href="/services/request-form.html">request a quote</a> through our online form or <a href="/contact.html">contact us</a> directly. We'll discuss your project needs and provide a custom quote within 1-2 business days.</p>
+            </div>
+          </article>
+
+          <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+            <h3 itemprop="name">What's your turnaround time?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text">Turnaround times vary by project scope. For photography, you can typically expect edited photos within 1-2 weeks. Video projects range from 2-4 weeks depending on complexity. Rush delivery is available upon request.</p>
+            </div>
+          </article>
+
+          <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+            <h3 itemprop="name">Do you travel for projects?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text">Yes! We're available for projects throughout the United States. Travel fees may apply for projects outside our local area, which will be discussed during the quote process.</p>
+            </div>
+          </article>
+
+          <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+            <h3 itemprop="name">What equipment do you use?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text">We use professional-grade equipment including multiple camera bodies, lenses, lighting setups, audio equipment, and industry-standard editing software to ensure high-quality deliverables for every project.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <!-- ABOUT PREVIEW -->
       <section id="about-preview" class="homepage-section" aria-labelledby="about-title">
         <h2 id="about-title">About Neil Smith Media Group</h2>
         <div class="about-content">
-          <img src="/media/logos/nsmg-logo.png" alt="Neil Smith Media Group Logo" class="about-logo" decoding="async" loading="lazy" />
+          <img src="/media/logos/nsmg-logo.png" alt="Neil Smith Media Group Logo" class="about-logo" width="512" height="512" decoding="async" loading="lazy" />
           <div>
             <p>We're passionate about telling authentic stories through images and video. Our mission is to make every client look and feel their best on camera.</p>
             <a href="/about-us/about.html" class="about-link">Learn More</a>
@@ -186,14 +319,15 @@
 
       <!-- CTA -->
       <section id="cta" class="homepage-section" aria-labelledby="cta-title">
-        <h2 id="cta-title">Are You Ready to Get Started?</h2>
+        <h2 id="cta-title">Ready to Bring Your Vision to Life?</h2>
+        <p>Get a free consultation and custom quote for your project.</p>
         <a href="/contact.html" class="cta-btn">Contact Us</a>
         <a href="/services/request-form.html" class="cta-btn secondary">Request a Quote</a>
       </section>
     </main>
 
     <!-- Right Sidebar -->
-    <aside class="sidebar right-sidebar" aria-label="Right sidebar" role="complementary"></aside>
+    <aside class="sidebar right-sidebar" aria-label="Right sidebar"></aside>
   </div>
 
   <!-- Footer (injected via JS) -->
