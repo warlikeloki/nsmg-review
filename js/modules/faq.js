@@ -9,11 +9,14 @@ export function initFAQ() {
   if (faqItems.length === 0) return;
 
   faqItems.forEach((item, index) => {
-    // Wrap h3 in a button for accessibility
     const h3 = item.querySelector('h3');
     const answer = item.querySelector('div[itemscope]');
 
     if (!h3 || !answer) return;
+
+    // Get the question text
+    const questionText = h3.textContent;
+    const questionItemprop = h3.getAttribute('itemprop');
 
     // Create button wrapper
     const button = document.createElement('button');
@@ -22,15 +25,21 @@ export function initFAQ() {
     button.setAttribute('aria-controls', `faq-answer-${index}`);
     button.type = 'button';
 
+    // Create h3 inside button with question text
+    const newH3 = document.createElement('h3');
+    newH3.textContent = questionText;
+    newH3.id = `faq-question-${index}`;
+    if (questionItemprop) {
+      newH3.setAttribute('itemprop', questionItemprop);
+    }
+
     // Add toggle icon
     const toggleIcon = document.createElement('span');
     toggleIcon.className = 'faq-toggle';
     toggleIcon.setAttribute('aria-hidden', 'true');
     toggleIcon.textContent = '+';
 
-    // Move h3 content into button
-    h3.setAttribute('id', `faq-question-${index}`);
-    button.appendChild(h3);
+    button.appendChild(newH3);
     button.appendChild(toggleIcon);
 
     // Wrap answer in collapsible container

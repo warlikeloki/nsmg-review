@@ -38,7 +38,7 @@
 .faq-item .faq-question {
   width: 100%;
   text-align: left;
-  background: none;
+  background: transparent;
   border: none;
   padding: 1.5rem;
   cursor: pointer;
@@ -47,13 +47,20 @@
   align-items: center;
   gap: 1rem;
   transition: background-color 0.2s;
+  color: inherit;
+  font-family: inherit;
 }
 
 .faq-item .faq-question:hover {
-  background-color: rgba(var(--shadow-color), 0.03);
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 .faq-item .faq-question:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: -2px;
+}
+
+.faq-item .faq-question:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: -2px;
 }
