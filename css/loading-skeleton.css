@@ -1,0 +1,164 @@
+/* =========================================================
+   loading-skeleton.css — Loading skeleton placeholders
+   ========================================================= */
+
+/* Base skeleton styles */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base, #e0e0e0) 0%,
+    var(--skeleton-highlight, #f0f0f0) 50%,
+    var(--skeleton-base, #e0e0e0) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: var(--border-radius, 6px);
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Skeleton variants */
+.skeleton-text {
+  height: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+}
+
+.skeleton-text.short {
+  width: 40%;
+}
+
+.skeleton-text.medium {
+  width: 70%;
+}
+
+.skeleton-text.long {
+  width: 100%;
+}
+
+.skeleton-heading {
+  height: 2rem;
+  width: 60%;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+}
+
+.skeleton-card {
+  height: 200px;
+  width: 100%;
+  margin-bottom: 1rem;
+  border-radius: var(--border-radius, 8px);
+}
+
+.skeleton-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.skeleton-button {
+  height: 40px;
+  width: 120px;
+  border-radius: var(--border-radius, 6px);
+}
+
+/* Equipment grid skeleton */
+.skeleton-equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.skeleton-equipment-card {
+  background: var(--background-card, #fff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: var(--border-radius, 8px);
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.skeleton-equipment-card .skeleton-text {
+  margin-bottom: 0.75rem;
+}
+
+/* Service content skeleton */
+.skeleton-service-content {
+  padding: 2rem 1rem;
+}
+
+.skeleton-service-content .skeleton-heading {
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-service-content .skeleton-text:last-child {
+  margin-bottom: 0;
+}
+
+/* Pricing table skeleton */
+.skeleton-pricing-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.skeleton-pricing-table tr {
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.skeleton-pricing-table td {
+  padding: 1rem;
+}
+
+.skeleton-pricing-table .skeleton-text {
+  margin-bottom: 0;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .skeleton {
+    --skeleton-base: #2a2a2a;
+    --skeleton-highlight: #3a3a3a;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--skeleton-base, #e0e0e0);
+  }
+}
+
+/* Container for loading state */
+.loading-container {
+  position: relative;
+  min-height: 200px;
+}
+
+.loading-container[aria-busy="true"] {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Screen reader only loading text */
+.loading-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

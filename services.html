@@ -7,6 +7,117 @@
 
   <!-- SEO -->
   <meta name="description" content="Explore Neil Smith Media Group's services: event photography, videography, editing, and other creative services tailored to your project needs." />
+  <link rel="canonical" href="https://neilsmith.org/services.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:site_name" content="Neil Smith Media Group" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Services - Neil Smith Media Group" />
+  <meta property="og:description" content="Professional photography, videography, and editing services for brands, events, and businesses." />
+  <meta property="og:image" content="https://neilsmith.org/media/og/services.jpg" />
+  <meta property="og:url" content="https://neilsmith.org/services.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Structured Data (Schema.org) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Neil Smith Media Group Services",
+    "description": "Professional media services including photography, videography, and editing",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "item": {
+          "@type": "Service",
+          "@id": "https://neilsmith.org/services/photography.html",
+          "name": "Photography Services",
+          "description": "Professional event and commercial photography with state-of-the-art equipment",
+          "provider": {
+            "@type": "ProfessionalService",
+            "name": "Neil Smith Media Group",
+            "url": "https://neilsmith.org/"
+          },
+          "serviceType": "Photography",
+          "areaServed": "US"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "item": {
+          "@type": "Service",
+          "@id": "https://neilsmith.org/services/videography.html",
+          "name": "Videography Services",
+          "description": "Professional video production and cinematography for events and brands",
+          "provider": {
+            "@type": "ProfessionalService",
+            "name": "Neil Smith Media Group",
+            "url": "https://neilsmith.org/"
+          },
+          "serviceType": "Videography",
+          "areaServed": "US"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "item": {
+          "@type": "Service",
+          "@id": "https://neilsmith.org/services/editing.html",
+          "name": "Editing Services",
+          "description": "Professional video and photo editing, color grading, and post-production",
+          "provider": {
+            "@type": "ProfessionalService",
+            "name": "Neil Smith Media Group",
+            "url": "https://neilsmith.org/"
+          },
+          "serviceType": "Video Editing",
+          "areaServed": "US"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "item": {
+          "@type": "Service",
+          "@id": "https://neilsmith.org/services/other-services.html",
+          "name": "Other Services",
+          "description": "Additional services including production assistance, notary public, and wedding officiant",
+          "provider": {
+            "@type": "ProfessionalService",
+            "name": "Neil Smith Media Group",
+            "url": "https://neilsmith.org/"
+          },
+          "areaServed": "US"
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Breadcrumb Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://neilsmith.org/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Services",
+        "item": "https://neilsmith.org/services.html"
+      }
+    ]
+  }
+  </script>
 
   <!-- CSS -->
   <link rel="stylesheet" href="/css/global.css" />
@@ -18,6 +129,7 @@
   <link rel="stylesheet" href="/css/footer.css" />
   <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/equipment.css" />
+  <link rel="stylesheet" href="/css/loading-skeleton.css" />
   <link rel="stylesheet" href="/css/wip.css" />
 
   <!-- Page-scoped overrides for the Services drawer -->
@@ -81,8 +193,12 @@
 
     <!-- Main Content (services.js injects fragments + equipment here) -->
     <main class="main-content" id="services-content" role="main" tabindex="-1" aria-labelledby="services-title">
+      <!-- ARIA live region for screen reader announcements -->
+      <div id="service-announcer" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+
       <!-- Mobile-only dashboard hamburger; aria-controls points to the drawer -->
       <button
+        type="button"
         id="services-toggle"
         class="hamburger"
         aria-label="Toggle services menu"

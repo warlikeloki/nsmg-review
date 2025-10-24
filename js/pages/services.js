@@ -11,9 +11,44 @@
   const MAIN_ID   = 'services-content';
   const DRAWER_ID = 'services-drawer';
   const TOGGLE_ID = 'services-toggle';
+  const ANNOUNCER_ID = 'service-announcer';
 
   let inFlight = false;
   let currentKey = null;
+
+  // Service metadata for canonical URLs and announcements
+  const SERVICE_META = {
+    photography: {
+      title: 'Photography Services',
+      url: 'https://neilsmith.org/services/photography.html',
+      announcement: 'Loading photography services'
+    },
+    videography: {
+      title: 'Videography Services',
+      url: 'https://neilsmith.org/services/videography.html',
+      announcement: 'Loading videography services'
+    },
+    editing: {
+      title: 'Editing Services',
+      url: 'https://neilsmith.org/services/editing.html',
+      announcement: 'Loading editing services'
+    },
+    'other-services': {
+      title: 'Other Services',
+      url: 'https://neilsmith.org/services/other-services.html',
+      announcement: 'Loading other services'
+    },
+    pricing: {
+      title: 'Pricing',
+      url: 'https://neilsmith.org/services/pricing.html',
+      announcement: 'Loading pricing information'
+    },
+    'request-form': {
+      title: 'Request a Quote',
+      url: 'https://neilsmith.org/services/request-form.html',
+      announcement: 'Loading service request form'
+    }
+  };
 
   const SERVICE_CANDIDATES = {
     photography:      ['services/photography.html','./services/photography.html'],
@@ -60,6 +95,65 @@
       drawer.classList.remove('open');
       if (toggle) toggle.setAttribute('aria-expanded', 'false');
     }
+  }
+
+  // Update canonical URL for current service
+  function updateCanonicalUrl(serviceKey) {
+    const meta = SERVICE_META[serviceKey];
+    if (!meta) return;
+
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = meta.url;
+
+    // Also update document title
+    if (meta.title) {
+      document.title = `${meta.title} - Neil Smith Media Group`;
+    }
+  }
+
+  // Announce to screen readers
+  function announce(message) {
+    const announcer = document.getElementById(ANNOUNCER_ID);
+    if (!announcer) return;
+
+    // Clear and re-set to ensure announcement
+    announcer.textContent = '';
+    setTimeout(() => {
+      announcer.textContent = message;
+    }, 100);
+  }
+
+  // Create loading skeleton
+  function showLoadingSkeleton() {
+    return `
+      <div class="skeleton-service-content" role="status" aria-live="polite" aria-busy="true">
+        <span class="loading-sr-only">Loading content...</span>
+        <div class="skeleton skeleton-heading"></div>
+        <div class="skeleton skeleton-text long"></div>
+        <div class="skeleton skeleton-text medium"></div>
+        <div class="skeleton skeleton-text long"></div>
+        <div style="height: 2rem;"></div>
+        <div class="skeleton skeleton-equipment-grid">
+          <div class="skeleton-equipment-card">
+            <div class="skeleton skeleton-text medium"></div>
+            <div class="skeleton skeleton-text short"></div>
+          </div>
+          <div class="skeleton-equipment-card">
+            <div class="skeleton skeleton-text medium"></div>
+            <div class="skeleton skeleton-text short"></div>
+          </div>
+          <div class="skeleton-equipment-card">
+            <div class="skeleton skeleton-text medium"></div>
+            <div class="skeleton skeleton-text short"></div>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   async function fetchFirstOk(candidates) {
@@ -316,7 +410,20 @@
     inFlight = true;
     currentKey = key;
 
+    const meta = SERVICE_META[key];
+
+    // Update canonical URL immediately
+    updateCanonicalUrl(key);
+
+    // Announce to screen readers
+    if (meta && meta.announcement) {
+      announce(meta.announcement);
+    }
+
+    // Show loading skeleton
+    mount.innerHTML = showLoadingSkeleton();
     main.setAttribute('data-loading', 'true');
+    main.setAttribute('aria-busy', 'true');
 
     try {
       const candidates = SERVICE_CANDIDATES[key] || [];
@@ -346,12 +453,19 @@
       await activatePricingIfPresent();
       await activateOtherServicesIfPresent();
 
+      // Announce completion to screen readers
+      if (meta && meta.title) {
+        announce(`${meta.title} loaded`);
+      }
+
       closeDrawerIfOpen();
     } catch (err) {
       console.error('[services] load error', err);
       mount.innerHTML = `<div class="notice error" role="alert"><p>Sorry, we couldn't load that section right now.</p></div>`;
+      announce('Error loading content. Please try again.');
     } finally {
       main.removeAttribute('data-loading');
+      main.removeAttribute('aria-busy');
       inFlight = false;
     }
   }
