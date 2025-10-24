@@ -1,0 +1,165 @@
+/* =========================================================
+   services-content.css — Styling for service page content
+   ========================================================= */
+
+/* Service Article Layout */
+article[data-fragment="service"] {
+  padding: 1rem 0;
+}
+
+article[data-fragment="service"] > h1 {
+  font-size: 2.5rem;
+  color: var(--primary-color, #0073e6);
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+article[data-fragment="service"] > p {
+  font-size: 1.125rem;
+  color: var(--text-secondary, #555);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* Hero Section */
+.hero-section {
+  margin-bottom: 2rem;
+}
+
+.hero-section h1 {
+  font-size: 2.5rem;
+  color: var(--primary-color, #0073e6);
+  margin-bottom: 0.75rem;
+}
+
+.hero-section p {
+  font-size: 1.125rem;
+  color: var(--text-secondary, #555);
+  line-height: 1.6;
+}
+
+/* Services Offered Section */
+.services-offered {
+  background: var(--background-card, #ffffff);
+  border-radius: var(--border-radius, 8px);
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid var(--accent-color, #ffa500);
+}
+
+.services-offered h2 {
+  font-size: 1.75rem;
+  color: var(--text-main, #222);
+  margin-bottom: 1.25rem;
+  font-weight: 600;
+}
+
+.services-offered ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.services-offered li {
+  padding: 0.75rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  line-height: 1.7;
+  color: var(--text-secondary, #444);
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.services-offered li:last-child {
+  border-bottom: none;
+}
+
+/* Custom bullet using ::before */
+.services-offered li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent-color, #ffa500);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.services-offered li strong {
+  color: var(--text-main, #222);
+  font-weight: 600;
+}
+
+/* Equipment Section */
+.equipment-section {
+  margin-bottom: 2rem;
+}
+
+.equipment-section h2 {
+  font-size: 1.75rem;
+  color: var(--text-main, #222);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.equipment-section > p {
+  color: var(--text-secondary, #666);
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Services Details Section (for Other Services) */
+.services-details {
+  margin-top: 2.5rem;
+}
+
+.services-details h2 {
+  font-size: 1.75rem;
+  color: var(--text-main, #222);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.services-details > p {
+  color: var(--text-secondary, #666);
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  article[data-fragment="service"] > h1,
+  .hero-section h1 {
+    font-size: 2rem;
+  }
+
+  article[data-fragment="service"] > p,
+  .hero-section p {
+    font-size: 1rem;
+  }
+
+  .services-offered {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .services-offered h2,
+  .equipment-section h2,
+  .services-details h2 {
+    font-size: 1.5rem;
+  }
+
+  .services-offered li {
+    padding: 0.6rem 0;
+    padding-left: 1.25rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .services-offered {
+    background: var(--background-card-dark, #2a2a2a);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}

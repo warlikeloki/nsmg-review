@@ -86,6 +86,7 @@
   <link rel="stylesheet" href="/css/footer.css" />
   <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/equipment.css" />
+  <link rel="stylesheet" href="/css/services-content.css" />
   <link rel="stylesheet" href="/css/wip.css" />
   <script type="module" src="/js/wip.js" defer></script>
   <script type="module" src="/js/modules/site-settings.js"></script>
@@ -101,13 +102,30 @@
       <!-- data-fragment wrapper helps services.js extract the right content -->
       <article data-fragment="service">
         <h1>Photography</h1>
-        <p>Selected gear commonly used for photography.</p>
+        <p>Capturing moments that tell your story with professional-grade equipment and over a decade of experience.</p>
 
-        <!-- Both data-category and data-category-filter for compatibility -->
-        <section id="equipment-list" class="equipment-grid" 
-                 data-category="photography" 
-                 data-category-filter="photography">
-          <p>Loading equipment...</p>
+        <section class="services-offered">
+          <h2>What We Offer</h2>
+          <ul>
+            <li><strong>Event Photography:</strong> Corporate events, conferences, galas, and special occasions</li>
+            <li><strong>Brand Photography:</strong> Professional headshots, product photography, and marketing materials</li>
+            <li><strong>Wedding Photography:</strong> Full-day coverage with candid and posed shots</li>
+            <li><strong>Portrait Photography:</strong> Individual and group portraits with professional lighting</li>
+            <li><strong>Real Estate Photography:</strong> Property listings with HDR and wide-angle shots</li>
+            <li><strong>Sports & Action:</strong> Fast-paced events with high-speed capture</li>
+          </ul>
+        </section>
+
+        <section class="equipment-section">
+          <h2>Photography Equipment</h2>
+          <p>Selected gear commonly used for photography projects.</p>
+
+          <!-- Both data-category and data-category-filter for compatibility -->
+          <div id="equipment-list" class="equipment-grid"
+               data-category="photography"
+               data-category-filter="photography">
+            <p>Loading equipment...</p>
+          </div>
         </section>
       </article>
     </main>
