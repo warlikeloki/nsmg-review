@@ -3,6 +3,10 @@
 // Uses hero_image → image → featuredImage → coverImage fallback.
 // "Read More" links point to /blog-post.php?id=<postId>.
 
+import { fetchJson } from '../utils/fetch-utils.js';
+import { escapeHtml } from '../utils/html-utils.js';
+import { resolveFeaturedImage } from '../utils/blog-utils.js';
+
 (function () {
   // ===== CONFIG =====
   const POST_PAGE = "/blog-post.php"; // stays PHP to match your staging
@@ -10,12 +14,6 @@
   const BLOG_PHP_ENDPOINT = "/php/get_posts.php"; // optional backend; JSON fallback works fine
 
   const $ = (sel, root = document) => root.querySelector(sel);
-
-  async function fetchJson(url) {
-    const r = await fetch(url, { headers: { "Accept": "application/json" } });
-    if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
-    return r.json();
-  }
 
   // Prefer PHP if present (limit supported); else JSON
   async function getLatestPosts(limit = 1) {
@@ -32,37 +30,6 @@
         .sort((a, b) => (new Date(b?.date || 0)) - (new Date(a?.date || 0)))
         .slice(0, limit);
     }
-  }
-
-  function resolveFeaturedImage(post) {
-    // Your schema: hero_image, image
-    const p = post || {};
-    const candidates = [
-      p.hero_image,
-      p.image,
-      p.featuredImage,       // future-proof
-      p.coverImage,
-      p?.images?.featured,
-      Array.isArray(p?.images?.all) ? p.images.all[0] : null
-    ].filter(Boolean);
-
-    const first = candidates[0];
-    if (!first) return null;
-
-    if (typeof first === "string") return { src: first, alt: p?.title || "Blog image" };
-    if (typeof first === "object") {
-      return {
-        src: first.src || first.url || first.path || "",
-        alt: first.alt || p?.title || "Blog image"
-      };
-    }
-    return null;
-  }
-
-  function escapeHtml(str) {
-    return String(str).replace(/[&<>"']/g, s => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[s]));
   }
 
   function choosePostUrl(post) {
