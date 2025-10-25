@@ -212,3 +212,27 @@ html.nav-mobile #nav-menu.nav-menu > li > a:active {
 
 html.nav-mobile, html.nav-mobile body { overflow-x: hidden; }
 html.nav-mobile.nav-open, html.nav-mobile body.nav-open { overflow: hidden; }
+
+/* --------- Backdrop overlay (mobile only) --------- */
+#nsm-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1999; /* below header (2000), above content */
+  display: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.nav-open #nsm-nav-backdrop,
+html.nav-open #nsm-nav-backdrop {
+  display: block;
+  opacity: 1;
+}
+
+@media (max-width: 1023px) {
+  #nsm-nav-backdrop {
+    cursor: pointer;
+  }
+}
