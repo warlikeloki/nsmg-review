@@ -35,6 +35,11 @@
   display: block;
 }
 
+/* When WIP banner is visible, increase offset to include banner height */
+body.has-wip-banner .header-offset {
+  height: calc(var(--header-height, 80px) + var(--wip-banner-height, 52px));
+}
+
 /* When WIP banner is visible, place header right under it */
 body.has-wip-banner #site-header.nav-container{
   top: var(--wip-banner-height, 52px);
