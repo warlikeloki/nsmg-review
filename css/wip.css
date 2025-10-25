@@ -18,12 +18,13 @@
 }
 
 /* ------------------------------------------------------------
-   Primary banner (sticky; shown at top when enabled by JS)
+   Primary banner (fixed; shown at top when enabled by JS)
    ------------------------------------------------------------ */
 #nsmg-wip-banner {
-  position: sticky;
+  position: fixed;
   top: 0;
   left: 0;
+  right: 0;
   width: 100%;
   z-index: var(--wip-z);
   background: linear-gradient(90deg, var(--wip-bg), #0b1220);

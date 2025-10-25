@@ -67,7 +67,16 @@ import { formatDate } from '../utils/date-utils.js';
     const a = document.createElement('article');
     a.className = 'blog-card';
 
-    const url = post.url || (post.slug ? `/blog/${post.slug}.html` : '#');
+    // Generate URL: use post.url if present, otherwise use blog-post.php with id or slug
+    let url = '#';
+    if (post.url) {
+      url = post.url;
+    } else if (post.id) {
+      url = `/blog-post.php?id=${encodeURIComponent(post.id)}`;
+    } else if (post.slug) {
+      url = `/blog-post.php?slug=${encodeURIComponent(post.slug)}`;
+    }
+
     const title = post.title || 'Untitled';
     const date = post.date ? `<time class="blog-date" datetime="${post.date}">${formatDate(post.date)}</time>` : '';
     const img = post.image ? `

@@ -177,6 +177,56 @@ body:not(.embed) #right-sidebar {
   color: var(--primary-color, #0073e6);
 }
 
+/* ---------- Mobile responsive tables ---------- */
+@media (max-width: 768px) {
+  /* Wrap tables in scrollable container on mobile */
+  #packages-section,
+  #ala-carte-section {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pricing-table {
+    min-width: 500px; /* Ensure table is readable */
+    font-size: 0.85rem;
+  }
+
+  .pricing-table th,
+  .pricing-table td {
+    padding: 0.6rem 0.8rem;
+  }
+
+  #pricing-section {
+    padding: 1.5rem 1rem;
+  }
+
+  #pricing-section h1 {
+    font-size: 1.6rem;
+  }
+
+  #packages-section h2,
+  #ala-carte-section h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* ---------- Very small screens ---------- */
+@media (max-width: 480px) {
+  .pricing-table {
+    font-size: 0.8rem;
+    min-width: 450px;
+  }
+
+  .pricing-table th,
+  .pricing-table td {
+    padding: 0.5rem 0.6rem;
+  }
+
+  #pricing-section {
+    padding: 1rem 0.75rem;
+  }
+}
+
 /* ---------- Wide-screen polish ---------- */
 @media (min-width: 1280px) {
   /* Slightly larger tap/reading targets on big displays */

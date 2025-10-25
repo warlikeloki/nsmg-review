@@ -194,19 +194,8 @@
   <!-- Shared footer (hidden automatically in .embed mode via pricing.css) -->
   <div id="footer-container" role="contentinfo"></div>
 
-  <!-- Inject header/footer HTML -->
-  <script>
-    (function () {
-      fetch("/header.html").then(r => r.text()).then(html => {
-        const hc = document.getElementById("header-container");
-        if (hc) hc.innerHTML = html;
-      }).catch(()=>{});
-      fetch("/footer.html").then(r => r.text()).then(html => {
-        const fc = document.getElementById("footer-container");
-        if (fc) fc.innerHTML = html;
-      }).catch(()=>{});
-    })();
-  </script>
+  <!-- Inject header/footer HTML via main.js (includes nav functionality) -->
+  <script type="module" src="/js/main.js" defer></script>
 
   <!-- Pricing logic -->
   <script type="module" src="/js/modules/pricing.js" defer></script>

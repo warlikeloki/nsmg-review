@@ -111,14 +111,66 @@
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
+  #homepage {
+    padding: 0 1rem;
+    overflow-x: hidden;
+  }
+
   .homepage-section {
     margin: 24px 0;
     padding: 20px 0;
+    overflow-x: hidden;
   }
+
   .services-cards,
   .about-content {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .services-cards {
+    gap: 1.5rem;
+    overflow-x: hidden;
+  }
+
+  .service-card {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .testimonials-slider,
+  .portfolio-thumbnails,
+  .blog-post-preview {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 1rem;
+  }
+
+  .testimonial-card,
+  .portfolio-thumb {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  .testimonial-card {
+    max-width: 85vw;
+  }
+
+  .portfolio-thumb {
+    max-width: 85vw;
+  }
+
+  #hero {
+    padding: 60px 1rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
   }
 }
 
