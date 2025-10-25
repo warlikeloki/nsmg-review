@@ -69,6 +69,7 @@ nav.breadcrumbs {
 .breadcrumbs .separator {
   color: var(--text-tertiary, #999);
   font-weight: normal;
+  -webkit-user-select: none; /* Safari 3+, Safari on iOS 3+ */
   user-select: none;
   pointer-events: none;
 }
