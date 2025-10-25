@@ -72,8 +72,13 @@
           <label for="message">Message<span aria-hidden="true">*</span></label>
           <textarea id="message" name="message" rows="6" required></textarea>
 
+          <!-- Status messages with ARIA live region -->
+          <div id="contact-status" class="form-status" aria-live="polite" aria-atomic="true"></div>
+
+          <!-- Fallback link container -->
+          <div id="contact-fallback" class="form-fallback" hidden></div>
+
           <button type="submit" class="btn">Send Message</button>
-          <div id="form-status" class="form-status" aria-live="polite" role="status"></div>
         </form>
       </section>
     </main>
