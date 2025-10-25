@@ -382,6 +382,21 @@
     }
   }
 
+  async function activateServiceRequestFormIfPresent() {
+    const form = mount.querySelector('#service-request-form');
+    if (!form) return;
+
+    try {
+      const mod = await import('/js/modules/service-request.js');
+      if (mod?.initServiceRequestForm) {
+        await mod.initServiceRequestForm();
+        console.log('[services] Service request form initialized');
+      }
+    } catch (e) {
+      console.error('[services] service request form activation failed:', e);
+    }
+  }
+
   function renderOtherServicesAsCollapsible(container, items) {
     if (!Array.isArray(items) || items.length === 0) {
       container.innerHTML = '<p>No other services listed.</p>';
@@ -489,6 +504,7 @@
       await activateEquipmentIfPresent();
       await activatePricingIfPresent();
       await activateOtherServicesIfPresent();
+      await activateServiceRequestFormIfPresent();
 
       // Announce completion to screen readers
       if (meta && meta.title) {
