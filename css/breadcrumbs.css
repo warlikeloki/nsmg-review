@@ -1,0 +1,164 @@
+/* =========================================================
+   breadcrumbs.css — Breadcrumb navigation styling
+   ========================================================= */
+
+/* Breadcrumb Container */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #666);
+}
+
+/* Breadcrumb Navigation (semantic nav wrapper) */
+nav.breadcrumbs {
+  padding: 1rem 0;
+}
+
+/* Breadcrumb List */
+.breadcrumbs ol,
+.breadcrumbs ul {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Breadcrumb Items */
+.breadcrumbs li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Breadcrumb Links */
+.breadcrumbs a {
+  color: var(--link-color, #0073e6);
+  text-decoration: none;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.breadcrumbs a:hover {
+  color: var(--link-hover-color, #005bb5);
+  text-decoration: underline;
+  background-color: rgba(0, 115, 230, 0.05);
+}
+
+.breadcrumbs a:focus {
+  outline: 2px solid var(--accent-color, #ffa500);
+  outline-offset: 2px;
+}
+
+/* Current Page (no link) */
+.breadcrumbs [aria-current="page"] {
+  color: var(--text-main, #222);
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Breadcrumb Separator */
+.breadcrumbs .separator {
+  color: var(--text-tertiary, #999);
+  font-weight: normal;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Using ::after for separators (alternative approach) */
+.breadcrumbs li:not(:last-child)::after {
+  content: '›';
+  margin-left: 0.5rem;
+  color: var(--text-tertiary, #999);
+  font-weight: normal;
+  font-size: 1.1rem;
+}
+
+/* Remove separator from last item when using ::after */
+.breadcrumbs li:last-child::after {
+  display: none;
+}
+
+/* Icon support (optional) */
+.breadcrumbs .breadcrumb-icon {
+  width: 1rem;
+  height: 1rem;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 0.25rem;
+}
+
+/* Home icon */
+.breadcrumbs .home-icon::before {
+  content: '🏠';
+  font-size: 0.95rem;
+}
+
+/* Compact variant */
+.breadcrumbs.compact {
+  font-size: 0.85rem;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+}
+
+.breadcrumbs.compact a,
+.breadcrumbs.compact [aria-current="page"] {
+  padding: 0.2rem 0.4rem;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .breadcrumbs {
+    font-size: 0.85rem;
+    gap: 0.4rem;
+  }
+
+  .breadcrumbs a,
+  .breadcrumbs [aria-current="page"] {
+    padding: 0.2rem 0.4rem;
+  }
+
+  .breadcrumbs li:not(:last-child)::after {
+    margin-left: 0.4rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .breadcrumbs {
+    display: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .breadcrumbs {
+    color: var(--text-secondary-dark, #aaa);
+  }
+
+  .breadcrumbs a {
+    color: var(--link-color-dark, #4d9eff);
+  }
+
+  .breadcrumbs a:hover {
+    color: var(--link-hover-color-dark, #80b3ff);
+    background-color: rgba(77, 158, 255, 0.1);
+  }
+
+  .breadcrumbs [aria-current="page"] {
+    color: var(--text-main-dark, #e0e0e0);
+  }
+
+  .breadcrumbs .separator,
+  .breadcrumbs li:not(:last-child)::after {
+    color: var(--text-tertiary-dark, #666);
+  }
+}

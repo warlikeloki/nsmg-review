@@ -12,39 +12,46 @@
   const DRAWER_ID = 'services-drawer';
   const TOGGLE_ID = 'services-toggle';
   const ANNOUNCER_ID = 'service-announcer';
+  const BREADCRUMBS_ID = 'service-breadcrumbs';
 
   let inFlight = false;
   let currentKey = null;
 
-  // Service metadata for canonical URLs and announcements
+  // Service metadata for canonical URLs, announcements, and breadcrumbs
   const SERVICE_META = {
     photography: {
       title: 'Photography Services',
+      breadcrumb: 'Photography',
       url: 'https://neilsmith.org/services/photography.html',
       announcement: 'Loading photography services'
     },
     videography: {
       title: 'Videography Services',
+      breadcrumb: 'Videography',
       url: 'https://neilsmith.org/services/videography.html',
       announcement: 'Loading videography services'
     },
     editing: {
       title: 'Editing Services',
+      breadcrumb: 'Editing',
       url: 'https://neilsmith.org/services/editing.html',
       announcement: 'Loading editing services'
     },
     'other-services': {
       title: 'Other Services',
+      breadcrumb: 'Other Services',
       url: 'https://neilsmith.org/services/other-services.html',
       announcement: 'Loading other services'
     },
     pricing: {
       title: 'Pricing',
+      breadcrumb: 'Pricing',
       url: 'https://neilsmith.org/services/pricing.html',
       announcement: 'Loading pricing information'
     },
     'request-form': {
       title: 'Request a Quote',
+      breadcrumb: 'Request a Quote',
       url: 'https://neilsmith.org/services/request-form.html',
       announcement: 'Loading service request form'
     }
@@ -126,6 +133,33 @@
     setTimeout(() => {
       announcer.textContent = message;
     }, 100);
+  }
+
+  // Update breadcrumb navigation
+  function updateBreadcrumbs(serviceKey) {
+    const breadcrumbs = document.getElementById(BREADCRUMBS_ID);
+    if (!breadcrumbs) return;
+
+    const meta = SERVICE_META[serviceKey];
+    if (!meta) {
+      // No service selected - show default Services breadcrumb
+      breadcrumbs.innerHTML = `
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li><span aria-current="page">Services</span></li>
+        </ol>
+      `;
+      return;
+    }
+
+    // Service selected - show full breadcrumb trail
+    breadcrumbs.innerHTML = `
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/services.html">Services</a></li>
+        <li><span aria-current="page">${meta.breadcrumb}</span></li>
+      </ol>
+    `;
   }
 
   // Create loading skeleton
@@ -414,6 +448,9 @@
 
     // Update canonical URL immediately
     updateCanonicalUrl(key);
+
+    // Update breadcrumbs
+    updateBreadcrumbs(key);
 
     // Announce to screen readers
     if (meta && meta.announcement) {

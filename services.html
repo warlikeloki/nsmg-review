@@ -130,6 +130,7 @@
   <link rel="stylesheet" href="/css/mobile.css" />
   <link rel="stylesheet" href="/css/equipment.css" />
   <link rel="stylesheet" href="/css/loading-skeleton.css" />
+  <link rel="stylesheet" href="/css/breadcrumbs.css" />
   <link rel="stylesheet" href="/css/wip.css" />
 
   <!-- Page-scoped overrides for the Services drawer -->
@@ -208,6 +209,14 @@
       >
         <span></span><span></span><span></span>
       </button>
+
+      <!-- Breadcrumb Navigation -->
+      <nav class="breadcrumbs" aria-label="Breadcrumb" id="service-breadcrumbs">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li><span aria-current="page">Services</span></li>
+        </ol>
+      </nav>
 
       <div id="service-placeholder">
         <h1 id="services-title">Our Services</h1>
