@@ -57,9 +57,9 @@ function esc_attr($s) { return htmlspecialchars($s ?? '', ENT_QUOTES | ENT_SUBST
   <div id="footer-container"></div>
 
   <!-- Header/Footer injection -->
-  
+  <script type="module" src="/js/main.js" defer></script>
 
   <!-- Single-post script (already supports ?id= or ?slug=) -->
-  <script src="/js/modules/blog-post.js?v=2025-10-13" defer></script>
+  <script type="module" src="/js/modules/blog-post.js" defer></script>
 </body>
 </html>

@@ -132,11 +132,9 @@ import { escapeHtml } from '../utils/html-utils.js';
   }
 
   function renderGrid(listEl, items, opts = {}) {
-    const categoryLabel = opts.category ? ` — ${escapeHtml(opts.category)}` : '';
     if (!Array.isArray(items) || items.length === 0) {
       listEl.innerHTML = `
         <div class="equipment-empty">
-          <h3 class="equipment-title">Equipment${categoryLabel}</h3>
           <p>No equipment found.</p>
         </div>`;
       return;
@@ -150,7 +148,6 @@ import { escapeHtml } from '../utils/html-utils.js';
 
     listEl.innerHTML = `
       <div class="equipment-wrapper">
-        <h3 class="equipment-title">Equipment${categoryLabel}</h3>
         <div class="equip-grid">${html}</div>
       </div>`;
     wireToggles(listEl);
